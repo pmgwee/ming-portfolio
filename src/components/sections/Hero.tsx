@@ -1,0 +1,310 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
+import { EyebrowBadge } from "@/components/ui/EyebrowBadge";
+import { Button } from "@/components/ui/Button";
+
+/* The scrubbed sequence — every other frame of the source video. */
+const FRAME_COUNT = 120;
+const frameSrc = (i: number) =>
+  `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
+
+/* Scroll-position zones where each annotation card is visible. */
+const ANNOTATIONS = [
+  {
+    id: "intro",
+    show: 0.1,
+    hide: 0.3,
+    eyebrow: "01 — Hello",
+    title: "I design & build the web.",
+    body: "Creative developer focused on cinematic, performant interfaces — where motion, 3D and engineering meet.",
+  },
+  {
+    id: "skills",
+    show: 0.38,
+    hide: 0.58,
+    eyebrow: "02 — Toolkit",
+    title: "A full-stack toolkit.",
+    body: "Next.js · React · TypeScript · WebGL · GSAP · Framer Motion. Pixel-precise UI, real-time graphics, and systems that scale.",
+  },
+  {
+    id: "work",
+    show: 0.66,
+    hide: 0.86,
+    eyebrow: "03 — Selected work",
+    title: "Things I've shipped.",
+    body: "Interactive product sites, 3D scrollytelling, and design systems. Currently open to new roles — let's talk.",
+  },
+] as const;
+
+export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  const tickingRef = useRef(false);
+  const currentFrameRef = useRef(-1);
+  const prevVisibleRef = useRef("");
+
+  const [visibleCards, setVisibleCards] = useState<string[]>([]);
+
+  const { imagesRef, progress, loaded } = useImagePreloader(
+    FRAME_COUNT,
+    frameSrc,
+  );
+
+  /* Draw one frame, cover-fit + centered, in device-pixel space (DPR-aware). */
+  const drawFrame = useCallback(
+    (index: number) => {
+      const canvas = canvasRef.current;
+      const img = imagesRef.current?.[index];
+      if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const cw = canvas.width; // already × dpr
+      const ch = canvas.height;
+      ctx.clearRect(0, 0, cw, ch);
+
+      const imgRatio = img.naturalWidth / img.naturalHeight;
+      const canvasRatio = cw / ch;
+
+      let drawW: number;
+      let drawH: number;
+      if (canvasRatio > imgRatio) {
+        drawW = cw;
+        drawH = cw / imgRatio;
+      } else {
+        drawH = ch;
+        drawW = ch * imgRatio;
+      }
+
+      // Mobile: zoom 1.3× to keep the subject prominent on small screens.
+      if (window.innerWidth <= 768) {
+        drawW *= 1.3;
+        drawH *= 1.3;
+      }
+
+      const drawX = (cw - drawW) / 2;
+      const drawY = (ch - drawH) / 2;
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    },
+    [imagesRef],
+  );
+
+  /* DPR-aware sizing — internal resolution scaled, CSS size left in px. */
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    if (currentFrameRef.current >= 0) drawFrame(currentFrameRef.current);
+  }, [drawFrame]);
+
+  /* The hot path — runs inside one RAF per scroll burst. */
+  const update = useCallback(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const rect = section.getBoundingClientRect();
+    const scrollable = section.offsetHeight - window.innerHeight;
+    const progressVal =
+      scrollable > 0
+        ? Math.min(1, Math.max(0, -rect.top / scrollable))
+        : 0;
+
+    // 1) Canvas frame (direct draw, only when the index changes).
+    const frameIndex = Math.min(
+      FRAME_COUNT - 1,
+      Math.floor(progressVal * FRAME_COUNT),
+    );
+    if (frameIndex !== currentFrameRef.current) {
+      currentFrameRef.current = frameIndex;
+      drawFrame(frameIndex);
+    }
+
+    // 2) Hero text fade over the first 8% (direct DOM, no React state).
+    if (heroTextRef.current) {
+      const o = Math.max(0, 1 - progressVal / 0.08);
+      heroTextRef.current.style.opacity = String(o);
+      heroTextRef.current.style.pointerEvents = o < 0.05 ? "none" : "auto";
+    }
+
+    // 3) Scrub progress bar (direct DOM transform).
+    if (progressBarRef.current) {
+      progressBarRef.current.style.transform = `scaleX(${progressVal})`;
+    }
+
+    // 4) Annotation visibility — React state only when the set changes.
+    const visible = ANNOTATIONS.filter(
+      (a) => progressVal >= a.show && progressVal < a.hide,
+    ).map((a) => a.id);
+    const key = visible.join(",");
+    if (key !== prevVisibleRef.current) {
+      prevVisibleRef.current = key;
+      setVisibleCards(visible);
+    }
+  }, [drawFrame]);
+
+  /* Wire up scroll + resize with RAF throttling. */
+  useEffect(() => {
+    resizeCanvas();
+    update();
+
+    const onScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(() => {
+        update();
+        tickingRef.current = false;
+      });
+    };
+    const onResize = () => {
+      resizeCanvas();
+      update();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [resizeCanvas, update]);
+
+  /* Once frames finish loading, force a repaint of the current frame. */
+  useEffect(() => {
+    if (!loaded) return;
+    currentFrameRef.current = -1;
+    resizeCanvas();
+    update();
+  }, [loaded, resizeCanvas, update]);
+
+  return (
+    <section ref={sectionRef} className="scroll-animation relative">
+      <div
+        className="sticky top-0 h-screen w-full overflow-hidden"
+        style={{ willChange: "transform", transform: "translateZ(0)" }}
+      >
+        {/* Frame-sequence canvas */}
+        <canvas
+          ref={canvasRef}
+          className="block h-full w-full"
+          style={{ willChange: "contents", transform: "translateZ(0)" }}
+        />
+
+        {/* Cinematic vignette / gradient overlays for text legibility */}
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+        <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(120%_80%_at_50%_40%,transparent_40%,rgba(7,8,12,0.55)_100%)]" />
+
+        {/* Scrub progress bar (pinned to top of viewport) */}
+        <div className="absolute left-0 top-0 z-40 h-[3px] w-full bg-white/5">
+          <div
+            ref={progressBarRef}
+            className="h-full origin-left bg-gradient-to-r from-indigo-500 to-violet-500"
+            style={{ transform: "scaleX(0)" }}
+          />
+        </div>
+
+        {/* Hero text — fades out over the first 8% of scroll */}
+        <div
+          ref={heroTextRef}
+          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
+        >
+          <EyebrowBadge>Creative Developer · Portfolio</EyebrowBadge>
+          <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
+            Hi, I&apos;m <span className="text-gradient">Ming</span>.
+          </h1>
+          <p className="mt-5 max-w-[42ch] text-base text-zinc-300 md:text-lg">
+            I build cinematic, high-performance web experiences — from 3D
+            scrollytelling to design systems.
+          </p>
+          <div className="mt-8 flex items-center gap-3">
+            <Button href="#work" showArrow>
+              View work
+            </Button>
+            <Button href="#contact" variant="secondary">
+              Get in touch
+            </Button>
+          </div>
+
+          {/* Scroll hint */}
+          <motion.div
+            className="absolute bottom-10 flex flex-col items-center gap-2 text-zinc-400"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em]">
+              Scroll
+            </span>
+            <span className="flex h-8 w-5 justify-center rounded-full border border-zinc-500/60 pt-1.5">
+              <motion.span
+                className="h-1.5 w-1 rounded-full bg-zinc-300"
+                animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Annotation cards — CSS transitions, anchored bottom-left */}
+        <div className="absolute inset-x-0 bottom-0 z-30 px-6 pb-10 md:px-10 md:pb-14">
+          <div className="relative mx-auto h-48 max-w-[1400px] md:h-44">
+            {ANNOTATIONS.map((a) => {
+              const visible = visibleCards.includes(a.id);
+              return (
+                <div
+                  key={a.id}
+                  className={`absolute bottom-0 left-0 w-[min(92vw,440px)] rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${
+                    visible
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none translate-y-6 opacity-0"
+                  }`}
+                  style={{ boxShadow: "var(--card-shadow)" }}
+                >
+                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-indigo-300">
+                    {a.eyebrow}
+                  </div>
+                  <h2 className="mt-2 text-xl font-semibold tracking-tight md:text-2xl">
+                    {a.title}
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                    {a.body}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Loading overlay — real preload progress */}
+        {!loaded && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#07080c]">
+            <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-zinc-400">
+              Loading experience
+            </div>
+            <div className="mt-5 h-px w-56 overflow-hidden bg-white/10">
+              <div
+                className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-200 ease-out"
+                style={{ width: `${Math.round(progress * 100)}%` }}
+              />
+            </div>
+            <div className="mt-3 font-mono text-[10px] tabular-nums text-zinc-500">
+              {Math.round(progress * 100)}%
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens                                                      */
+/* ------------------------------------------------------------------ */
+:root {
+  --background: #07080c;
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+
+  /* Accent gradient */
+  --accent-from: #6366f1; /* indigo-500 */
+  --accent-to: #8b5cf6; /* violet-500 */
+
+  /* Neumorphic shadow stack (the signature — keep the whole stack) */
+  --card-shadow:
+    0px 0.7px 0.7px -0.67px rgba(0, 0, 0, 0.3),
+    0px 1.8px 1.8px -1.33px rgba(0, 0, 0, 0.28),
+    0px 3.6px 3.6px -2px rgba(0, 0, 0, 0.26),
+    0px 6.9px 6.9px -2.67px rgba(0, 0, 0, 0.22),
+    0px 13.6px 13.6px -3.33px rgba(0, 0, 0, 0.18),
+    0px 30px 30px -4px rgba(0, 0, 0, 0.12),
+    inset 0px 1px 0px 0px rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Lenis drives smoothness; keep native scroll-behavior off to avoid conflicts. */
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll-animation section heights (responsive scrub distance)       */
+/* ------------------------------------------------------------------ */
+.scroll-animation {
+  height: 400vh;
+}
+
+@media (max-width: 1024px) {
+  .scroll-animation {
+    height: 350vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .scroll-animation {
+    height: 300vh;
+  }
+}
+
+/* Gradient text helper */
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Respect reduced-motion: shorten the scrub so the page is navigable */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-animation {
+    height: 150vh;
+  }
+}
