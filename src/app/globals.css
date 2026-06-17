@@ -55,18 +55,18 @@ body {
 /*  Scroll-animation section heights (responsive scrub distance)       */
 /* ------------------------------------------------------------------ */
 .scroll-animation {
-  height: 400vh;
+  height: 500vh;
 }
 
 @media (max-width: 1024px) {
   .scroll-animation {
-    height: 350vh;
+    height: 425vh;
   }
 }
 
 @media (max-width: 768px) {
   .scroll-animation {
-    height: 300vh;
+    height: 350vh;
   }
 }
 
@@ -82,6 +82,6 @@ body {
 /* Respect reduced-motion: shorten the scrub so the page is navigable */
 @media (prefers-reduced-motion: reduce) {
   .scroll-animation {
-    height: 150vh;
+    height: 180vh;
   }
 }

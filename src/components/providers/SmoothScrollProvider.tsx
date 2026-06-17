@@ -27,10 +27,10 @@ export function SmoothScrollProvider({
 
     const lenis = new Lenis({
       lerp: 0.1,
+      duration: 1.2,
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.1,
     });
 
     let rafId: number;

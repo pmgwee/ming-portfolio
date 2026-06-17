@@ -6,8 +6,8 @@ import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { EyebrowBadge } from "@/components/ui/EyebrowBadge";
 import { Button } from "@/components/ui/Button";
 
-/* The scrubbed sequence — every other frame of the source video. */
-const FRAME_COUNT = 120;
+/* The scrubbed sequence — every frame of the source video (1920×1080). */
+const FRAME_COUNT = 240;
 const frameSrc = (i: number) =>
   `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
 
