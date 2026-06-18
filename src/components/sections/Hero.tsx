@@ -5,39 +5,12 @@ import { motion } from "framer-motion";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { EyebrowBadge } from "@/components/ui/EyebrowBadge";
 import { Button } from "@/components/ui/Button";
-
-/* The scrubbed sequence — every frame of the source video (1920×1080). */
-const FRAME_COUNT = 240;
-const frameSrc = (i: number) =>
-  `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
-
-/* Scroll-position zones where each annotation card is visible. */
-const ANNOTATIONS = [
-  {
-    id: "intro",
-    show: 0.1,
-    hide: 0.3,
-    eyebrow: "01 — Hello",
-    title: "I design & build the web.",
-    body: "Creative developer focused on cinematic, performant interfaces — where motion, 3D and engineering meet.",
-  },
-  {
-    id: "skills",
-    show: 0.38,
-    hide: 0.58,
-    eyebrow: "02 — Toolkit",
-    title: "A full-stack toolkit.",
-    body: "Next.js · React · TypeScript · WebGL · GSAP · Framer Motion. Pixel-precise UI, real-time graphics, and systems that scale.",
-  },
-  {
-    id: "work",
-    show: 0.66,
-    hide: 0.86,
-    eyebrow: "03 — Selected work",
-    title: "Things I've shipped.",
-    body: "Interactive product sites, 3D scrollytelling, and design systems. Currently open to new roles — let's talk.",
-  },
-] as const;
+import {
+  ANNOTATIONS,
+  FRAME_COUNT,
+  HERO_TEXT_FADE_END,
+  frameSrc,
+} from "@/lib/hero";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -131,7 +104,7 @@ export function Hero() {
 
     // 2) Hero text fade over the first 8% (direct DOM, no React state).
     if (heroTextRef.current) {
-      const o = Math.max(0, 1 - progressVal / 0.08);
+      const o = Math.max(0, 1 - progressVal / HERO_TEXT_FADE_END);
       heroTextRef.current.style.opacity = String(o);
       heroTextRef.current.style.pointerEvents = o < 0.05 ? "none" : "auto";
     }
