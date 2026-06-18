@@ -58,18 +58,25 @@ export function ImageField({
   // each new card spawns to replace one already on its way out — never in
   // lockstep, never leaving empty gaps. Angle / scale / rotation re-randomise
   // per cycle in the loop via hashCycle (see frame()).
-  const cards = useMemo(
-    () =>
-      Array.from({ length: N }, (_, i) => {
-        const burst = hash01(i, 911.3) < FIELD.BURST_FRACTION;
-        return {
-          burst,
-          speed: FIELD.BASE_SPEED * (burst ? FIELD.BURST_SPEED_MULT : 1),
-          offset: (i + hash01(i, 17.1)) / N,
-        };
-      }),
-    [N],
-  );
+  const cards = useMemo(() => {
+    // Per-tier sequential counters: each card's `angleIdx` counts ONLY within
+    // its own tier, so each tier forms its own clean golden-angle distribution.
+    // That guarantees no two cards in the SAME tier ever share a radial line —
+    // the fix for base cards "chasing/stacking" behind an earlier batch on the
+    // same path. (Deterministic loop → identical on server & client.)
+    let baseIdx = 0;
+    let burstIdx = 0;
+    return Array.from({ length: N }, (_, i) => {
+      const burst = hash01(i, 911.3) < FIELD.BURST_FRACTION;
+      const angleIdx = burst ? burstIdx++ : baseIdx++;
+      return {
+        burst,
+        speed: FIELD.BASE_SPEED * (burst ? FIELD.BURST_SPEED_MULT : 1),
+        offset: (i + hash01(i, 17.1)) / N,
+        angleIdx,
+      };
+    });
+  }, [N]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -78,6 +85,14 @@ export function ImageField({
     let last = performance.now();
     let advance = 0;
     let running = true;
+
+    // Scroll-velocity coupling: the field drifts at FLOW_SPEED when idle and
+    // SPEEDS UP with scroll speed (either direction → magnitude). `scrollVel`
+    // (px/s) is a smoothed estimate of the page scroll velocity, sampled from
+    // window.scrollY each frame (Lenis drives native scroll, so this reflects
+    // the smoothed wheel/trackpad input). It decays to 0 when scrolling stops.
+    let lastScrollY = window.scrollY;
+    let scrollVel = 0;
 
     // 1 CSS vmax in px — cached here, refreshed on resize (cheap to multiply).
     let vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
@@ -90,9 +105,20 @@ export function ImageField({
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
       last = now;
 
-      // Time-driven: the field flows on its own and never rewinds. Scroll does
-      // not touch `advance` — it only dims the layer (parent's entry-dim ramp).
-      advance += FIELD.FLOW_SPEED * dt;
+      // Velocity-driven: the field flows on its own at FLOW_SPEED and never
+      // rewinds. Scrolling (either direction) boosts the pace in proportion to
+      // scroll speed — smoothed so it ramps in/out gently and settles back to
+      // the idle drift when scrolling stops. (Scroll also dims the layer via
+      // the parent's entry-dim ramp; the two effects compose.)
+      const instantVel = (window.scrollY - lastScrollY) / Math.max(dt, 1e-3);
+      lastScrollY = window.scrollY;
+      // Exponential smoothing (~150 ms time constant) toward instantaneous vel.
+      scrollVel += (instantVel - scrollVel) * (1 - Math.exp(-dt / 0.15));
+      const boost = Math.min(
+        FIELD.SCROLL_BOOST_MAX,
+        FIELD.SCROLL_VEL_GAIN * Math.abs(scrollVel),
+      );
+      advance += (FIELD.FLOW_SPEED + boost) * dt;
 
       const fadeIn = (phase: number) => clamp01(phase / FIELD.FADE_IN_PHASE);
 
@@ -115,7 +141,7 @@ export function ImageField({
         // `cos`/`sin` below.) Rotation is fixed per cycle; opacity is 0 at both
         // cycle boundaries, so the per-cycle jitter snap is never seen.
         const angle =
-          ((i * GOLDEN) % TWO_PI) +
+          ((c.angleIdx * GOLDEN) % TWO_PI) +
           (hashCycle(i, cycle, 1) * 2 - 1) * FIELD.BASE_ANGLE_JITTER;
         const rotation = (hashCycle(i, cycle, 4) * 2 - 1) * FIELD.ROTATE_MAX;
         const cos = Math.cos(angle);
@@ -132,12 +158,12 @@ export function ImageField({
           // gently scales up ~1.2× in the second half of travel so it exits as
           // a slightly scaled-up picture.
           //
-          // Angle: golden-angle (phyllotaxis) base unique per card index
+          // Angle: golden-angle (phyllotaxis) over the card's BURST-tier index
           // (~137.5° steps) plus small per-cycle jitter — spreads bursts around
           // the FULL circle so two simultaneously-visible bursts never share a
-          // radial line. (Base & burst are disjoint index sets, so their golden
-          // angles don't coincide either.)
-          const baseAngle = (i * GOLDEN) % TWO_PI;
+          // radial line. Offset by half a golden step so burst angles interleave
+          // with (never coincide with) the base tier's angles.
+          const baseAngle = (c.angleIdx * GOLDEN + GOLDEN * 0.5) % TWO_PI;
           const angle =
             baseAngle +
             (hashCycle(i, cycle, 1) * 2 - 1) * FIELD.BURST_ANGLE_JITTER;
@@ -175,8 +201,9 @@ export function ImageField({
           // cycle wraps → "just moves out", no exit fade).
           opacity = onDuty ? fadeIn(phase) : 0;
         } else {
-          // Midground: steady linear drift outward at near-constant size, with
-          // a slight bump just before it reaches the edge and fades.
+          // Midground: steady linear drift outward. Holds its VARIED size
+          // through the first half, then scales up in the second half (exits as
+          // a slightly scaled-up picture) while fading out.
           const startRadius = lerp(
             FIELD.BASE_START_MIN_VMAX,
             FIELD.BASE_START_MAX_VMAX,
@@ -219,6 +246,8 @@ export function ImageField({
         if (entry.isIntersecting && !running) {
           running = true;
           last = performance.now(); // avoid a huge dt jump on resume
+          lastScrollY = window.scrollY; // avoid a velocity spike on resume
+          scrollVel = 0;
           rafId = requestAnimationFrame(frame);
         } else if (!entry.isIntersecting && running) {
           running = false;

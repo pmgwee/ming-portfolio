@@ -37,13 +37,13 @@ export const PHASES = {
 /* ------------------------------------------------------------------ */
 /*  Image-field (Layer 1) tuning — organic radial-burst emitter         */
 /* ------------------------------------------------------------------ */
-/*  Time-driven: a single `advance` accumulator grows at FLOW_SPEED      */
-/*  every second (NOT scroll-coupled — scroll only dims the layer). Each */
+/*  Velocity-driven: a single `advance` accumulator grows every second      */
+/*  every second — at FLOW_SPEED when idle, boosted by live scroll speed. Each */
 /*  card cycles repeatedly; on every cycle boundary it RE-RANDOMISES its */
 /*  angle/scale/rotation via hashCycle(i, cycle) for independent organic */
 /*  paths. Two tiers behave differently:                                 */
-/*   • base  — evenly spread around ALL angles (golden-angle), drifts     */
-/*             outward at ~constant size and slowly fades as it exits.     */
+/*   • base  — evenly spread around ALL angles (golden-angle per tier),   */
+/*             holds a varied size then grows in the 2nd half, fades out.  */
 /*   • burst — emerges from center at a VARIED size, drifts outward, and  */
 /*             gently scales up ~1.2× in the second half of its travel.   */
 export const FIELD = {
@@ -51,9 +51,9 @@ export const FIELD = {
   N_DESKTOP: 24,
   N_MOBILE: 12,
   /**
-   * Time-based advance per second (overall pace). With the values below a
-   * base card takes ~30s to drift across and fade, a burst card ~6–7s — so
-   * 4–5 burst cards fly past during a single base lifetime (Leonardo feel).
+   * IDLE advance rate per second — the field's drift pace when the user is
+   * NOT scrolling. Scrolling boosts this via SCROLL_VEL_GAIN (below). At idle
+   * a base card takes ~24s to drift across and fade (burst ~5s).
    */
   FLOW_SPEED: 0.06,
   /** How much one unit of `advance` moves a BASE card through its cycle. */
@@ -63,6 +63,16 @@ export const FIELD = {
    * how many bursts pass per base lifetime (~4–5), independent of FLOW_SPEED.
    */
   BURST_SPEED_MULT: 4.5,
+  /**
+   * Velocity coupling: scroll speed (px/s, magnitude — either direction) adds
+   * this much per px/s to the advance rate on top of FLOW_SPEED. The field
+   * therefore drifts slowly when idle and accelerates with scroll activity,
+   * easing back to the idle drift ~150 ms after scrolling stops. ~0.0002 → a
+   * 1000 px/s scroll roughly quadruples the pace.
+   */
+  SCROLL_VEL_GAIN: 0.0002,
+  /** Cap on the scroll boost (added advance-rate) so frantic scrolling can't overclock the field. */
+  SCROLL_BOOST_MAX: 0.5,
   /** Fraction of the pool assigned to the fast "burst" tier. */
   BURST_FRACTION: 0.5,
   /** Base card size (CSS vw); height via aspect-ratio in the component. */
@@ -77,7 +87,7 @@ export const FIELD = {
   /** Phase slice over which any freshly-spawned card fades in from nothing. */
   FADE_IN_PHASE: 0.1,
   /** Max fixed per-card rotateZ (degrees, ±). */
-  ROTATE_MAX: 15,
+  ROTATE_MAX: 1,
 
   /* --- Burst tier — center-spawn outward drift ----------------------- */
   /**
@@ -114,17 +124,25 @@ export const FIELD = {
   /** Scale-up cap applied over the second half of travel (1.2×, per spec). */
   BURST_SCALE_END_MULT: 1.9,
 
-  /* --- Base tier — steady linear drift, near-constant size ------------ */
-  /** Intrinsic base-card size variety (stays ~constant in flight). */
-  BASE_CARD_SCALE_MIN: 0.5,
+  /* --- Base tier — center-spawn outward drift, grows in 2nd half ------ */
+  /** Varied INTRINSIC size band — each card holds its own size, like burst. */
+  BASE_CARD_SCALE_MIN: 0.4,
   BASE_CARD_SCALE_MAX: 1,
-  /** Slight size bump applied near the very end of a base card's travel. */
-  BASE_SCALE_END_MULT: 1.3,
-  /** Phase at which the end bump starts ramping in (1.0 = exit). */
-  BASE_BUMP_START: 0.3,
-  /** Spawn radius band (CSS vmax) — mid-field, away from dead center. */
-  BASE_START_MIN_VMAX: 5,
-  BASE_START_MAX_VMAX: 30,
+  /** Scale-up a base card reaches by the end of travel (exits scaled-up). */
+  BASE_SCALE_END_MULT: 2.3,
+  /**
+   * Phase at which the scale-up begins (smoothstep → 1 at exit). Second half
+   * (0.5): the card holds its varied size through the first half, then grows
+   * so it exits as a slightly scaled-up picture — same shape as the burst tier.
+   */
+  BASE_BUMP_START: 0.01,
+  /**
+   * Spawn radius (CSS vmax). Base cards originate at the very CENTER (0,0) and
+   * fan outward along their golden angle — set both to 0 for a pure center
+   * spawn, or nudge MAX up slightly to spread the emergence ring a little.
+   */
+  BASE_START_MIN_VMAX: 0,
+  BASE_START_MAX_VMAX: 5,
   /** Radius (CSS vmax) a base card reaches at the end of its travel (off-screen). */
   BASE_END_VMAX: 100,
   /**
