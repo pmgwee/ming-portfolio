@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { FIELD, TILE_COUNT, hash01, hashCycle, tileSrc } from "@/lib/showcase";
 
 const TWO_PI = Math.PI * 2;
-const HALF_PI = Math.PI / 2;
+/** Golden angle (~137.508°) — phyllotaxis spacing for balanced angular spread. */
+const GOLDEN = 2.399963;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -26,8 +27,9 @@ const smoothstep = (e0: number, e1: number, x: number) => {
  * organic. Two tiers behave differently:
  *   • base  — drifts outward at constant speed and near-constant size, with a
  *             slight bump just before it reaches the edge and fades.
- *   • burst — perspective fly-through: spawns small near center, scales up
- *             dramatically while translating, then passes the lens and fades.
+ *   • burst — emerges from center at a VARIED intrinsic size (layered depth),
+ *             drifts outward, and gently scales up ~1.2× in the second half
+ *             of travel, then exits the frame (no exit fade — just moves out).
  *
  * Transforms are written straight to DOM refs (no per-frame React state),
  * matching the Hero's hot-path pattern. The parent also fades the whole layer
@@ -51,9 +53,11 @@ export function ImageField({
 
   // Per-card identity — stable for the life of the pool. A card's tier sets
   // its cycle speed (burst = faster → parallax) and which motion model the
-  // loop uses; the offset staggers cycle boundaries so cards never spawn in
-  // lockstep. The angle / scale / rotation / spread re-randomise per cycle in
-  // the loop via hashCycle (see frame()).
+  // loop uses. `offset` staggers cycle boundaries on an EVEN grid (one card
+  // per 1/N slot, lightly jittered) so the field stays continuously filled:
+  // each new card spawns to replace one already on its way out — never in
+  // lockstep, never leaving empty gaps. Angle / scale / rotation re-randomise
+  // per cycle in the loop via hashCycle (see frame()).
   const cards = useMemo(
     () =>
       Array.from({ length: N }, (_, i) => {
@@ -61,7 +65,7 @@ export function ImageField({
         return {
           burst,
           speed: FIELD.BASE_SPEED * (burst ? FIELD.BURST_SPEED_MULT : 1),
-          offset: hash01(i, 17.1),
+          offset: (i + hash01(i, 17.1)) / N,
         };
       }),
     [N],
@@ -103,13 +107,16 @@ export function ImageField({
         const cycle = Math.floor(phaseGlobal);
         const phase = phaseGlobal - cycle;
 
-        // Shared per-cycle params: a rotating quadrant keeps angles balanced
-        // across the screen, with random jitter inside it; rotation is fixed
-        // for the cycle. (Opacity is 0 at both cycle boundaries, so the
-        // per-cycle param snap is never seen.)
-        const quadrant = ((i + cycle) % 4 + 4) % 4;
+        // BASE tier direction: a golden-angle (phyllotaxis) base unique per
+        // card index (~137.5° steps) plus small per-cycle jitter — the same
+        // even full-circle spread the burst tier uses, so base cards fill ALL
+        // angles (left/right/top/down) with no quadrant clustering and no two
+        // cards on the same radial line. (The burst tier overrides `angle`/
+        // `cos`/`sin` below.) Rotation is fixed per cycle; opacity is 0 at both
+        // cycle boundaries, so the per-cycle jitter snap is never seen.
         const angle =
-          (quadrant + hashCycle(i, cycle, 1) * FIELD.QUAD_JITTER) * HALF_PI;
+          ((i * GOLDEN) % TWO_PI) +
+          (hashCycle(i, cycle, 1) * 2 - 1) * FIELD.BASE_ANGLE_JITTER;
         const rotation = (hashCycle(i, cycle, 4) * 2 - 1) * FIELD.ROTATE_MAX;
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
@@ -120,28 +127,53 @@ export function ImageField({
         let opacity: number;
 
         if (c.burst) {
-          // Foreground: perspective fly-through. One hyperbolic factor drives
-          // scale AND drift, so both rush together as the card nears the lens.
-          const burstScale = lerp(
+          // Foreground: emerges from center, drifts outward. Each card spawns
+          // at a VARIED intrinsic size (layered depth) and holds it, then
+          // gently scales up ~1.2× in the second half of travel so it exits as
+          // a slightly scaled-up picture.
+          //
+          // Angle: golden-angle (phyllotaxis) base unique per card index
+          // (~137.5° steps) plus small per-cycle jitter — spreads bursts around
+          // the FULL circle so two simultaneously-visible bursts never share a
+          // radial line. (Base & burst are disjoint index sets, so their golden
+          // angles don't coincide either.)
+          const baseAngle = (i * GOLDEN) % TWO_PI;
+          const angle =
+            baseAngle +
+            (hashCycle(i, cycle, 1) * 2 - 1) * FIELD.BURST_ANGLE_JITTER;
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+
+          // VARIED intrinsic size per card/cycle → layered depth
+          // (small/background to large/foreground). No perspective projection,
+          // so this IS the visible card size.
+          const size0 = lerp(
             FIELD.BURST_SCALE_MIN,
             FIELD.BURST_SCALE_MAX,
             hashCycle(i, cycle, 3),
           );
-          const spread = lerp(
-            FIELD.BURST_SPREAD_MIN_VMAX,
-            FIELD.BURST_SPREAD_MAX_VMAX,
+          // Spawn near center, travel outward to off-screen.
+          const startRadius = lerp(
+            FIELD.BURST_START_MIN_VMAX,
+            FIELD.BURST_START_MAX_VMAX,
             hashCycle(i, cycle, 2),
           );
-          const z = lerp(FIELD.Z_FAR, FIELD.Z_NEAR, phase);
-          const proj = FIELD.FOCAL / z;
-          scale = proj * burstScale;
-          x = cos * spread * vmaxPx * proj;
-          y = sin * spread * vmaxPx * proj;
-          // Fade out as it passes the lens (driven by scale → coincides with
-          // it filling the frame).
-          opacity =
-            fadeIn(phase) *
-            clamp01((FIELD.PASS_BY_SCALE - scale) / FIELD.PASS_BY_FADE_BAND);
+          const radius = lerp(startRadius, FIELD.BURST_END_VMAX, phase) * vmaxPx;
+          // Gentle 1.2× scale-up, only in the second half of travel — each
+          // card exits scaled up relative to its OWN initial size (variety
+          // preserved, not a uniform growth curve).
+          const bump = smoothstep(FIELD.BURST_BUMP_START, 1, phase);
+          scale = size0 * lerp(1, FIELD.BURST_SCALE_END_MULT, bump);
+          x = cos * radius;
+          y = sin * radius;
+          // Duty gate: only emit on a per-cycle subset of cycles so the burst
+          // stream thins out and adjacent bursts rarely co-emit (kills the
+          // 0.2–0.3s same-trajectory follow). Off-duty cycles stay invisible.
+          const onDuty = hashCycle(i, cycle, 7) < FIELD.BURST_DUTY;
+          // No pass-by lens anymore: bursts fade IN at center, then travel out
+          // at full opacity and exit the frame (fully off-screen before the
+          // cycle wraps → "just moves out", no exit fade).
+          opacity = onDuty ? fadeIn(phase) : 0;
         } else {
           // Midground: steady linear drift outward at near-constant size, with
           // a slight bump just before it reaches the edge and fades.
@@ -160,11 +192,14 @@ export function ImageField({
           scale = cardScale * lerp(1, FIELD.BASE_SCALE_END_MULT, bump);
           x = cos * radius;
           y = sin * radius;
-          // Fade out by phase as it reaches the edge (scale never crosses the
-          // pass-by threshold, so opacity is keyed to travel progress).
-          opacity =
-            fadeIn(phase) *
-            clamp01((1 - phase) / FIELD.BASE_FADE_OUT_PHASE);
+          // Fade out as the card travels outward: a slow quadratic ease-in
+          // that starts at BASE_FADE_START and reaches exactly 0 at phase 1
+          // (= BASE_END_VMAX = off-screen), so the card dims gradually on its
+          // way out and is fully gone the instant it leaves the viewport.
+          const fadeT = clamp01(
+            (phase - FIELD.BASE_FADE_START) / (1 - FIELD.BASE_FADE_START),
+          );
+          opacity = fadeIn(phase) * (1 - fadeT * fadeT);
         }
 
         el.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale}) rotate(${rotation}deg)`;

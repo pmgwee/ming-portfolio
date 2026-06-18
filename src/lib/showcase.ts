@@ -42,70 +42,98 @@ export const PHASES = {
 /*  card cycles repeatedly; on every cycle boundary it RE-RANDOMISES its */
 /*  angle/scale/rotation via hashCycle(i, cycle) for independent organic */
 /*  paths. Two tiers behave differently:                                 */
-/*   • base  — drifts outward at constant speed & ~constant size, only   */
-/*             bumping ~1.1–1.2× just before it exits and fades.         */
-/*   • burst — perspective fly-through: spawns small near center, scales */
-/*             up dramatically while translating, then passes the lens.  */
+/*   • base  — evenly spread around ALL angles (golden-angle), drifts     */
+/*             outward at ~constant size and slowly fades as it exits.     */
+/*   • burst — emerges from center at a VARIED size, drifts outward, and  */
+/*             gently scales up ~1.2× in the second half of its travel.   */
 export const FIELD = {
   /** Card-pool size — desktop / mobile. */
   N_DESKTOP: 24,
   N_MOBILE: 12,
   /**
    * Time-based advance per second (overall pace). With the values below a
-   * base card takes ~30s to drift across and fade, a burst card ~5.5s — so
-   * 5–6 burst cards fly past during a single base lifetime (Leonardo feel).
+   * base card takes ~30s to drift across and fade, a burst card ~6–7s — so
+   * 4–5 burst cards fly past during a single base lifetime (Leonardo feel).
    */
-  FLOW_SPEED: 0.067,
+  FLOW_SPEED: 0.06,
   /** How much one unit of `advance` moves a BASE card through its cycle. */
-  BASE_SPEED: 0.5,
+  BASE_SPEED: 0.7,
   /**
    * Burst cards advance this much faster than base cards. This gap alone sets
-   * how many bursts pass per base lifetime (~5–6), independent of FLOW_SPEED.
+   * how many bursts pass per base lifetime (~4–5), independent of FLOW_SPEED.
    */
-  BURST_SPEED_MULT: 5.5,
+  BURST_SPEED_MULT: 4.5,
   /** Fraction of the pool assigned to the fast "burst" tier. */
-  BURST_FRACTION: 0.4,
+  BURST_FRACTION: 0.5,
   /** Base card size (CSS vw); height via aspect-ratio in the component. */
   CARD_W_VW: 14,
-  /** How much of a quadrant (0–1 → 0–90°) a card may jitter into. */
-  QUAD_JITTER: 0.9,
+  /**
+   * Per-cycle angular jitter (radians, ±) layered on each BASE card's
+   * golden-angle base angle — same idea as BURST_ANGLE_JITTER. ~0.18 rad ≈
+   * ±10°; small enough that the golden spacing dominates (no two cards share
+   * a radial line), large enough to stay organic.
+   */
+  BASE_ANGLE_JITTER: 0.18,
   /** Phase slice over which any freshly-spawned card fades in from nothing. */
   FADE_IN_PHASE: 0.1,
   /** Max fixed per-card rotateZ (degrees, ±). */
   ROTATE_MAX: 15,
 
-  /* --- Burst tier — perspective projection (proj = FOCAL / z) --------- */
-  /** Focal length (arbitrary units; scales the projected burst field). */
-  FOCAL: 1,
-  /** Depth at spawn (deep) and at the lens (closest); both > 0. */
-  Z_FAR: 3.5,
-  Z_NEAR: 0.28,
-  /** Intrinsic burst-card size band; on-screen scale = this * proj. */
-  BURST_SCALE_MIN: 0.65,
-  BURST_SCALE_MAX: 1.0,
-  /** Off-axis spread band (CSS vmax); screen drift = spread * proj. */
-  BURST_SPREAD_MIN_VMAX: 20,
-  BURST_SPREAD_MAX_VMAX: 55,
-  /** On-screen scale at which a burst card has passed the lens (opacity 0). */
-  PASS_BY_SCALE: 2.3,
-  /** Scale-width over which the pass-by fade ramps 1 → 0. */
-  PASS_BY_FADE_BAND: 0.8,
+  /* --- Burst tier — center-spawn outward drift ----------------------- */
+  /**
+   * Varied INTRINSIC spawn-size band (no perspective projection anymore, so
+   * this IS the visible card size). A wide 0.6→1.5 range gives the layered
+   * depth (small/background to large/foreground) of a scattered field.
+   */
+  BURST_SCALE_MIN: 0.4,
+  BURST_SCALE_MAX: 0.8,
+  /**
+   * Per-cycle angular jitter (radians, ±) layered on top of each burst card's
+   * golden-angle base angle. Small enough that the ~137.5° golden spacing
+   * dominates (so two bursts never share a radial line), large enough to
+   * avoid mechanical precision. ~0.18 rad ≈ ±10°.
+   */
+  BURST_ANGLE_JITTER: 0.18,
+  /**
+   * Fraction of cycles in which a given burst card is allowed to be visible
+   * (duty gate). <1 thins the burst stream so adjacent bursts rarely co-emit,
+   * giving the field breathing room instead of a steady pile-up.
+   */
+  BURST_DUTY: 0.9,
+  /** Spawn radius band (CSS vmax) — near center, where bursts emerge from. */
+  BURST_START_MIN_VMAX: 3,
+  BURST_START_MAX_VMAX: 10,
+  /** Radius (CSS vmax) a burst card reaches at the end of its travel (off-screen). */
+  BURST_END_VMAX: 100,
+  /**
+   * Phase at which the gentle scale-up begins ramping (smoothstep → 1 at
+   * phase 1). Halfway, per spec — cards hold their varied size, then grow in
+   * the second half of travel so they exit as slightly scaled-up pictures.
+   */
+  BURST_BUMP_START: 0.02,
+  /** Scale-up cap applied over the second half of travel (1.2×, per spec). */
+  BURST_SCALE_END_MULT: 1.9,
 
   /* --- Base tier — steady linear drift, near-constant size ------------ */
   /** Intrinsic base-card size variety (stays ~constant in flight). */
-  BASE_CARD_SCALE_MIN: 0.85,
-  BASE_CARD_SCALE_MAX: 1.1,
+  BASE_CARD_SCALE_MIN: 0.5,
+  BASE_CARD_SCALE_MAX: 1,
   /** Slight size bump applied near the very end of a base card's travel. */
-  BASE_SCALE_END_MULT: 1.18,
+  BASE_SCALE_END_MULT: 1.3,
   /** Phase at which the end bump starts ramping in (1.0 = exit). */
-  BASE_BUMP_START: 0.65,
+  BASE_BUMP_START: 0.3,
   /** Spawn radius band (CSS vmax) — mid-field, away from dead center. */
-  BASE_START_MIN_VMAX: 10,
-  BASE_START_MAX_VMAX: 38,
+  BASE_START_MIN_VMAX: 5,
+  BASE_START_MAX_VMAX: 30,
   /** Radius (CSS vmax) a base card reaches at the end of its travel (off-screen). */
-  BASE_END_VMAX: 80,
-  /** Trailing phase slice over which a base card fades out at the edge. */
-  BASE_FADE_OUT_PHASE: 0.25,
+  BASE_END_VMAX: 100,
+  /**
+   * Phase at which the trailing fade-out begins ramping (quadratic ease-in),
+   * reaching exactly 0 at phase 1 (= BASE_END_VMAX = off-screen). Larger =
+   * later/harder, smaller = earlier/softer. The base card thus fades slowly
+   * as it travels out and is fully gone the moment it leaves the screen.
+   */
+  BASE_FADE_START: 0.4,
 } as const;
 
 /* ------------------------------------------------------------------ */
