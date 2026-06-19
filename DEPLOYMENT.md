@@ -72,15 +72,72 @@ Copy the **Distribution domain name**, e.g. `d1234567890.cloudfront.net`.
 
 `NEXT_PUBLIC_*` is inlined at **build** time — set this **before** the deploy.
 
+### 4b. Showcase media — live S3 listing (`/api/media`)
+The Showcase no longer hardcodes media filenames. The `/api/media` route
+([src/app/api/media/route.ts](src/app/api/media/route.ts)) lists the bucket at
+request time and returns:
+- **tiles** — every image under `temp_pictures/` (the image-field pool), and
+- **videos** — the *current* clip (newest object) in each carousel folder
+  (`video1/`, `video2/`, … — the distinct folders referenced by
+  `SHOWCASE_VIDEOS` in [src/lib/showcase.ts](src/lib/showcase.ts)).
+
+So dropping a new batch of **arbitrarily-named** files into a folder on S3 is
+picked up with **no code change**: new tiles appear in the field, and a
+replacement clip in `videoN/` becomes the carousel's clip. (Adding a brand-new
+video folder only needs a new `SHOWCASE_VIDEOS` entry.) To enable it:
+
+#### Create the read-only IAM key (this is your `S3_ACCESS_KEY_ID` / `_SECRET`)
+The bucket policy you already have (CloudFront OAC → `s3:GetObject`) is separate
+and stays as-is — this is a **new IAM user** just for *listing*:
+1. AWS Console → **IAM → Users → Create user** (e.g. `ming-portfolio-lister`),
+   **no** console access.
+2. **Permissions → Attach policies → Create inline policy → JSON**, paste
+   (`s3:ListBucket` only — listing object keys; the browser still fetches the
+   bytes through CloudFront, so no `GetObject` is needed here):
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [{
+       "Effect": "Allow",
+       "Action": "s3:ListBucket",
+       "Resource": "arn:aws:s3:::s3-ming-portfolio-web"
+     }]
+   }
+   ```
+   (Whole-bucket because the route lists several prefixes. To tighten it, add a
+   `Condition` with `StringLike` `s3:prefix` listing `temp_pictures/*`,
+   `video1/*`, `video2/*`.)
+3. Create the user → open it → **Security credentials → Create access key →
+   "Application running outside AWS"**. Copy the **Access key ID** and **Secret
+   access key** (the secret is shown once).
+
+#### Set the server-side env vars in Vercel (Production + Preview)
+These are **not** `NEXT_PUBLIC_*`, so they stay on the server, out of the browser
+bundle:
+- `S3_REGION` = `ap-southeast-2`
+- `S3_BUCKET` = `s3-ming-portfolio-web`
+- `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` = the read-only key from above
+- `S3_TILES_PREFIX` = `temp_pictures/` *(optional; this is the default)*
+
+> The route is prerendered at build with a 1 h revalidate, so set these
+> **before** the deploy and they bake into the first listing; it refreshes
+> hourly after. When you **replace** an existing key in place, still invalidate
+> CloudFront (`/temp_pictures/*` or `/*`) — same-key replacements stay
+> edge-cached. Brand-new filenames are a cache miss automatically.
+
 ---
 
 ## Phase B — code (already done in this branch)
 
 - [`src/lib/media.ts`](src/lib/media.ts) — the `media(path)` helper.
 - [`src/lib/hero.ts`](src/lib/hero.ts) — `frameSrc()` routes frames through `media()`.
-- [`src/lib/showcase.ts`](src/lib/showcase.ts) — `SHOWCASE_VIDEOS[].src` routed through `media()`.
+- [`src/lib/showcase.ts`](src/lib/showcase.ts) — `SHOWCASE_VIDEOS[]` names a
+  folder per slide; the URL is resolved live by `/api/media`.
+- [`src/app/api/media/route.ts`](src/app/api/media/route.ts) — lists tiles +
+  the current clip per video folder (see 4b).
 - [`.gitignore`](.gitignore) — heavy media folders ignored (kept on disk for dev).
-- [`.env.example`](.env.example) — documents `NEXT_PUBLIC_MEDIA_BASE`.
+- [`.env.example`](.env.example) — documents `NEXT_PUBLIC_MEDIA_BASE` + the
+  `S3_*` listing vars.
 
 ---
 

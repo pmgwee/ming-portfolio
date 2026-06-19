@@ -55,15 +55,22 @@ export function VideoStage({
   settled,
   isMobile,
   reducedMotion,
+  videos,
 }: {
   panelRef: React.RefObject<HTMLDivElement | null>;
   controlsRef: React.RefObject<HTMLDivElement | null>;
   settled: boolean;
   isMobile: boolean;
   reducedMotion: boolean;
+  /** Folder → current clip URL, resolved live from S3 via /api/media. */
+  videos: Record<string, string>;
 }) {
   const slides = CONFIG.videos;
   const N = slides.length;
+
+  // Resolve a slide's folder to its current clip URL (undefined until the
+  // parent's /api/media fetch lands → the <video> simply has no source yet).
+  const srcFor = (slide: ShowcaseSlide) => videos[slide.folder];
 
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -189,7 +196,7 @@ export function VideoStage({
         >
           {slides.map((slide: ShowcaseSlide, i: number) => (
             <video
-              key={`${slide.src}-${i}`}
+              key={`${slide.folder}-${i}`}
               ref={(el) => {
                 videoRefs.current[i] = el;
               }}
@@ -198,7 +205,7 @@ export function VideoStage({
                 opacity: i === activeIndex ? 1 : 0,
                 transition: `opacity ${CONFIG.carousel.CROSSFADE_MS}ms ease`,
               }}
-              src={slide.src}
+              src={srcFor(slide) || undefined}
               muted
               loop
               playsInline
@@ -249,12 +256,14 @@ export function VideoStage({
               {/* Mini-previews of the neighbouring clips. */}
               <MiniPreview
                 side="left"
-                slide={slides[prevIndex]}
+                src={srcFor(slides[prevIndex])}
+                label={slides[prevIndex].label}
                 visible={interactive && hoverSide === "left"}
               />
               <MiniPreview
                 side="right"
-                slide={slides[nextIndex]}
+                src={srcFor(slides[nextIndex])}
+                label={slides[nextIndex].label}
                 visible={interactive && hoverSide === "right"}
               />
             </>

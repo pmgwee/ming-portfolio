@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { FIELD, TILE_COUNT, hash01, hashCycle, tileSrc } from "@/lib/showcase";
+import { FIELD, hash01, hashCycle } from "@/lib/showcase";
 
 const TWO_PI = Math.PI * 2;
 /** Golden angle (~137.508°) — phyllotaxis spacing for balanced angular spread. */
@@ -40,8 +40,11 @@ const smoothstep = (e0: number, e1: number, x: number) => {
  */
 export function ImageField({
   reducedMotion,
+  tiles,
 }: {
   reducedMotion: boolean;
+  /** Image URLs for the field pool, listed live from S3 via /api/media. */
+  tiles: string[];
 }) {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -77,6 +80,12 @@ export function ImageField({
       };
     });
   }, [N]);
+
+  // Maps any card index onto the available tiles (wraps; undefined when empty).
+  // `tiles` is fetched once by the parent (Showcase) from /api/media, so a new
+  // batch of arbitrarily-named files dropped into the S3 prefix "just works".
+  const tileAt = (i: number) =>
+    tiles.length ? tiles[((i % tiles.length) + tiles.length) % tiles.length] : undefined;
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -280,6 +289,7 @@ export function ImageField({
             const r = 26; // vmin
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
+            const src = tileAt(i);
             return (
               <div
                 key={i}
@@ -291,47 +301,54 @@ export function ImageField({
                   boxShadow: "var(--card-shadow)",
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={tileSrc((i % TILE_COUNT) + 1)}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  draggable={false}
-                />
+                {src ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={src}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    draggable={false}
+                  />
+                ) : null}
               </div>
             );
           })}
         </div>
       ) : (
-        Array.from({ length: N }).map((_, i) => (
-          <div
-            key={i}
-            ref={(el) => {
-              cardRefs.current[i] = el;
-            }}
-            className="absolute left-1/2 top-1/2 overflow-hidden rounded-2xl border border-white/10"
-            style={{
-              width: `${FIELD.CARD_W_VW}vw`,
-              aspectRatio: "3 / 4",
-              opacity: 0,
-              willChange: "transform, opacity",
-              // Deep-z spawn placeholder (opacity 0); the rAF loop takes over
-              // on the first frame after mount.
-              transform: "translate3d(-50%, -50%, 0) scale(0.12)",
-              boxShadow: "var(--card-shadow)",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={tileSrc((i % TILE_COUNT) + 1)}
-              alt=""
-              className="h-full w-full object-cover"
-              loading="lazy"
-              draggable={false}
-            />
-          </div>
-        ))
+        Array.from({ length: N }).map((_, i) => {
+          const src = tileAt(i);
+          return (
+            <div
+              key={i}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              className="absolute left-1/2 top-1/2 overflow-hidden rounded-2xl border border-white/10"
+              style={{
+                width: `${FIELD.CARD_W_VW}vw`,
+                aspectRatio: "3 / 4",
+                opacity: 0,
+                willChange: "transform, opacity",
+                // Deep-z spawn placeholder (opacity 0); the rAF loop takes over
+                // on the first frame after mount.
+                transform: "translate3d(-50%, -50%, 0) scale(0.12)",
+                boxShadow: "var(--card-shadow)",
+              }}
+            >
+              {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  draggable={false}
+                />
+              ) : null}
+            </div>
+          );
+        })
       )}
     </div>
   );

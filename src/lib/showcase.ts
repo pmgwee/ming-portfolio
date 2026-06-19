@@ -1,16 +1,15 @@
-import { mediaUrl } from "./media";
-
 /* ------------------------------------------------------------------ */
 /*  Showcase — Image fly-through → fullscreen video reveal             */
 /*  All tunable constants live here (mirrors src/lib/hero.ts).         */
 /* ------------------------------------------------------------------ */
 
-/** Number of distinct tiles available in /public/temp_pictures. */
-export const TILE_COUNT = 32;
-
-/** Maps a 1-based tile index to its URL (tile-01.webp … tile-32.webp). */
-export const tileSrc = (i: number) =>
-    mediaUrl(`/temp_pictures/tile-${String(i).padStart(2, "0")}.webp`);
+/**
+ * Heavy media (image-field tiles + carousel clips) is no longer hardcoded by
+ * filename. It is listed live from S3 at runtime via the `/api/media` route
+ * ([src/app/api/media/route.ts](src/app/api/media/route.ts)) and resolved by
+ * the components below, so dropping a new batch into the relevant S3 folder
+ * (`temp_pictures/`, `video1/`, `video2/`, …) is picked up with no code change.
+ */
 
 /* ------------------------------------------------------------------ */
 /*  Carousel slides (Layer 3) — the full-bleed clips, in order          */
@@ -26,8 +25,13 @@ export type ShowcaseOverlay = {
 };
 
 export type ShowcaseSlide = {
-  /** Public path to the looping clip (object-fit: cover crops to viewport). */
-  src: string;
+  /**
+   * S3 folder (e.g. "video1") whose CURRENT clip plays for this slide. The file
+   * URL is resolved at runtime from /api/media (newest clip in the folder), so
+   * replacing the clip in that folder needs no code change. Two slides may share
+   * a folder (the same clip plays in both).
+   */
+  folder: string;
   /** Short state/name label shown on the hover mini-preview chip. */
   label: string;
   /** Per-slide overlay (F). Undefined = no overlay on this slide. */
@@ -35,16 +39,16 @@ export type ShowcaseSlide = {
 };
 
 /**
- * The carousel, in display order. PLACEHOLDERS: wired to the two existing
- * screen-recording clips so the carousel works today (clip 0 repeats at 2).
- * ⚠️ Those clips have browser chrome baked into the FOOTAGE — drop real
- * cinematic loops in /public/showcase (clip-01.mp4 …) and point `src` here to
- * remove it. See the asset note in the plan / README.
+ * The carousel, in display order. Each slide names the S3 FOLDER its clip lives
+ * in; /api/media resolves that to the folder's current clip at runtime. To swap
+ * a clip, drop a new file into that folder on S3 (no code change). To add a
+ * slide, add an entry here — its folder is listed automatically.
+ * (video2 is reused for slides 0 and 2, so the same clip plays in both.)
  */
 export const SHOWCASE_VIDEOS: ShowcaseSlide[] = [
-  { src: mediaUrl("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Flow State" },
-  { src: mediaUrl("/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4"), label: "Deep Focus" },
-  { src: mediaUrl("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Momentum" },
+  { folder: "video2", label: "Flow State" },
+  { folder: "video1", label: "Deep Focus" },
+  { folder: "video2", label: "Momentum" },
 ];
 
 /* ------------------------------------------------------------------ */

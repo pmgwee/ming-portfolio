@@ -37,6 +37,33 @@ export function Showcase() {
   const [settled, setSettled] = useState(false);
   const settledRef = useRef(false);
 
+  // Heavy media (image-field tiles + carousel clips) is listed live from S3 via
+  // /api/media — a single fetch here, passed down to both layers. Empty until it
+  // resolves; both components degrade gracefully to no media in the meantime.
+  const [media, setMedia] = useState<{
+    tiles: string[];
+    videos: Record<string, string>;
+  }>({ tiles: [], videos: {} });
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/media")
+      .then((r) => (r.ok ? r.json() : { tiles: [], videos: {} }))
+      .then((d: { tiles?: unknown; videos?: unknown }) => {
+        if (cancelled) return;
+        setMedia({
+          tiles: Array.isArray(d.tiles) ? (d.tiles as string[]) : [],
+          videos:
+            d.videos && typeof d.videos === "object"
+              ? (d.videos as Record<string, string>)
+              : {},
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     setReducedMotion(
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -194,7 +221,7 @@ export function Showcase() {
 
         {/* Layer 1 — image field (own opacity wrapper for the hinge fade) */}
         <div ref={fieldWrapRef} className="absolute inset-0 z-10">
-          <ImageField reducedMotion={reducedMotion} />
+          <ImageField reducedMotion={reducedMotion} tiles={media.tiles} />
         </div>
 
         {/* Layer 2 — hero text */}
@@ -212,6 +239,7 @@ export function Showcase() {
           settled={settled}
           isMobile={isMobile}
           reducedMotion={reducedMotion}
+          videos={media.videos}
         />
       </div>
     </section>

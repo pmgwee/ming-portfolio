@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { HOVER } from "@/lib/showcase";
-import type { ShowcaseSlide } from "@/lib/showcase";
 
 /**
  * The rounded edge thumbnail that slides in from the left/right edge while its
@@ -15,11 +14,15 @@ import type { ShowcaseSlide } from "@/lib/showcase";
  */
 export function MiniPreview({
   side,
-  slide,
+  src,
+  label,
   visible,
 }: {
   side: "left" | "right";
-  slide: ShowcaseSlide;
+  /** Current clip URL for the neighboring slide (undefined until resolved). */
+  src: string | undefined;
+  /** State/name label shown on the chip (e.g. "Flow State"). */
+  label: string;
   visible: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,7 +62,7 @@ export function MiniPreview({
         <video
           ref={videoRef}
           className="h-full w-full object-cover"
-          src={slide.src}
+          src={src || undefined}
           muted
           loop
           playsInline
@@ -67,7 +70,7 @@ export function MiniPreview({
         />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent" />
         <span className="absolute bottom-3 left-3 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
-          {slide.label}
+          {label}
         </span>
       </div>
     </div>
