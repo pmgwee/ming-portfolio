@@ -1,4 +1,4 @@
-import { media } from "./media";
+import { mediaUrl } from "./media";
 
 /* ------------------------------------------------------------------ */
 /*  Showcase — Image fly-through → fullscreen video reveal             */
@@ -10,7 +10,7 @@ export const TILE_COUNT = 32;
 
 /** Maps a 1-based tile index to its URL (tile-01.webp … tile-32.webp). */
 export const tileSrc = (i: number) =>
-  `/temp_pictures/tile-${String(i).padStart(2, "0")}.webp`;
+    mediaUrl(`/temp_pictures/tile-${String(i).padStart(2, "0")}.webp`);
 
 /* ------------------------------------------------------------------ */
 /*  Carousel slides (Layer 3) — the full-bleed clips, in order          */
@@ -42,9 +42,9 @@ export type ShowcaseSlide = {
  * remove it. See the asset note in the plan / README.
  */
 export const SHOWCASE_VIDEOS: ShowcaseSlide[] = [
-  { src: media("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Flow State" },
-  { src: media("/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4"), label: "Deep Focus" },
-  { src: media("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Momentum" },
+  { src: mediaUrl("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Flow State" },
+  { src: mediaUrl("/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4"), label: "Deep Focus" },
+  { src: mediaUrl("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Momentum" },
 ];
 
 /* ------------------------------------------------------------------ */

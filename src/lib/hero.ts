@@ -1,10 +1,10 @@
-import { media } from "./media";
+import { mediaUrl } from "./media";
 
 /* The scrubbed sequence — every frame of the source video (1920×1080). */
 export const FRAME_COUNT = 240;
 
 export const frameSrc = (i: number) =>
-  media(`/frames/frame_${String(i).padStart(4, "0")}.jpg`);
+  mediaUrl(`/frames/frame_${String(i).padStart(4, "0")}.jpg`);
 
 /* Hero text finishes fading out by this scroll progress (first 8%). */
 export const HERO_TEXT_FADE_END = 0.08;
