@@ -10,9 +10,40 @@ export const TILE_COUNT = 32;
 export const tileSrc = (i: number) =>
   `/temp_pictures/tile-${String(i).padStart(2, "0")}.webp`;
 
-/** The single clip that rises and expands to full-bleed. */
-export const VIDEO_SRC =
-  "/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4";
+/* ------------------------------------------------------------------ */
+/*  Carousel slides (Layer 3) — the full-bleed clips, in order          */
+/* ------------------------------------------------------------------ */
+/**
+ * Optional overlay UI (requirement F) per slide — DEFERRED for now. The shape
+ * is kept so a slide can later opt into a headline + typewriter prompt bar
+ * without touching the component wiring.
+ */
+export type ShowcaseOverlay = {
+  headline: string;
+  prompts: string[];
+};
+
+export type ShowcaseSlide = {
+  /** Public path to the looping clip (object-fit: cover crops to viewport). */
+  src: string;
+  /** Short state/name label shown on the hover mini-preview chip. */
+  label: string;
+  /** Per-slide overlay (F). Undefined = no overlay on this slide. */
+  overlay?: ShowcaseOverlay;
+};
+
+/**
+ * The carousel, in display order. PLACEHOLDERS: wired to the two existing
+ * screen-recording clips so the carousel works today (clip 0 repeats at 2).
+ * ⚠️ Those clips have browser chrome baked into the FOOTAGE — drop real
+ * cinematic loops in /public/showcase (clip-01.mp4 …) and point `src` here to
+ * remove it. See the asset note in the plan / README.
+ */
+export const SHOWCASE_VIDEOS: ShowcaseSlide[] = [
+  { src: "/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4", label: "Flow State" },
+  { src: "/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4", label: "Deep Focus" },
+  { src: "/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4", label: "Momentum" },
+];
 
 /* ------------------------------------------------------------------ */
 /*  Scroll-progress phase ranges (p = 0 settled → 1 video full-bleed)  */
@@ -26,12 +57,60 @@ export const PHASES = {
   fieldEnd: 0.62,
   hingeStart: 0.62,
   hingeEnd: 0.72,
-  slideStart: 0.72,
-  slideEnd: 0.8,
-  expandStart: 0.8,
-  expandEnd: 0.95,
+  /**
+   * Single continuous reveal: the panel rises + scales + un-rounds to full
+   * bleed in one expo-out motion (replaces the old slide+expand split). Set
+   * the panel above the nav at revealStart; controls fade in over its tail.
+   */
+  revealStart: 0.62,
+  revealEnd: 0.92,
   controlsStart: 0.86,
   controlsEnd: 1.0,
+  /** Progress past which the stage is "settled" → interactivity is enabled. */
+  settledAt: 0.92,
+} as const;
+
+/* ------------------------------------------------------------------ */
+/*  Reveal / hover / parallax / carousel tunables                       */
+/*  (mirrored into the VideoStage CONFIG block for at-a-glance tuning)   */
+/* ------------------------------------------------------------------ */
+
+/** Transform-only full-bleed reveal of the video panel. */
+export const REVEAL = {
+  /** Uniform start scale of the centered cinematic card before it fills. */
+  START_SCALE: 0.62,
+  /** Corner radius (px) of the card at the start of the reveal → 0 at full. */
+  START_RADIUS_PX: 16,
+} as const;
+
+/** Edge hover-zones → translate-away + mini-preview reveal. */
+export const HOVER = {
+  /** Width of each edge hover-zone as a fraction of viewport width. */
+  ZONE_PCT: 0.12,
+  /** How far the active video slides away from a hovered edge (px). */
+  TRANSLATE_PX: 48,
+  /** Active video scale while a zone is hovered. */
+  SCALE: 0.92,
+  /** Ease time constant (ms) for the hover settle (used by the lerp loop). */
+  EASE_MS: 400,
+  /** Mini-preview dimensions / radius (px). */
+  PREVIEW_W: 220,
+  PREVIEW_H: 300,
+  PREVIEW_RADIUS: 12,
+} as const;
+
+/** Subtle magnetic cursor parallax on the active video. */
+export const PARALLAX = {
+  /** Max horizontal / vertical displacement (px) at the screen edges. */
+  MAX_X: 10,
+  MAX_Y: 6,
+  /** Lerp factor toward the target each frame (lower = smoother/slower). */
+  LERP: 0.08,
+} as const;
+
+/** Carousel crossfade between active clips. */
+export const CAROUSEL = {
+  CROSSFADE_MS: 500,
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -152,17 +231,6 @@ export const FIELD = {
    * as it travels out and is fully gone the moment it leaves the screen.
    */
   BASE_FADE_START: 0.4,
-} as const;
-
-/* ------------------------------------------------------------------ */
-/*  Video panel (Layer 3) geometry                                     */
-/* ------------------------------------------------------------------ */
-export const PANEL = {
-  WIDTH_VW_DESKTOP: 58,
-  WIDTH_VW_MOBILE: 86,
-  RADIUS_PX: 24,
-  /** Resting height before full-bleed (CSS vh). */
-  REST_HEIGHT_VH: 70,
 } as const;
 
 /** Outer Stage scroll length (CSS vh) — sets total scrub distance. */
