@@ -30,3 +30,11 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# Heavy media — offloaded to S3/CloudFront. Kept on disk for local dev but NOT
+# committed. See DEPLOYMENT.md (Phase A) and src/lib/media.ts.
+/public/frames/
+/public/video1/
+/public/video2/
+/public/showcase/*
+!/public/showcase/README.md

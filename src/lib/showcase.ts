@@ -1,3 +1,5 @@
+import { media } from "./media";
+
 /* ------------------------------------------------------------------ */
 /*  Showcase — Image fly-through → fullscreen video reveal             */
 /*  All tunable constants live here (mirrors src/lib/hero.ts).         */
@@ -40,9 +42,9 @@ export type ShowcaseSlide = {
  * remove it. See the asset note in the plan / README.
  */
 export const SHOWCASE_VIDEOS: ShowcaseSlide[] = [
-  { src: "/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4", label: "Flow State" },
-  { src: "/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4", label: "Deep Focus" },
-  { src: "/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4", label: "Momentum" },
+  { src: media("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Flow State" },
+  { src: media("/video1/v3_3D_Scrollytelling_Sequence_202606170011.mp4"), label: "Deep Focus" },
+  { src: media("/video2/v1_3D_Scrollytelling_Sequence_202606170015.mp4"), label: "Momentum" },
 ];
 
 /* ------------------------------------------------------------------ */
