@@ -4,7 +4,7 @@ import { mediaUrl } from "./media";
 export const FRAME_COUNT = 240;
 
 export const frameSrc = (i: number) =>
-  mediaUrl(`/frames/frame_${String(i).padStart(4, "0")}.jpg`);
+  `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
 
 /* Hero text finishes fading out by this scroll progress (first 8%). */
 export const HERO_TEXT_FADE_END = 0.08;
