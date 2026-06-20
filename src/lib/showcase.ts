@@ -5,12 +5,73 @@
 
 import { mediaUrl } from "./media";
 
-/** Number of distinct tiles available in /public/temp_pictures. */
-export const TILE_COUNT = 32;
+/**
+ * The image-field tile pool — the actual files dropped into
+ * /public/temp_pictures (order-agnostic, all used). No hardcoded tile-NN
+ * sequence: list the real filenames here and they're served as-is.
+ *
+ * To refresh after swapping the batch, regenerate the body with:
+ *   ls -1 public/temp_pictures/*.webp | sort | sed 's/.*\//  "/; s/$/",/'
+ */
+const TILE_FILES = [
+  "candice 1.1.webp",
+  "candice 1.2.webp",
+  "candice 1.3.webp",
+  "candice 1.4.webp",
+  "crystal 1.1.webp",
+  "crystal 1.2.webp",
+  "crystal 1.3.webp",
+  "jasper 1.1.webp",
+  "jasper 1.2.webp",
+  "juyi 1.webp",
+  "juyi 2.webp",
+  "juyi 3.webp",
+  "juyi 4.webp",
+  "juyi 5.webp",
+  "juyi 6.webp",
+  "ming 1.1.webp",
+  "ming 1.2.webp",
+  "ming 1.3.webp",
+  "ming 2.1.webp",
+  "ming 2.2.webp",
+  "ming 2.3.webp",
+  "ming 2.4.webp",
+  "ming 3.1.webp",
+  "ming 3.2.webp",
+  "ming 3.3.webp",
+  "sakura.webp",
+  "sayaha 1.1.webp",
+  "sayaha 1.2.webp",
+  "sayaha 1.3.webp",
+  "sayaha 1.4.webp",
+  "slyvia 1.1.webp",
+  "slyvia 1.2.webp",
+  "slyvia 1.3.webp",
+  "slyvia 1.4.webp",
+  "slyvia 1.5.webp",
+  "tayar 1.1.webp",
+  "tayar 1.2.webp",
+  "tayar 1.3.webp",
+  "wat 1.1.webp",
+  "yiwei 1.1.webp",
+  "yiwei 1.2.webp",
+  "zhan hang 1.webp",
+];
 
-/** Maps a 1-based tile index to its URL (tile-01.webp … tile-32.webp). */
-export const tileSrc = (i: number) =>
-  `/temp_pictures/tile-${String(i).padStart(2, "0")}.webp`;
+/** Encodes each path segment (spaces, etc.) while keeping "/" separators. */
+const encodePath = (p: string) => p.split("/").map(encodeURIComponent).join("/");
+
+/**
+ * Resolved tile URLs, in order. Filenames are URL-encoded (handles spaces)
+ * and prefixed with the CloudFront base via mediaUrl when configured, so the
+ * same list works locally (/public) and in production (CDN).
+ */
+export const TILE_SRCS = TILE_FILES.map((f) =>
+  mediaUrl(encodePath(`/temp_pictures/${f}`)),
+);
+
+/** Number of distinct tiles available in /public/temp_pictures. */
+export const TILE_COUNT = TILE_SRCS.length;
 /* ------------------------------------------------------------------ */
 /*  Carousel slides (Layer 3) — the full-bleed clips, in order          */
 /* ------------------------------------------------------------------ */

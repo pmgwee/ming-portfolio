@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { FIELD, TILE_COUNT, hash01, hashCycle, tileSrc } from "@/lib/showcase";
+import { FIELD, TILE_COUNT, TILE_SRCS, hash01, hashCycle } from "@/lib/showcase";
 
 const TWO_PI = Math.PI * 2;
 /** Golden angle (~137.508°) — phyllotaxis spacing for balanced angular spread. */
@@ -293,7 +293,7 @@ export function ImageField({
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={tileSrc((i % TILE_COUNT) + 1)}
+                  src={TILE_SRCS[i % TILE_COUNT]}
                   alt=""
                   className="h-full w-full object-cover"
                   loading="lazy"
@@ -324,7 +324,7 @@ export function ImageField({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={tileSrc((i % TILE_COUNT) + 1)}
+              src={TILE_SRCS[i % TILE_COUNT]}
               alt=""
               className="h-full w-full object-cover"
               loading="lazy"
