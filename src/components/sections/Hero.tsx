@@ -238,7 +238,7 @@ export function Hero() {
               return (
                 <div
                   key={a.id}
-                  className={`absolute bottom-0 left-0 w-[min(92vw,440px)] rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${
+                  className={`absolute bottom-0 left-0 w-[min(92vw,440px)] rounded-xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${
                     visible
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none translate-y-6 opacity-0"

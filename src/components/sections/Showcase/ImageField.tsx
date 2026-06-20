@@ -357,7 +357,7 @@ export function ImageField({
             return (
               <div
                 key={i}
-                className="absolute left-1/2 top-1/2 overflow-hidden rounded-2xl border border-white/10 opacity-30"
+                className="absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10 opacity-30"
                 style={{
                   width: `${FIELD.CARD_W_VW}vw`,
                   aspectRatio: "3 / 4",
@@ -388,7 +388,7 @@ export function ImageField({
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="absolute left-1/2 top-1/2 overflow-hidden rounded-2xl border border-white/10"
+              className="absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10"
               style={{
                 width: `${FIELD.CARD_W_VW}vw`,
                 aspectRatio: "3 / 4",
