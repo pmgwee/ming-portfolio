@@ -44,12 +44,27 @@ export function ImageField({
   reducedMotion: boolean;
 }) {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Per-card <img> handles — the rAF loop swaps their `src` on cycle
+  // boundaries so each card shows MANY pictures over its life (see frame()).
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Pool size depends on viewport (set once on mount).
   const isMobile =
     typeof window !== "undefined" && window.innerWidth <= 768;
   const N = isMobile ? FIELD.N_MOBILE : FIELD.N_DESKTOP;
+
+  // Deterministic (SSR-safe) shuffle of the FULL tile pool. Used for the
+  // initial, server-rendered assignment so the first frame already shows a
+  // balanced, varied subset spread across ALL tiles — not just the first N.
+  // hash01 (no Math.random) keeps server & client markup identical.
+  const tileOrder = useMemo(
+    () =>
+      Array.from({ length: TILE_COUNT }, (_, k) => k).sort(
+        (a, b) => hash01(a, 53.7) - hash01(b, 53.7),
+      ),
+    [],
+  );
 
   // Per-card identity — stable for the life of the pool. A card's tier sets
   // its cycle speed (burst = faster → parallax) and which motion model the
@@ -101,6 +116,39 @@ export function ImageField({
     };
     window.addEventListener("resize", onResize);
 
+    // --- Tile sequencer (shuffle bag) ----------------------------------
+    // Draws every tile exactly once, in a random order, before any repeat —
+    // so the field cycles through the WHOLE pool (balanced, non-repetitive)
+    // instead of pinning each card to one fixed image. Reshuffles each pass
+    // and avoids repeating a tile across the seam. Runtime-only (inside the
+    // effect, never SSR), so Math.random is safe here.
+    const makeBag = () => {
+      const b = TILE_SRCS.map((_, k) => k);
+      for (let j = b.length - 1; j > 0; j--) {
+        const r = Math.floor(Math.random() * (j + 1));
+        [b[j], b[r]] = [b[r], b[j]];
+      }
+      return b;
+    };
+    let bag = makeBag();
+    let bagPos = 0;
+    let lastDrawn = -1;
+    const drawTile = () => {
+      if (bagPos >= bag.length) {
+        bag = makeBag();
+        bagPos = 0;
+        if (bag.length > 1 && bag[0] === lastDrawn) {
+          [bag[0], bag[1]] = [bag[1], bag[0]];
+        }
+      }
+      lastDrawn = bag[bagPos++];
+      return lastDrawn;
+    };
+    // Per-card last-seen cycle. Initialised lazily (null) so each card KEEPS
+    // its initially-rendered tile for its first observed cycle, then swaps on
+    // every boundary thereafter.
+    const lastCycle: (number | null)[] = new Array(N).fill(null);
+
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
       last = now;
@@ -132,6 +180,18 @@ export function ImageField({
         const phaseGlobal = advance * c.speed + c.offset;
         const cycle = Math.floor(phaseGlobal);
         const phase = phaseGlobal - cycle;
+
+        // On each cycle boundary the card respawns — swap in a fresh tile from
+        // the shuffle bag so one card shows many different pictures over time
+        // and the whole pool is exercised. The swap happens at phase≈0 where
+        // opacity is ~0 (fade-in not started), so it's never visible mid-frame.
+        if (lastCycle[i] === null) {
+          lastCycle[i] = cycle; // adopt initial cycle, keep the rendered tile
+        } else if (cycle !== lastCycle[i]) {
+          lastCycle[i] = cycle;
+          const img = imgRefs.current[i];
+          if (img) img.src = TILE_SRCS[drawTile()];
+        }
 
         // BASE tier direction: a golden-angle (phyllotaxis) base unique per
         // card index (~137.5° steps) plus small per-cycle jitter — the same
@@ -293,7 +353,7 @@ export function ImageField({
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={TILE_SRCS[i % TILE_COUNT]}
+                  src={TILE_SRCS[tileOrder[i % TILE_COUNT]]}
                   alt=""
                   className="h-full w-full object-cover"
                   loading="lazy"
@@ -324,7 +384,10 @@ export function ImageField({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={TILE_SRCS[i % TILE_COUNT]}
+              ref={(el) => {
+                imgRefs.current[i] = el;
+              }}
+              src={TILE_SRCS[tileOrder[i % TILE_COUNT]]}
               alt=""
               className="h-full w-full object-cover"
               loading="lazy"
