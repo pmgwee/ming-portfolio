@@ -1,7 +1,7 @@
 import { mediaUrl } from "./media";
 
 /* The scrubbed sequence — every frame of the source video (1920×1080). */
-export const FRAME_COUNT = 240;
+export const FRAME_COUNT = 169;
 
 export const frameSrc = (i: number) =>
   `/frames/frame_${String(i).padStart(4, "0")}.jpg`;
