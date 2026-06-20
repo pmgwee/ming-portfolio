@@ -4,6 +4,9 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 
+// CloudFront base for the heavy media (frames, tiles, clips). Inlined at build.
+const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_BASE;
+
 export const metadata: Metadata = {
   title: "Ming — Creative Developer & Portfolio",
   description:
@@ -16,6 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
+        {/* Warm up the CloudFront connection (DNS + TLS) before the media
+            requests fire. No crossOrigin — media is fetched non-CORS (see
+            DEPLOYMENT.md). React hoists this <link> into <head>. */}
+        {MEDIA_BASE ? <link rel="preconnect" href={MEDIA_BASE} /> : null}
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>

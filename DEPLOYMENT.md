@@ -37,14 +37,35 @@ Keep **"Block *all* public access" ON**. The bucket stays private; CloudFront
 reads it via Origin Access Control.
 
 ### 2. Upload the media (preserve the path prefixes the code expects)
+Always pass `--cache-control` so browsers cache media long-term — without it
+(the old default) every **refresh re-downloads tens of MB**. The media is
+effectively immutable (new batches get new filenames), so a 1-year TTL is safe;
+when you *replace* a file in place, invalidate CloudFront (step 7 / 4b).
 ```bash
-aws s3 sync public/frames s3://ming-portfolio-media/frames --include "*.jpg"
-aws s3 sync public/video1 s3://ming-portfolio-media/video1
-aws s3 sync public/video2 s3://ming-portfolio-media/video2
+CC="public, max-age=31536000, immutable"
+aws s3 sync public/frames        s3://ming-portfolio-media/frames        --include "*.jpg" --cache-control "$CC"
+aws s3 sync public/temp_pictures s3://ming-portfolio-media/temp_pictures --cache-control "$CC"
+aws s3 sync public/video1        s3://ming-portfolio-media/video1        --cache-control "$CC"
+aws s3 sync public/video2        s3://ming-portfolio-media/video2        --cache-control "$CC"
 ```
 The AWS CLI infers `ContentType` from the extension (`.mp4` → `video/mp4`,
-`.jpg` → `image/jpeg`) — browsers need these for correct playback. (If you upload
-via the console instead, set Content-Type manually.)
+`.jpg` → `image/jpeg`, `.webp` → `image/webp`) — browsers need these for correct
+playback. (If you upload via the console instead, set Content-Type + Cache-Control
+manually.)
+
+> **Already uploaded without Cache-Control?** Stamp it on the existing objects
+> in place (no re-upload of bytes), then invalidate so the edge re-reads headers:
+> ```bash
+> CC="public, max-age=31536000, immutable"
+> for p in frames temp_pictures video1 video2; do
+>   aws s3 cp "s3://ming-portfolio-media/$p" "s3://ming-portfolio-media/$p" \
+>     --recursive --metadata-directive REPLACE --cache-control "$CC"
+> done
+> aws cloudfront create-invalidation --distribution-id <DIST_ID> --paths "/*"
+> ```
+> `CachingOptimized` already forwards these origin headers to the browser, so
+> repeat visits then load every frame/tile/clip from disk cache — no network,
+> no loading spinner.
 
 > Future showcase clips go to `s3://ming-portfolio-media/showcase/clip-01.mp4`
 > and are referenced as `media("/showcase/clip-01.mp4")` in `SHOWCASE_VIDEOS`
@@ -177,8 +198,14 @@ The force-push triggers Vercel's auto-deploy (or click **Redeploy**). Confirm:
 - Vercel Hobby = free.
 - The $100 AWS credit covers years of this kind of traffic.
 
-## Future optimization (optional, out of scope)
-The 59 MB hero frame sequence (240 JPGs) is the single heaviest payload.
-Converting it to one scrubbed `<video>` (mp4/webm) would cut it to a few MB — a
-separate change in [`Hero.tsx`](src/components/sections/Hero.tsx), not required
-for this deploy.
+## Hero frame sequence — current state
+`FRAME_COUNT` is **169** ([`src/lib/hero.ts`](src/lib/hero.ts)) and MUST equal the
+number of `frame_XXXX.jpg` files in `s3://…/frames/` (`frame_0001` … `frame_0169`).
+The preload is **non-blocking**: the hero reveals after the leading frames load
+([`useImagePreloader`](src/hooks/useImagePreloader.ts) `ready`) and the rest stream
+in behind it — so first paint no longer waits on the whole sequence.
+
+### Future optimization (optional, out of scope)
+Converting the sequence to one scrubbed `<video>` (mp4/webm) would cut it from
+tens of MB to a few — a separate change in
+[`Hero.tsx`](src/components/sections/Hero.tsx), not required for this deploy.

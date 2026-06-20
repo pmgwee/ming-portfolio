@@ -7,6 +7,7 @@ import { ImageField } from "./ImageField";
 import { HeroText } from "./HeroText";
 import { VideoStage } from "./VideoStage";
 import { PHASES, REVEAL } from "@/lib/showcase";
+import type { ShowcaseMedia } from "@/lib/showcase-media";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
  * (Layer 1) runs its own rAF loop and only its master opacity is on the
  * timeline. See src/lib/showcase.ts for every tunable constant.
  */
-export function Showcase() {
+export function Showcase({ media }: { media: ShowcaseMedia }) {
   const stageRef = useRef<HTMLElement>(null);
   const pinnedRef = useRef<HTMLDivElement>(null);
 
@@ -37,32 +38,9 @@ export function Showcase() {
   const [settled, setSettled] = useState(false);
   const settledRef = useRef(false);
 
-  // Heavy media (image-field tiles + carousel clips) is listed live from S3 via
-  // /api/media — a single fetch here, passed down to both layers. Empty until it
-  // resolves; both components degrade gracefully to no media in the meantime.
-  const [media, setMedia] = useState<{
-    tiles: string[];
-    videos: Record<string, string>;
-  }>({ tiles: [], videos: {} });
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/media")
-      .then((r) => (r.ok ? r.json() : { tiles: [], videos: {} }))
-      .then((d: { tiles?: unknown; videos?: unknown }) => {
-        if (cancelled) return;
-        setMedia({
-          tiles: Array.isArray(d.tiles) ? (d.tiles as string[]) : [],
-          videos:
-            d.videos && typeof d.videos === "object"
-              ? (d.videos as Record<string, string>)
-              : {},
-        });
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // Heavy media (image-field tiles + carousel clips) is resolved from S3 on the
+  // server (page.tsx, build + ISR) and passed in as a prop — so the URLs are in
+  // the initial HTML and downloads begin at first paint, no client fetch.
 
   useEffect(() => {
     setReducedMotion(

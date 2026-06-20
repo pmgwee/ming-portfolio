@@ -340,6 +340,18 @@ export function ImageField({
           opacity = fadeIn(phase) * (1 - fadeT * fadeT);
         }
 
+        // Load-gate: never fade a card in while its media is still arriving —
+        // hold it hidden until the shown element has pixels to paint, so the
+        // user never sees a half-decoded image/clip. Once ready it fades in
+        // normally on the next frames.
+        const vid = videoRefs.current[i];
+        const img = imgRefs.current[i];
+        const showingVideo = !!vid && vid.style.display !== "none";
+        const mediaReady = showingVideo
+          ? vid.readyState >= 2 // HAVE_CURRENT_DATA — a frame is paintable
+          : !!img && img.complete && img.naturalWidth > 0;
+        if (!mediaReady) opacity = 0;
+
         el.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale}) rotate(${rotation}deg)`;
         el.style.opacity = String(opacity);
         // Larger cards sort on top → growing burst cards rise above the
@@ -476,7 +488,7 @@ export function ImageField({
                 loop
                 playsInline
                 autoPlay
-                preload="auto"
+                preload="metadata"
               />
             </div>
           );

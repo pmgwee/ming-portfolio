@@ -1,7 +1,8 @@
 import { mediaUrl } from "./media";
 
-/* The scrubbed sequence — every frame of the source video (1920×1080). */
-export const FRAME_COUNT = 240;
+/* The scrubbed sequence — every frame of the source video (1920×1080).
+   MUST equal the number of frame_XXXX.jpg files in S3 (frame_0001 … frame_0169). */
+export const FRAME_COUNT = 169;
 
 export const frameSrc = (i: number) =>
   mediaUrl(`/frames/frame_${String(i).padStart(4, "0")}.jpg`);
