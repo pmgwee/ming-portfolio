@@ -207,7 +207,7 @@ export const FIELD = {
    */
   BURST_BUMP_START: 0.02,
   /** Scale-up cap applied over the second half of travel (1.2×, per spec). */
-  BURST_SCALE_END_MULT: 1.9,
+  BURST_SCALE_END_MULT: 2.5,
 
   /* --- Base tier — center-spawn outward drift, grows in 2nd half ------ */
   /** Varied INTRINSIC size band — each card holds its own size, like burst. */
