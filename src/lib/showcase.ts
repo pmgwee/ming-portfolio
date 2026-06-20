@@ -8,48 +8,19 @@
  * filename. It is listed live from S3 at runtime via the `/api/media` route
  * ([src/app/api/media/route.ts](src/app/api/media/route.ts)) and resolved by
  * the components below, so dropping a new batch into the relevant S3 folder
- * (`temp_pictures/`, `video1/`, `video2/`, …) is picked up with no code change.
+ * (`temp_pictures/`, `video/`) is picked up with no code change.
  */
 
 /* ------------------------------------------------------------------ */
 /*  Carousel slides (Layer 3) — the full-bleed clips, in order          */
 /* ------------------------------------------------------------------ */
 /**
- * Optional overlay UI (requirement F) per slide — DEFERRED for now. The shape
- * is kept so a slide can later opt into a headline + typewriter prompt bar
- * without touching the component wiring.
+ * The carousel is driven entirely by the contents of the single `video/` folder
+ * in S3: every clip there becomes one slide, in alphabetical filename order
+ * (resolved by /api/media → an ordered URL array). To add/remove/reorder slides,
+ * add/remove/rename files in that folder — no code change. Each slide's hover
+ * label is derived from its filename via `labelFromUrl()` below.
  */
-export type ShowcaseOverlay = {
-  headline: string;
-  prompts: string[];
-};
-
-export type ShowcaseSlide = {
-  /**
-   * S3 folder (e.g. "video1") whose CURRENT clip plays for this slide. The file
-   * URL is resolved at runtime from /api/media (newest clip in the folder), so
-   * replacing the clip in that folder needs no code change. Two slides may share
-   * a folder (the same clip plays in both).
-   */
-  folder: string;
-  /** Short state/name label shown on the hover mini-preview chip. */
-  label: string;
-  /** Per-slide overlay (F). Undefined = no overlay on this slide. */
-  overlay?: ShowcaseOverlay;
-};
-
-/**
- * The carousel, in display order. Each slide names the S3 FOLDER its clip lives
- * in; /api/media resolves that to the folder's current clip at runtime. To swap
- * a clip, drop a new file into that folder on S3 (no code change). To add a
- * slide, add an entry here — its folder is listed automatically.
- * (video2 is reused for slides 0 and 2, so the same clip plays in both.)
- */
-export const SHOWCASE_VIDEOS: ShowcaseSlide[] = [
-  { folder: "video2", label: "Flow State" },
-  { folder: "video1", label: "Deep Focus" },
-  { folder: "video2", label: "Momentum" },
-];
 
 /* ------------------------------------------------------------------ */
 /*  Scroll-progress phase ranges (p = 0 settled → 1 video full-bleed)  */
@@ -241,6 +212,22 @@ export const FIELD = {
 
 /** Outer Stage scroll length (CSS vh) — sets total scrub distance. */
 export const STAGE_VH = 320;
+
+/**
+ * Derive a clean carousel/hover label from a clip URL's filename, e.g.
+ * "https://…/video/01-flow-state.mp4" → "Flow State". Strips the path,
+ * extension and any leading order prefix (01-, 02_…), turns separators into
+ * spaces and Title-Cases the result.
+ */
+export function labelFromUrl(url: string): string {
+  const file = url.split("/").pop() ?? "";
+  return file
+    .replace(/\.[^.]+$/, "") // strip extension
+    .replace(/^\d+[-_\s]*/, "") // strip leading order prefix (01-, 02_…)
+    .replace(/[-_]+/g, " ") // separators → spaces
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // Title Case
+}
 
 /** A deterministic ±JITTER offset for card `i` (stable across renders). */
 export function jitterFor(i: number): number {

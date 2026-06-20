@@ -1,5 +1,4 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-import { SHOWCASE_VIDEOS } from "@/lib/showcase";
 
 /* ------------------------------------------------------------------ */
 /*  Showcase media — live listing of the field tiles + carousel clips  */
@@ -13,9 +12,9 @@ import { SHOWCASE_VIDEOS } from "@/lib/showcase";
  * Returns, from the private media bucket:
  *   • `tiles`  — every image AND short looping clip under the `temp_pictures/`
  *                prefix (the mixed image-field pool; order-agnostic, all used).
- *   • `videos` — folder → CURRENT clip URL, for each distinct folder referenced
- *                by SHOWCASE_VIDEOS (the carousel). "Current" = newest object in
- *                the folder by LastModified.
+ *   • `videos` — every clip under the single `video/` folder, as an ORDERED
+ *                array of URLs (alphabetical by key). Each becomes one carousel
+ *                slide, so dropping N clips into the folder yields N slides.
  *
  * So dropping a new batch of arbitrarily-named files into a folder on S3 "just
  * works" with no code change. The bucket is private (CloudFront OAC), so the
@@ -27,6 +26,7 @@ import { SHOWCASE_VIDEOS } from "@/lib/showcase";
 const REGION = process.env.S3_REGION ?? "ap-southeast-2";
 const BUCKET = process.env.S3_BUCKET ?? "";
 const TILES_PREFIX = process.env.S3_TILES_PREFIX ?? "temp_pictures/";
+const VIDEO_PREFIX = process.env.S3_VIDEO_PREFIX ?? "video/";
 // Reuse the public CloudFront base the client already uses (no trailing slash).
 const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE ?? "").replace(/\/+$/, "");
 
@@ -35,7 +35,7 @@ const VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i;
 
 export type ShowcaseMedia = {
   tiles: string[];
-  videos: Record<string, string>;
+  videos: string[];
 };
 
 type Item = { key: string; lastModified: number };
@@ -66,16 +66,12 @@ const urlFor = (key: string) => `${MEDIA_BASE}/${key}`;
 
 export async function getShowcaseMedia(): Promise<ShowcaseMedia> {
   const s3 = makeClient();
-  if (!s3) return { tiles: [], videos: {} };
+  if (!s3) return { tiles: [], videos: [] };
 
   try {
-    // Distinct video folders the carousel references (DRY: add a slide in
-    // showcase.ts → its folder is listed here automatically).
-    const videoFolders = [...new Set(SHOWCASE_VIDEOS.map((s) => s.folder))];
-
-    const [tileItems, ...videoItemLists] = await Promise.all([
+    const [tileItems, videoItems] = await Promise.all([
       listPrefix(s3, TILES_PREFIX),
-      ...videoFolders.map((f) => listPrefix(s3, `${f}/`)),
+      listPrefix(s3, VIDEO_PREFIX),
     ]);
 
     // The field pool is mixed media: still images AND short looping clips
@@ -86,17 +82,16 @@ export async function getShowcaseMedia(): Promise<ShowcaseMedia> {
       .map((it) => urlFor(it.key))
       .sort();
 
-    const videos: Record<string, string> = {};
-    videoFolders.forEach((folder, i) => {
-      const clip = videoItemLists[i]
-        .filter((it) => VIDEO_RE.test(it.key))
-        .sort((a, b) => b.lastModified - a.lastModified)[0];
-      if (clip) videos[folder] = urlFor(clip.key);
-    });
+    // Every clip in the single video/ folder, alphabetical by key → one
+    // carousel slide each (control order by naming files 01-…, 02-…).
+    const videos = videoItems
+      .filter((it) => VIDEO_RE.test(it.key))
+      .sort((a, b) => a.key.localeCompare(b.key))
+      .map((it) => urlFor(it.key));
 
     return { tiles, videos };
   } catch {
     // Never hard-fail the page over decorative/media listing.
-    return { tiles: [], videos: {} };
+    return { tiles: [], videos: [] };
   }
 }

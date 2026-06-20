@@ -12,9 +12,8 @@ import {
   HOVER,
   PARALLAX,
   REVEAL,
-  SHOWCASE_VIDEOS,
+  labelFromUrl,
 } from "@/lib/showcase";
-import type { ShowcaseSlide } from "@/lib/showcase";
 import { useCursorParallax } from "@/hooks/useCursorParallax";
 import { MiniPreview } from "./MiniPreview";
 
@@ -24,8 +23,6 @@ import { MiniPreview } from "./MiniPreview";
 /*  every knob the stage uses is visible at a glance.                   */
 /* ------------------------------------------------------------------ */
 const CONFIG = {
-  /** Ordered carousel clips ({ src, label }). */
-  videos: SHOWCASE_VIDEOS,
   /** Transform-only reveal start (panel rises + scales + un-rounds). */
   reveal: REVEAL, // { START_SCALE, START_RADIUS_PX }
   /** Edge hover-zones → translate-away + mini-preview. */
@@ -47,7 +44,7 @@ const CONFIG = {
  *
  * A–E implemented: reveal target, autoplay/unmute, wrap-around carousel
  * (only the active clip plays), hover mini-preview, cursor parallax, plus
- * mobile swipe. Overlay UI (F) is deferred (see ShowcaseSlide.overlay hook).
+ * mobile swipe. Overlay UI (F) is deferred.
  */
 export function VideoStage({
   panelRef,
@@ -62,15 +59,15 @@ export function VideoStage({
   settled: boolean;
   isMobile: boolean;
   reducedMotion: boolean;
-  /** Folder → current clip URL, resolved live from S3 via /api/media. */
-  videos: Record<string, string>;
+  /** Ordered clip URLs from the S3 `video/` folder (one per carousel slide). */
+  videos: string[];
 }) {
-  const slides = CONFIG.videos;
+  // One slide per clip in the video/ folder; label derived from the filename.
+  const slides = videos.map((src) => ({ src, label: labelFromUrl(src) }));
   const N = slides.length;
-
-  // Resolve a slide's folder to its current clip URL (undefined until the
-  // parent's /api/media fetch lands → the <video> simply has no source yet).
-  const srcFor = (slide: ShowcaseSlide) => videos[slide.folder];
+  // Wrap-around divisor — never 0 so the modulo math is always safe even when
+  // the folder listing is empty (e.g. local dev with no S3 creds).
+  const M = Math.max(N, 1);
 
   const mediaRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -91,11 +88,11 @@ export function VideoStage({
   // Parallax + hover translate-away are desktop-only, post-settle, motion-OK.
   const interactive = settled && canHover && !reducedMotion;
 
-  const prevIndex = (activeIndex - 1 + N) % N;
-  const nextIndex = (activeIndex + 1) % N;
+  const prevIndex = (activeIndex - 1 + M) % M;
+  const nextIndex = (activeIndex + 1) % M;
 
-  const next = useCallback(() => setActiveIndex((i) => (i + 1) % N), [N]);
-  const prev = useCallback(() => setActiveIndex((i) => (i - 1 + N) % N), [N]);
+  const next = useCallback(() => setActiveIndex((i) => (i + 1) % M), [M]);
+  const prev = useCallback(() => setActiveIndex((i) => (i - 1 + M) % M), [M]);
 
   // --- Playback: only the active clip plays; the rest pause (perf). --------
   useEffect(() => {
@@ -194,9 +191,9 @@ export function VideoStage({
           className="absolute inset-0"
           style={{ willChange: "transform" }}
         >
-          {slides.map((slide: ShowcaseSlide, i: number) => (
+          {slides.map((slide, i: number) => (
             <video
-              key={`${slide.folder}-${i}`}
+              key={slide.src}
               ref={(el) => {
                 videoRefs.current[i] = el;
               }}
@@ -205,7 +202,7 @@ export function VideoStage({
                 opacity: i === activeIndex ? 1 : 0,
                 transition: `opacity ${CONFIG.carousel.CROSSFADE_MS}ms ease`,
               }}
-              src={srcFor(slide) || undefined}
+              src={slide.src || undefined}
               muted
               loop
               playsInline
@@ -254,18 +251,22 @@ export function VideoStage({
               </div>
 
               {/* Mini-previews of the neighbouring clips. */}
-              <MiniPreview
-                side="left"
-                src={srcFor(slides[prevIndex])}
-                label={slides[prevIndex].label}
-                visible={interactive && hoverSide === "left"}
-              />
-              <MiniPreview
-                side="right"
-                src={srcFor(slides[nextIndex])}
-                label={slides[nextIndex].label}
-                visible={interactive && hoverSide === "right"}
-              />
+              {N > 0 && (
+                <>
+                  <MiniPreview
+                    side="left"
+                    src={slides[prevIndex].src}
+                    label={slides[prevIndex].label}
+                    visible={interactive && hoverSide === "left"}
+                  />
+                  <MiniPreview
+                    side="right"
+                    src={slides[nextIndex].src}
+                    label={slides[nextIndex].label}
+                    visible={interactive && hoverSide === "right"}
+                  />
+                </>
+              )}
             </>
           )}
 
@@ -309,7 +310,7 @@ export function VideoStage({
             {muted ? "Unmute" : "Mute"}
           </button>
 
-          {/* Overlay UI (F) is deferred; a slide opts in via slide.overlay. */}
+          {/* Overlay UI (F) is deferred. */}
         </div>
       </div>
     </div>

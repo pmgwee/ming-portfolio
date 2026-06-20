@@ -24,7 +24,7 @@ export function Hero() {
 
   const [visibleCards, setVisibleCards] = useState<string[]>([]);
 
-  const { imagesRef, progress, loaded, ready } = useImagePreloader(
+  const { imagesRef, progress, loaded } = useImagePreloader(
     FRAME_COUNT,
     frameSrc,
   );
@@ -260,9 +260,10 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Loading overlay — clears as soon as the leading frames are in; the
-            rest of the sequence keeps streaming behind the revealed hero. */}
-        {!ready && (
+        {/* Loading overlay — blocks until EVERY frame is loaded, so the scrub
+            never lands on a blank/half-loaded frame even if the user scrolls
+            immediately. */}
+        {!loaded && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#07080c]">
             <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-zinc-400">
               Loading experience

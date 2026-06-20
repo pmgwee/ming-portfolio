@@ -3,8 +3,8 @@
 **Hosting:** [Vercel](https://vercel.com) (Next.js frontend) + **AWS S3 behind CloudFront**
 (heavy media offload).
 
-Heavy media — the hero frame sequence (`/frames/*`) and the showcase videos
-(`/video1/*`, `/video2/*`, future `/showcase/*`) — lives in S3 and is served
+Heavy media — the hero frame sequence (`/frames/*`) and the showcase carousel
+clips (`/video/*`) — lives in S3 and is served
 through CloudFront. The app references it via the `NEXT_PUBLIC_MEDIA_BASE` env
 var and the `media()` helper in [`src/lib/media.ts`](src/lib/media.ts):
 
@@ -45,8 +45,7 @@ when you *replace* a file in place, invalidate CloudFront (step 7 / 4b).
 CC="public, max-age=31536000, immutable"
 aws s3 sync public/frames        s3://ming-portfolio-media/frames        --include "*.jpg" --cache-control "$CC"
 aws s3 sync public/temp_pictures s3://ming-portfolio-media/temp_pictures --cache-control "$CC"
-aws s3 sync public/video1        s3://ming-portfolio-media/video1        --cache-control "$CC"
-aws s3 sync public/video2        s3://ming-portfolio-media/video2        --cache-control "$CC"
+aws s3 sync public/video         s3://ming-portfolio-media/video         --cache-control "$CC"
 ```
 The AWS CLI infers `ContentType` from the extension (`.mp4` → `video/mp4`,
 `.jpg` → `image/jpeg`, `.webp` → `image/webp`) — browsers need these for correct
@@ -57,7 +56,7 @@ manually.)
 > in place (no re-upload of bytes), then invalidate so the edge re-reads headers:
 > ```bash
 > CC="public, max-age=31536000, immutable"
-> for p in frames temp_pictures video1 video2; do
+> for p in frames temp_pictures video; do
 >   aws s3 cp "s3://ming-portfolio-media/$p" "s3://ming-portfolio-media/$p" \
 >     --recursive --metadata-directive REPLACE --cache-control "$CC"
 > done
@@ -67,9 +66,9 @@ manually.)
 > repeat visits then load every frame/tile/clip from disk cache — no network,
 > no loading spinner.
 
-> Future showcase clips go to `s3://ming-portfolio-media/showcase/clip-01.mp4`
-> and are referenced as `media("/showcase/clip-01.mp4")` in `SHOWCASE_VIDEOS`
-> ([src/lib/showcase.ts](src/lib/showcase.ts)).
+> Add a carousel slide by dropping another clip into `s3://ming-portfolio-media/video/`
+> (e.g. `01-flow-state.mp4`) — it's listed automatically, in alphabetical
+> filename order, with no code change (see [src/lib/showcase.ts](src/lib/showcase.ts)).
 
 ### 3. Create the CloudFront distribution
 Console → **CloudFront → Create distribution**:
@@ -98,14 +97,13 @@ The Showcase no longer hardcodes media filenames. The `/api/media` route
 ([src/app/api/media/route.ts](src/app/api/media/route.ts)) lists the bucket at
 request time and returns:
 - **tiles** — every image under `temp_pictures/` (the image-field pool), and
-- **videos** — the *current* clip (newest object) in each carousel folder
-  (`video1/`, `video2/`, … — the distinct folders referenced by
-  `SHOWCASE_VIDEOS` in [src/lib/showcase.ts](src/lib/showcase.ts)).
+- **videos** — every clip in the single `video/` folder, as an ordered array
+  (alphabetical by filename). Each becomes one carousel slide.
 
 So dropping a new batch of **arbitrarily-named** files into a folder on S3 is
-picked up with **no code change**: new tiles appear in the field, and a
-replacement clip in `videoN/` becomes the carousel's clip. (Adding a brand-new
-video folder only needs a new `SHOWCASE_VIDEOS` entry.) To enable it:
+picked up with **no code change**: new tiles appear in the field, and every clip
+added to `video/` becomes a carousel slide (ordered by filename — name them
+`01-…`, `02-…` to control order). To enable it:
 
 #### Create the read-only IAM key (this is your `S3_ACCESS_KEY_ID` / `_SECRET`)
 The bucket policy you already have (CloudFront OAC → `s3:GetObject`) is separate
@@ -127,7 +125,7 @@ and stays as-is — this is a **new IAM user** just for *listing*:
    ```
    (Whole-bucket because the route lists several prefixes. To tighten it, add a
    `Condition` with `StringLike` `s3:prefix` listing `temp_pictures/*`,
-   `video1/*`, `video2/*`.)
+   `video/*`.)
 3. Create the user → open it → **Security credentials → Create access key →
    "Application running outside AWS"**. Copy the **Access key ID** and **Secret
    access key** (the secret is shown once).
@@ -139,6 +137,7 @@ bundle:
 - `S3_BUCKET` = `s3-ming-portfolio-web`
 - `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` = the read-only key from above
 - `S3_TILES_PREFIX` = `temp_pictures/` *(optional; this is the default)*
+- `S3_VIDEO_PREFIX` = `video/` *(optional; this is the default)*
 
 > The route is prerendered at build with a 1 h revalidate, so set these
 > **before** the deploy and they bake into the first listing; it refreshes
@@ -152,10 +151,10 @@ bundle:
 
 - [`src/lib/media.ts`](src/lib/media.ts) — the `media(path)` helper.
 - [`src/lib/hero.ts`](src/lib/hero.ts) — `frameSrc()` routes frames through `media()`.
-- [`src/lib/showcase.ts`](src/lib/showcase.ts) — `SHOWCASE_VIDEOS[]` names a
-  folder per slide; the URL is resolved live by `/api/media`.
+- [`src/lib/showcase.ts`](src/lib/showcase.ts) — `labelFromUrl()` derives each
+  slide's label from its clip filename; the carousel is driven by `/api/media`.
 - [`src/app/api/media/route.ts`](src/app/api/media/route.ts) — lists tiles +
-  the current clip per video folder (see 4b).
+  every clip in the `video/` folder, ordered (see 4b).
 - [`.gitignore`](.gitignore) — heavy media folders ignored (kept on disk for dev).
 - [`.env.example`](.env.example) — documents `NEXT_PUBLIC_MEDIA_BASE` + the
   `S3_*` listing vars.
@@ -166,7 +165,7 @@ bundle:
 
 ### 5. Untrack the heavy media (files stay on disk)
 ```bash
-git rm -r --cached public/frames public/video1 public/video2
+git rm -r --cached public/frames public/video
 git commit -m "chore: offload heavy media to S3/CloudFront"
 ```
 
@@ -174,14 +173,14 @@ git commit -m "chore: offload heavy media to S3/CloudFront"
 Using [git-filter-repo](https://github.com/newren/git-filter-repo) (`pip install git-filter-repo`):
 ```bash
 git filter-repo --invert-paths \
-  --path public/frames --path public/video1 --path public/video2
+  --path public/frames --path public/video
 # filter-repo removes the remote for safety — re-add it:
 git remote add origin https://github.com/pmgwee/ming-portfolio.git
 git push --force origin main
 ```
 ⚠️ `--force` rewrites remote history. Safe here (solo repo, few commits) — anyone
 with a clone must re-clone. (Alternative: [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
-with `--delete-folders '{public/frames,public/video1,public/video2}'`.)
+with `--delete-folders '{public/frames,public/video}'`.)
 
 ### 7. Deploy + verify
 The force-push triggers Vercel's auto-deploy (or click **Redeploy**). Confirm:
@@ -201,9 +200,10 @@ The force-push triggers Vercel's auto-deploy (or click **Redeploy**). Confirm:
 ## Hero frame sequence — current state
 `FRAME_COUNT` is **169** ([`src/lib/hero.ts`](src/lib/hero.ts)) and MUST equal the
 number of `frame_XXXX.jpg` files in `s3://…/frames/` (`frame_0001` … `frame_0169`).
-The preload is **non-blocking**: the hero reveals after the leading frames load
-([`useImagePreloader`](src/hooks/useImagePreloader.ts) `ready`) and the rest stream
-in behind it — so first paint no longer waits on the whole sequence.
+The preload is **blocking** ([`useImagePreloader`](src/hooks/useImagePreloader.ts)):
+the "Loading experience" overlay stays until *every* frame is loaded, so the
+scroll-scrub never lands on a blank/half-loaded frame even if the user scrolls
+immediately. Keep the frame count low + compress the JPGs so this wait stays short.
 
 ### Future optimization (optional, out of scope)
 Converting the sequence to one scrubbed `<video>` (mp4/webm) would cut it from
