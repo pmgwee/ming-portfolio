@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useRef } from "react";
 import { FIELD, hash01, hashCycle } from "@/lib/showcase";
 
+/** A field tile is a short looping clip (vs. a still image) when it matches. */
+const VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i;
+const isVideoUrl = (u: string) => VIDEO_RE.test(u);
+
 const TWO_PI = Math.PI * 2;
 /** Golden angle (~137.508°) — phyllotaxis spacing for balanced angular spread. */
 const GOLDEN = 2.399963;
@@ -47,9 +51,12 @@ export function ImageField({
   tiles: string[];
 }) {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  // Per-card <img> handles — the rAF loop swaps their `src` on cycle
-  // boundaries so each card shows MANY pictures over its life (see frame()).
+  // Per-card media handles — the rAF loop swaps the source on cycle boundaries
+  // so each card shows MANY items over its life (see frame()). Each card holds
+  // BOTH an <img> and a <video>, overlapping; only the one matching the current
+  // tile is shown, so a card can flip between a still image and a looping clip.
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Pool size depends on viewport (set once on mount).
@@ -105,6 +112,10 @@ export function ImageField({
   // batch of arbitrarily-named files dropped into the S3 prefix "just works".
   const tileAt = (i: number) =>
     tiles.length ? tiles[tileOrder[i % tiles.length]] : undefined;
+
+  // Reduced-motion cluster shows STILL images only — never autoplay a clip for
+  // users who asked for less motion.
+  const imageTiles = useMemo(() => tiles.filter((t) => !isVideoUrl(t)), [tiles]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -162,6 +173,34 @@ export function ImageField({
     // every boundary thereafter.
     const lastCycle: (number | null)[] = new Array(N).fill(null);
 
+    // Point a card at a tile, showing the right element: a still <img> or a
+    // looping muted <video> (the other is hidden). Same swap pattern as before
+    // — just media-type aware so clips and images can share the field pool.
+    const applyMedia = (i: number, url: string | undefined) => {
+      if (!url) return;
+      const img = imgRefs.current[i];
+      const vid = videoRefs.current[i];
+      if (isVideoUrl(url)) {
+        if (vid) {
+          if (vid.getAttribute("src") !== url) vid.src = url;
+          vid.muted = true;
+          vid.style.display = "";
+          const p = vid.play();
+          if (p) p.catch(() => {}); // autoplay rejection on muted clip is harmless
+        }
+        if (img) img.style.display = "none";
+      } else {
+        if (img) {
+          if (img.getAttribute("src") !== url) img.src = url;
+          img.style.display = "";
+        }
+        if (vid) {
+          vid.style.display = "none";
+          vid.pause();
+        }
+      }
+    };
+
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
       last = now;
@@ -202,8 +241,7 @@ export function ImageField({
           lastCycle[i] = cycle; // adopt initial cycle, keep the rendered tile
         } else if (cycle !== lastCycle[i]) {
           lastCycle[i] = cycle;
-          const img = imgRefs.current[i];
-          if (img && tiles.length) img.src = tiles[drawTile()];
+          if (tiles.length) applyMedia(i, tiles[drawTile()]);
         }
 
         // BASE tier direction: a golden-angle (phyllotaxis) base unique per
@@ -322,9 +360,18 @@ export function ImageField({
           lastScrollY = window.scrollY; // avoid a velocity spike on resume
           scrollVel = 0;
           rafId = requestAnimationFrame(frame);
+          // Resume the clips that are currently the shown element.
+          for (const v of videoRefs.current) {
+            if (v && v.style.display !== "none" && v.getAttribute("src")) {
+              const p = v.play();
+              if (p) p.catch(() => {});
+            }
+          }
         } else if (!entry.isIntersecting && running) {
           running = false;
           cancelAnimationFrame(rafId);
+          // Don't decode looping clips while the field is off-screen.
+          for (const v of videoRefs.current) v?.pause();
         }
       },
       { threshold: 0 },
@@ -353,7 +400,9 @@ export function ImageField({
             const r = 26; // vmin
             const x = Math.cos(angle) * r;
             const y = Math.sin(angle) * r;
-            const src = tileAt(i);
+            const src = imageTiles.length
+              ? imageTiles[i % imageTiles.length]
+              : undefined;
             return (
               <div
                 key={i}
@@ -382,6 +431,9 @@ export function ImageField({
       ) : (
         Array.from({ length: N }).map((_, i) => {
           const src = tileAt(i);
+          // A card holds both elements; only the one matching the current tile
+          // is shown. The rAF loop toggles them via applyMedia() on each cycle.
+          const video = src ? isVideoUrl(src) : false;
           return (
             <div
               key={i}
@@ -400,19 +452,32 @@ export function ImageField({
                 boxShadow: "var(--card-shadow)",
               }}
             >
-              {src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  ref={(el) => {
-                    imgRefs.current[i] = el;
-                  }}
-                  src={src}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                  draggable={false}
-                />
-              ) : null}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                ref={(el) => {
+                  imgRefs.current[i] = el;
+                }}
+                src={src && !video ? src : undefined}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{ display: video ? "none" : undefined }}
+                loading="lazy"
+                draggable={false}
+              />
+              <video
+                ref={(el) => {
+                  videoRefs.current[i] = el;
+                  if (el) el.muted = true;
+                }}
+                src={src && video ? src : undefined}
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{ display: video ? undefined : "none" }}
+                muted
+                loop
+                playsInline
+                autoPlay
+                preload="auto"
+              />
             </div>
           );
         })

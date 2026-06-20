@@ -81,8 +81,11 @@ export async function GET() {
       ...videoFolders.map((f) => listPrefix(s3, `${f}/`)),
     ]);
 
+    // The field pool is mixed media: still images AND short looping clips
+    // (muted .mp4 etc.) dropped into the same prefix. Both flow through the
+    // field; the client renders a <video> for clips and an <img> for images.
     const tiles = tileItems
-      .filter((it) => IMAGE_RE.test(it.key))
+      .filter((it) => IMAGE_RE.test(it.key) || VIDEO_RE.test(it.key))
       .map((it) => urlFor(it.key))
       .sort();
 
