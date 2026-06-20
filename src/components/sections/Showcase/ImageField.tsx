@@ -47,12 +47,29 @@ export function ImageField({
   tiles: string[];
 }) {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Per-card <img> handles — the rAF loop swaps their `src` on cycle
+  // boundaries so each card shows MANY pictures over its life (see frame()).
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Pool size depends on viewport (set once on mount).
   const isMobile =
     typeof window !== "undefined" && window.innerWidth <= 768;
   const N = isMobile ? FIELD.N_MOBILE : FIELD.N_DESKTOP;
+
+  // Deterministic shuffle of the FULL (S3-listed) tile pool. Used for the
+  // initial per-card assignment so the first populated paint already shows a
+  // balanced, varied subset spread across ALL tiles — not just the first N.
+  // Recomputed when the fetched count changes (empty → loaded). Tiles are
+  // client-fetched (empty on the server), so there's no hydration concern;
+  // hash01 just gives a stable spread once the list arrives.
+  const tileOrder = useMemo(
+    () =>
+      Array.from({ length: tiles.length }, (_, k) => k).sort(
+        (a, b) => hash01(a, 53.7) - hash01(b, 53.7),
+      ),
+    [tiles.length],
+  );
 
   // Per-card identity — stable for the life of the pool. A card's tier sets
   // its cycle speed (burst = faster → parallax) and which motion model the
@@ -81,11 +98,13 @@ export function ImageField({
     });
   }, [N]);
 
-  // Maps any card index onto the available tiles (wraps; undefined when empty).
+  // Initial per-card tile: index through the SHUFFLED order so the first
+  // populated paint spreads across the whole pool (not just the first N). The
+  // rAF loop then swaps each card's <img> on cycle boundaries (see frame()).
   // `tiles` is fetched once by the parent (Showcase) from /api/media, so a new
   // batch of arbitrarily-named files dropped into the S3 prefix "just works".
   const tileAt = (i: number) =>
-    tiles.length ? tiles[((i % tiles.length) + tiles.length) % tiles.length] : undefined;
+    tiles.length ? tiles[tileOrder[i % tiles.length]] : undefined;
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -109,6 +128,39 @@ export function ImageField({
       vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
     };
     window.addEventListener("resize", onResize);
+
+    // --- Tile sequencer (shuffle bag) ----------------------------------
+    // Draws every tile exactly once, in a random order, before any repeat —
+    // so the field cycles through the WHOLE pool (balanced, non-repetitive)
+    // instead of pinning each card to one fixed image. Reshuffles each pass
+    // and avoids repeating a tile across the seam. Runtime-only (inside the
+    // effect, never SSR), so Math.random is safe here.
+    const makeBag = () => {
+      const b = tiles.map((_, k) => k);
+      for (let j = b.length - 1; j > 0; j--) {
+        const r = Math.floor(Math.random() * (j + 1));
+        [b[j], b[r]] = [b[r], b[j]];
+      }
+      return b;
+    };
+    let bag = makeBag();
+    let bagPos = 0;
+    let lastDrawn = -1;
+    const drawTile = () => {
+      if (bagPos >= bag.length) {
+        bag = makeBag();
+        bagPos = 0;
+        if (bag.length > 1 && bag[0] === lastDrawn) {
+          [bag[0], bag[1]] = [bag[1], bag[0]];
+        }
+      }
+      lastDrawn = bag[bagPos++];
+      return lastDrawn;
+    };
+    // Per-card last-seen cycle. Initialised lazily (null) so each card KEEPS
+    // its initially-rendered tile for its first observed cycle, then swaps on
+    // every boundary thereafter.
+    const lastCycle: (number | null)[] = new Array(N).fill(null);
 
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
@@ -141,6 +193,18 @@ export function ImageField({
         const phaseGlobal = advance * c.speed + c.offset;
         const cycle = Math.floor(phaseGlobal);
         const phase = phaseGlobal - cycle;
+
+        // On each cycle boundary the card respawns — swap in a fresh tile from
+        // the shuffle bag so one card shows many different pictures over time
+        // and the whole pool is exercised. The swap happens at phase≈0 where
+        // opacity is ~0 (fade-in not started), so it's never visible mid-frame.
+        if (lastCycle[i] === null) {
+          lastCycle[i] = cycle; // adopt initial cycle, keep the rendered tile
+        } else if (cycle !== lastCycle[i]) {
+          lastCycle[i] = cycle;
+          const img = imgRefs.current[i];
+          if (img && tiles.length) img.src = tiles[drawTile()];
+        }
 
         // BASE tier direction: a golden-angle (phyllotaxis) base unique per
         // card index (~137.5° steps) plus small per-cycle jitter — the same
@@ -273,7 +337,7 @@ export function ImageField({
       io.disconnect();
       window.removeEventListener("resize", onResize);
     };
-  }, [reducedMotion, N, cards]);
+  }, [reducedMotion, N, cards, tiles]);
 
   return (
     <div
@@ -339,6 +403,9 @@ export function ImageField({
               {src ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
+                  ref={(el) => {
+                    imgRefs.current[i] = el;
+                  }}
                   src={src}
                   alt=""
                   className="h-full w-full object-cover"
