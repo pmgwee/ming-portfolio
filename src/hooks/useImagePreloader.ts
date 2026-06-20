@@ -7,8 +7,10 @@ export interface PreloadedSequence {
   imagesRef: React.RefObject<HTMLImageElement[]>;
   /** 0 → 1 load progress, drives the loading bar. */
   progress: number;
-  /** True once every frame has loaded (or errored) — safe to start drawing. */
+  /** True once every frame has settled (loaded OR errored) — safe to start drawing. */
   loaded: boolean;
+  /** 0-based indices of frames that failed to load (onerror). Empty on a clean load. */
+  failedFrames: number[];
 }
 
 /**
@@ -29,24 +31,33 @@ export function useImagePreloader(
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const [progress, setProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [failedFrames, setFailedFrames] = useState<number[]>([]);
 
   useEffect(() => {
     let cancelled = false;
     let done = 0;
+    const failed: number[] = [];
     const imgs: HTMLImageElement[] = [];
 
     const onSettled = () => {
       if (cancelled) return;
       done += 1;
       setProgress(done / frameCount);
-      if (done === frameCount) setLoaded(true);
+      if (done === frameCount) {
+        setLoaded(true);
+        if (failed.length) setFailedFrames([...failed].sort((a, b) => a - b));
+      }
     };
 
     for (let i = 1; i <= frameCount; i++) {
       const img = new Image();
+      const frameIndex = i - 1; // 0-based, matches imagesRef indexing
       img.decoding = "async";
       img.onload = onSettled;
-      img.onerror = onSettled;
+      img.onerror = () => {
+        failed.push(frameIndex);
+        onSettled();
+      };
       img.src = srcFor(i);
       imgs.push(img);
     }
@@ -61,5 +72,5 @@ export function useImagePreloader(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frameCount]);
 
-  return { imagesRef, progress, loaded };
+  return { imagesRef, progress, loaded, failedFrames };
 }

@@ -21,10 +21,12 @@ export function Hero() {
   const tickingRef = useRef(false);
   const currentFrameRef = useRef(-1);
   const prevVisibleRef = useRef("");
+  // Map of frameIndex → nearest loaded frameIndex; null when every frame loaded.
+  const nearestUsableRef = useRef<Int16Array | null>(null);
 
   const [visibleCards, setVisibleCards] = useState<string[]>([]);
 
-  const { imagesRef, progress, loaded } = useImagePreloader(
+  const { imagesRef, progress, loaded, failedFrames } = useImagePreloader(
     FRAME_COUNT,
     frameSrc,
   );
@@ -33,8 +35,17 @@ export function Hero() {
   const drawFrame = useCallback(
     (index: number) => {
       const canvas = canvasRef.current;
-      const img = imagesRef.current?.[index];
-      if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
+      if (!canvas) return;
+
+      let img: HTMLImageElement | undefined = imagesRef.current?.[index];
+      // If this frame failed to load, fall back to the nearest frame that did —
+      // keeps the scrub coherent across gaps instead of freezing on a stale frame.
+      if (!img || !img.complete || img.naturalWidth === 0) {
+        const fallback = nearestUsableRef.current?.[index] ?? -1;
+        img = fallback >= 0 ? imagesRef.current?.[fallback] : undefined;
+      }
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
@@ -150,6 +161,44 @@ export function Hero() {
       window.removeEventListener("resize", onResize);
     };
   }, [resizeCanvas, update]);
+
+  /* Once frames settle, build a nearest-usable lookup so any frame that failed
+     to load falls back to the closest one that did — and loudly warn which frames
+     are missing (a silent gap is exactly what froze the scrub at ~frame 119). */
+  useEffect(() => {
+    if (!loaded) return;
+    if (failedFrames.length === 0) {
+      nearestUsableRef.current = null; // clean load — no fallback needed
+      return;
+    }
+
+    console.warn(
+      `[Hero] ${failedFrames.length}/${FRAME_COUNT} frames failed to load — ` +
+        `scrub will fall back to the nearest loaded frame. Missing:\n` +
+        failedFrames.map((i) => frameSrc(i + 1)).join("\n"),
+    );
+
+    const imgs = imagesRef.current ?? [];
+    const usable = (i: number) => {
+      const im = imgs[i];
+      return !!im && im.complete && im.naturalWidth > 0;
+    };
+    const map = new Int16Array(FRAME_COUNT).fill(-1);
+    // Forward pass: nearest usable frame at or before i.
+    let prev = -1;
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      if (usable(i)) prev = i;
+      map[i] = prev;
+    }
+    // Backward pass: prefer the next usable frame when it's strictly closer.
+    let next = -1;
+    for (let i = FRAME_COUNT - 1; i >= 0; i--) {
+      if (usable(i)) next = i;
+      const before = map[i];
+      if (next >= 0 && (before < 0 || next - i < i - before)) map[i] = next;
+    }
+    nearestUsableRef.current = map;
+  }, [loaded, failedFrames, imagesRef]);
 
   /* Once frames finish loading, force a repaint of the current frame. */
   useEffect(() => {
