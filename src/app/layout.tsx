@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 // CloudFront base for the heavy media (frames, tiles, clips). Inlined at build.
 const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_BASE;
@@ -24,6 +25,7 @@ export default function RootLayout({
             DEPLOYMENT.md). React hoists this <link> into <head>. */}
         {MEDIA_BASE ? <link rel="preconnect" href={MEDIA_BASE} /> : null}
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <Analytics />
       </body>
     </html>
   );
