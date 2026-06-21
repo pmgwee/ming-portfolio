@@ -284,10 +284,17 @@ export function Hero() {
           <div className="relative mx-auto h-48 max-w-[1400px] md:h-44">
             {ANNOTATIONS.map((a) => {
               const visible = visibleCards.includes(a.id);
+              const position = a.position ?? "left";
+              const anchor =
+                position === "right"
+                  ? "right-0"
+                  : position === "center"
+                    ? "left-1/2 -translate-x-1/2"
+                    : "left-0";
               return (
                 <div
                   key={a.id}
-                  className={`absolute bottom-0 left-0 w-[min(92vw,440px)] rounded-xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${
+                  className={`absolute bottom-0 w-[min(92vw,440px)] rounded-xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${anchor} ${
                     visible
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none translate-y-6 opacity-0"

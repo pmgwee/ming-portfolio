@@ -17,6 +17,8 @@ export type Annotation = {
   eyebrow: string;
   title: string;
   body: string;
+  /* Horizontal anchor within the hero — defaults to "left". */
+  position?: "left" | "center" | "right";
 };
 
 /* Scroll-position zones where each annotation card is visible. */
@@ -36,6 +38,7 @@ export const ANNOTATIONS: Annotation[] = [
     eyebrow: "02 — Toolkit",
     title: "A full-stack toolkit.",
     body: "Next.js · React · TypeScript · WebGL · GSAP · Framer Motion. Pixel-precise UI, real-time graphics, and systems that scale.",
+    position: "right",
   },
   {
     id: "work",
@@ -44,5 +47,6 @@ export const ANNOTATIONS: Annotation[] = [
     eyebrow: "03 — Selected work",
     title: "Things I've shipped.",
     body: "Interactive product sites, 3D scrollytelling, and design systems. Currently open to new roles — let's talk.",
+    position: "center",
   },
 ];
