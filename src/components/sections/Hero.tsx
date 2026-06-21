@@ -241,11 +241,11 @@ export function Hero() {
         >
           <EyebrowBadge>Creative Developer · Portfolio</EyebrowBadge>
           <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
-            Hi, I&apos;m <span className="text-gradient">Ming</span>.
+            Hi, I&apos;m Ming
           </h1>
           <p className="mt-5 max-w-[42ch] text-base text-zinc-300 md:text-lg">
             I build cinematic, high-performance web experiences — from 3D
-            scrollytelling to design systems.
+            scrollytelling to awwwards standard using Gen Ai.
           </p>
           <div className="mt-8 flex items-center gap-3">
             <Button href="#work" showArrow>

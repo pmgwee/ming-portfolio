@@ -27,21 +27,21 @@ export function HeroText({
       ref={wrapRef}
       className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
     >
-      <EyebrowBadge>Showreel · 2026</EyebrowBadge>
+      <EyebrowBadge>Portfolio · 2026</EyebrowBadge>
 
       <h1
         ref={h1Ref}
         className="mt-6 max-w-[16ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl"
       >
-        Ming <span className="text-gradient">Vision</span>
+        Ming Vision
       </h1>
 
       <p
         ref={subRef}
         className="mt-5 max-w-[44ch] text-base text-zinc-300 md:text-lg"
       >
-        A reel of real-time 3D, scroll choreography, and interface work — built
-        in the browser, no compromises.
+        {/* A reel of real-time 3D, scroll choreography, and interface work — built
+        in the browser, no compromises. */}
       </p>
 
       <div ref={buttonsRef} className="mt-8 flex items-center gap-3">
