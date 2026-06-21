@@ -43,7 +43,9 @@ effectively immutable (new batches get new filenames), so a 1-year TTL is safe;
 when you *replace* a file in place, invalidate CloudFront (step 7 / 4b).
 ```bash
 CC="public, max-age=31536000, immutable"
-aws s3 sync public/frames        s3://ming-portfolio-media/frames        --include "*.jpg" --cache-control "$CC"
+# Frames live under a versioned prefix (frames/<FRAMES_VERSION>) — see the
+# "Replacing the hero frames" section. Match FRAMES_VERSION in src/lib/hero.ts.
+aws s3 sync public/frames        s3://ming-portfolio-media/frames/v1     --include "*.jpg" --cache-control "$CC"
 aws s3 sync public/temp_pictures s3://ming-portfolio-media/temp_pictures --cache-control "$CC"
 aws s3 sync public/video         s3://ming-portfolio-media/video         --cache-control "$CC"
 ```
@@ -199,11 +201,31 @@ The force-push triggers Vercel's auto-deploy (or click **Redeploy**). Confirm:
 
 ## Hero frame sequence — current state
 `FRAME_COUNT` is **169** ([`src/lib/hero.ts`](src/lib/hero.ts)) and MUST equal the
-number of `frame_XXXX.jpg` files in `s3://…/frames/` (`frame_0001` … `frame_0169`).
-The preload is **blocking** ([`useImagePreloader`](src/hooks/useImagePreloader.ts)):
-the "Loading experience" overlay stays until *every* frame is loaded, so the
-scroll-scrub never lands on a blank/half-loaded frame even if the user scrolls
-immediately. Keep the frame count low + compress the JPGs so this wait stays short.
+number of `frame_XXXX.jpg` files in `s3://…/frames/<FRAMES_VERSION>/`
+(`frame_0001` … `frame_0169`). The preload is **blocking**
+([`useImagePreloader`](src/hooks/useImagePreloader.ts)): the "Loading experience"
+overlay stays until *every* frame is loaded, so the scroll-scrub never lands on a
+blank/half-loaded frame even if the user scrolls immediately. Keep the frame count
+low + compress the JPGs so this wait stays short.
+
+### Replacing the hero frames (versioned — instant, no invalidation)
+Frame URLs are **fixed** (`frame_0001…`) and the JPGs are uploaded `immutable`, so
+re-uploading them *in place* never reaches a returning browser — a CloudFront
+invalidation only clears the edge, not visitors' browser caches. So the frame path
+is **versioned** via `FRAMES_VERSION` in [`src/lib/hero.ts`](src/lib/hero.ts). To
+swap the hero footage:
+1. Extract the new sequence to exactly `FRAME_COUNT` JPGs named `frame_0001.jpg …`.
+2. Upload them to a **new** prefix, e.g. `s3://…/frames/v2/` (keep the immutable
+   `--cache-control`, since a versioned path never needs busting):
+   ```bash
+   CC="public, max-age=31536000, immutable"
+   aws s3 sync ./new-frames s3://ming-portfolio-media/frames/v2 --include "*.jpg" --cache-control "$CC"
+   ```
+3. Bump `export const FRAMES_VERSION = "v2";` in `hero.ts` and redeploy.
+
+A new path = a brand-new URL, so every browser and CloudFront fetch the new frames
+immediately — **no invalidation, no stale cache**. (Old `frames/v1/` can be deleted
+once `v2` is live.)
 
 ### Future optimization (optional, out of scope)
 Converting the sequence to one scrubbed `<video>` (mp4/webm) would cut it from

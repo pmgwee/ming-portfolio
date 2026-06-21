@@ -4,8 +4,16 @@ import { mediaUrl } from "./media";
    MUST equal the number of frame_XXXX.jpg files in S3 (frame_0001 … frame_0169). */
 export const FRAME_COUNT = 169;
 
+/* Frame URLs are fixed (frame_0001…), and the JPGs are uploaded `immutable`, so a
+   browser that cached them won't re-fetch for a year — re-uploading frames in
+   place (even with a CloudFront invalidation) never reaches returning visitors.
+   So we version the PATH instead: bump this and upload the new sequence to
+   s3://…/frames/<this>/. A new path = a brand-new URL = everyone fetches the new
+   frames immediately, with no invalidation and no stale cache. */
+export const FRAMES_VERSION = "v1";
+
 export const frameSrc = (i: number) =>
-  mediaUrl(`/frames/frame_${String(i).padStart(4, "0")}.jpg`);
+  mediaUrl(`/frames/${FRAMES_VERSION}/frame_${String(i).padStart(4, "0")}.jpg`);
 
 /* Hero text finishes fading out by this scroll progress (first 8%). */
 export const HERO_TEXT_FADE_END = 0.08;
