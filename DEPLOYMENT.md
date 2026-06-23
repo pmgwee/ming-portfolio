@@ -231,3 +231,22 @@ once `v2` is live.)
 Converting the sequence to one scrubbed `<video>` (mp4/webm) would cut it from
 tens of MB to a few — a separate change in
 [`Hero.tsx`](src/components/sections/Hero.tsx), not required for this deploy.
+
+Recap of the answer:
+
+- Tiles/videos refresh because each upload gets a new filename = new URL (nothing cached to be stale). Frames don't, because they reuse the same filenames = same URLs + the immutable header → your browser serves them stale.
+- Your CloudFront invalidations clear the CDN edge only, never the browser — that's why they don't fix frames.
+- Both frames and tiles/videos are cached on refresh; neither re-downloads. The video "reloading" look is just <video> re-initializing playback, not a network re-fetch.
+- revalidate (page listing freshness) and CloudFront invalidation (file bytes) are separate layers — no conflict, nothing to remove.
+- 
+Browser cache   →   CloudFront edge (the CDN)   →   S3 (origin)
+(on your disk)      (cache near the visitor)        (the real file)
+
+Warehouse analogy:
+
+S3 = the central warehouse (original stock).
+CloudFront (CDN) = local convenience stores near customers, stocking copies of popular items.
+Browser cache = the customer's pantry at home.
+
+To get an item you check your pantry first, then the nearby store, then the store orders from the warehouse.
+
