@@ -14,8 +14,9 @@ gsap.registerPlugin(ScrollTrigger);
 /**
  * Section 2 — Image fly-through → fullscreen video reveal.
  *
- * One tall Stage whose inner layer is pinned by ScrollTrigger for the whole
- * range. Three stacked layers share a single scrub timeline; the image field
+ * One tall Stage whose inner layer is held in view with CSS `position: sticky`
+ * for the whole range (NOT GSAP's `pin` — see the timeline below for why).
+ * Three stacked layers share a single scrub timeline; the image field
  * (Layer 1) runs its own rAF loop and only its master opacity is on the
  * timeline. See src/lib/showcase.ts for every tunable constant.
  */
@@ -87,8 +88,15 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
             start: "top top",
             end: "bottom bottom",
             scrub: 0.5,
-            pin: pinnedRef.current,
-            anticipatePin: 1,
+            // No GSAP `pin`: the inner layer is held in view with CSS
+            // `position: sticky` instead (see pinnedRef below). GSAP's pin
+            // flips the element relative↔fixed and rebuilds a pin-spacer on
+            // every ScrollTrigger.refresh(); refreshing while scrolled into
+            // the range jerked the full-bleed video panel by ~220vh — which
+            // Vercel Speed Insights flagged as the site's entire CLS (4.69).
+            // Sticky stays in normal flow → zero layout shift, with identical
+            // geometry (the 320vh stage yields the same ~220vh of travel the
+            // pin duration produced, so the scrub mapping is unchanged).
             onUpdate: (self) => {
               // Gate interactivity once the video is essentially full-bleed.
               const s = self.progress >= PHASES.settledAt;
@@ -190,7 +198,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
     >
       <div
         ref={pinnedRef}
-        className="relative h-screen w-full overflow-hidden bg-[#07080c]"
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#07080c]"
       >
         {/* Faint oversized background glow (z0) */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
