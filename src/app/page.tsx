@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/ui/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { Showcase } from "@/components/sections/Showcase/Showcase";
+import { WorksMorph } from "@/components/sections/works/WorksMorph";
 import { NextSection } from "@/components/sections/NextSection";
 import { Footer } from "@/components/sections/Footer";
 import { getShowcaseMedia } from "@/lib/showcase-media";
@@ -18,6 +19,7 @@ export default async function Home() {
       <Navbar />
       <Hero />
       <Showcase media={media} />
+      <WorksMorph />
       <NextSection />
       <Footer />
     </main>
