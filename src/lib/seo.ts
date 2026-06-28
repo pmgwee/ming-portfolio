@@ -3,17 +3,16 @@
  *
  * Everything that feeds <head> tags, the sitemap, robots, the OG image, the
  * web manifest, the footer, and the JSON-LD structured data is derived from
- * `SITE` below, so the site speaks with one consistent voice to crawlers and
- * AI answer engines.
+ * `SITE` below.
  *
- * Positioning: the PRIMARY business is award-standard 3D / creative animated
- * websites (creative technology). AI agents & automation are a secondary,
- * trend-riding offering — present in the copy but never the lead.
+ * Positioning: The absolute PRIMARY focus is building, scaling, and representing
+ * the "Ming" personal and studio brand. This website serves as Ming's official
+ * interactive portfolio — centering Ming as the brand entity, showcasing a core
+ * creative mindset, high-impact Awwwards-quality 3D animation, and advanced
+ * Generative AI implementation.
  *
- * Brand vs. person: the public brand is "Ming Creatives"; the real person is
- * "Gwee Per Ming" (Malaysia order) / "Perming Gwee" (international), also found
- * as "perming" / "gweeperming". All variants are declared so a search for any
- * of them resolves to this site.
+ * Search Intent: Structured heavily around variations like "ming portfolio",
+ * "ming creative", "ming website", and "ming 3d animation".
  */
 export const SITE = {
   /** Canonical origin — must match the version Google indexes (www). No trailing slash. */
@@ -27,76 +26,99 @@ export const SITE = {
   personName: "Perming Gwee",
   givenName: "Per Ming",
   familyName: "Gwee",
+
   /** Every name variant people might search. Drives schema `alternateName`. */
   alternateNames: [
+    "Ming Portfolio",
+    "Ming Creative",
+    "Ming Website",
+    "Ming 3D Animation",
     "Gwee Per Ming",
     "Perming Gwee",
     "gweeperming",
     "perming",
     "Gwee",
-    "Ming Creatives",
     "Ming",
   ],
 
-  /** <title> default — brand first, lead with the main business (3D), AI second. */
-  title: "Ming Creatives — 3D Creative Websites & AI Consultant",
+  /**
+   * <title> default — ~60 characters.
+   * Ming leads as the brand entity. Awwwards frames the quality standard.
+   * Directly addresses "Ming Portfolio" and "Ming Creative" search queries.
+   */
+  title: "Ming Creatives | Awwwards 3D Animation & Generative AI",
 
-  /** ~150–160 chars: brand + name + main business (3D/award) + AI secondary + location. */
+  /**
+   * ~155 chars. Person-first framing — Ming is the subject, not the portfolio.
+   * Hits "Ming Creative", "Ming Website", and "Ming 3D" intent while
+   * positioning Generative AI as the second creative pillar.
+   */
   description:
-    "Ming Creatives is Perming Gwee — a creative technologist in Malaysia crafting award-standard 3D animated websites, plus AI agents & automation when you need them.",
+    "Ming is a Creative Technologist blending Awwwards-Quality 3D animation with Generative AI — building experiences that are as technically precise as they are visually unforgettable.",
 
-  /** Role: leads creative, includes AI. Used in the eyebrow, OG image, Person.jobTitle. */
-  jobTitle: "Creative Technologist & AI Consultant",
+  /**
+   * Three clean brand pillars separated by · — each standalone and searchable.
+   * Awwwards-Standard signals the quality benchmark Ming builds to.
+   */
+  jobTitle:
+    "Creative Technologist · Awwwards-Standard 3D Web Animator · Generative AI Developer",
 
   locale: "en_US",
+
   /** Geographic disambiguation for the entity. */
   location: "Malaysia",
 
   /** X/Twitter @handle without the @. Enables twitter:creator. */
   twitterHandle: "gweeperming",
 
-  /** Google Search Console verification token (the `content` value of the
-   *  google-site-verification meta tag). Emitted via layout metadata. */
+  /** Google Search Console verification token. */
   gscVerification: "VY-sT_74iIU6P13LMHLRgPbYhsEdm9uOKgkpgg_QtFs",
 
-  /** Terms to associate with the brand + person — creative/3D first, AI second. */
+  /**
+   * Keywords optimized for Ming-branded search intent, elevating Generative AI
+   * and Awwwards-quality 3D animation as the two core discovery pillars.
+   */
   keywords: [
+    "ming portfolio",
+    "ming creative",
+    "ming creative portfolio",
+    "ming website",
+    "ming 3d animation",
     "Ming Creatives",
     "Perming Gwee",
     "Gwee Per Ming",
     "gweeperming",
     "perming",
-    "3D website",
-    "creative developer",
-    "creative technologist",
-    "awwwards website",
-    "3D web animation",
-    "scrollytelling",
-    "WebGL",
-    "GSAP",
-    "Next.js",
-    "AI consultant",
-    "AI agent developer",
-    "AI automation",
-    "AI consultant Malaysia",
+    "awwwards 3d animation",
+    "awwwards quality portfolio",
+    "generative AI developer portfolio",
+    "creative technologist portfolio",
+    "3D animated website",
+    "interactive portfolio website",
+    "WebGL developer Malaysia",
+    "AI agents and automation",
+    "GSAP animation",
+    "Next.js portfolio",
   ],
 
-  /** Topics of authority — schema.org `knowsAbout` (a core AEO signal). Creative first. */
+  /**
+   * Topics of authority — schema.org `knowsAbout` (a core AEO signal).
+   * Ordered by brand priority: Generative AI and 3D animation lead.
+   */
   expertise: [
+    "Generative AI integration",
+    "AI agents & automation",
+    "Awwwards-quality 3D animated websites",
     "Creative web development",
     "3D web / WebGL",
-    "Web animation",
+    "Scroll-driven animation",
     "Scrollytelling",
     "GSAP",
     "Next.js",
     "React",
-    "AI agents",
-    "AI automation",
-    "Generative AI",
   ],
 
-  /** Social / profile links — single source for the footer AND schema `sameAs`.
-   *  This is the core AEO/GEO lever: it ties the on-site entity to the wider web. */
+  /** Social / profile links — single source for the footer AND schema `sameAs`. */
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/gweeperming" },
     { label: "GitHub", href: "https://github.com/pmgwee" },
