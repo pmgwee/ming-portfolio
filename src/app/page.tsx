@@ -2,6 +2,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { Showcase } from "@/components/sections/Showcase/Showcase";
 import { NextSection } from "@/components/sections/NextSection";
+import { Footer } from "@/components/sections/Footer";
 import { getShowcaseMedia } from "@/lib/showcase-media";
 
 // Statically prerendered, regenerated hourly (ISR). Resolving the S3 media list
@@ -18,6 +19,7 @@ export default async function Home() {
       <Hero />
       <Showcase media={media} />
       <NextSection />
+      <Footer />
     </main>
   );
 }

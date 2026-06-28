@@ -239,13 +239,14 @@ export function Hero() {
           ref={heroTextRef}
           className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
         >
-          <EyebrowBadge>Creative Developer · Portfolio</EyebrowBadge>
+          <EyebrowBadge>Creative Technologist &amp; AI Consultant</EyebrowBadge>
           <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
             Hi, I&apos;m Ming
           </h1>
-          <p className="mt-5 max-w-[42ch] text-base text-zinc-300 md:text-lg">
-            I build cinematic, high-performance web experiences — from 3D
-            scrollytelling to awwwards standard using Gen Ai.
+          <p className="mt-5 max-w-[44ch] text-base text-zinc-300 md:text-lg">
+            I craft award-standard 3D animated websites — cinematic,
+            high-performance experiences built to win attention — and add AI
+            agents &amp; automation when you need an edge.
           </p>
           <div className="mt-8 flex items-center gap-3">
             <Button href="#work" showArrow>

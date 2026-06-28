@@ -48,8 +48,10 @@ export function Navbar() {
           ))}
         </div>
 
-        <Link
-          href="#contact"
+        <a
+          href="https://wa.me/message/DFUGF3HXISNEF1"
+          target="_blank"
+          rel="noopener noreferrer"
           className="group inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-950 transition-all duration-300 hover:bg-zinc-200"
         >
           Let&apos;s talk
@@ -57,7 +59,7 @@ export function Navbar() {
             weight="bold"
             className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
           />
-        </Link>
+        </a>
       </nav>
     </header>
   );
