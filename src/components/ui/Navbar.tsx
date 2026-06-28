@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "@phosphor-icons/react";
 
 const LINKS = [
@@ -29,11 +30,17 @@ export function Navbar() {
             : "border border-transparent"
         }`}
       >
-        <Link
-          href="#"
-          className="font-mono text-sm font-semibold tracking-tight text-white"
-        >
-          ming<span className="text-indigo-400">.</span>creatives
+        <Link href="#" className="flex items-center gap-2">
+          <Image
+            src="/logo-resized.png"
+            alt="Ming Creatives"
+            width={28}
+            height={28}
+            className="rounded-md"
+          />
+          <span className="font-mono text-sm font-semibold tracking-tight text-white">
+            ming<span className="text-indigo-400">.</span>creatives
+          </span>
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">

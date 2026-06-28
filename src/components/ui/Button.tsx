@@ -6,6 +6,8 @@ interface ButtonProps {
   children: React.ReactNode;
   variant?: "primary" | "secondary";
   showArrow?: boolean;
+  target?: string;
+  rel?: string;
 }
 
 export function Button({
@@ -13,6 +15,8 @@ export function Button({
   children,
   variant = "primary",
   showArrow = false,
+  target,
+  rel,
 }: ButtonProps) {
   const base =
     "group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300";
@@ -22,7 +26,7 @@ export function Button({
       : "border border-white/15 bg-white/[0.04] text-white hover:bg-white/10";
 
   return (
-    <Link href={href} className={`${base} ${styles}`}>
+    <Link href={href} target={target} rel={rel} className={`${base} ${styles}`}>
       {children}
       {showArrow && (
         <ArrowRight

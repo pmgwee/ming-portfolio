@@ -239,21 +239,26 @@ export function Hero() {
           ref={heroTextRef}
           className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
         >
-          <EyebrowBadge>Creative Technologist &amp; AI Consultant</EyebrowBadge>
+          <EyebrowBadge>Creative Technologist · Ming Creatives</EyebrowBadge>
           <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
-            Hi, I&apos;m Ming
+            Hi, I&apos;m Ming.
           </h1>
-          <p className="mt-5 max-w-[44ch] text-base text-zinc-300 md:text-lg">
-            I craft award-standard 3D animated websites — cinematic,
-            high-performance experiences built to win attention — and add AI
-            agents &amp; automation when you need an edge.
+          <p className="mt-5 max-w-[44ch] text-base text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
+            I build Awwwards-level 3D animated websites — cinematic,
+            high-performance experiences that make brands impossible to ignore.
+            This site is the proof.
           </p>
           <div className="mt-8 flex items-center gap-3">
             <Button href="#work" showArrow>
-              View work
+              See my work
             </Button>
-            <Button href="#contact" variant="secondary">
-              Get in touch
+            <Button
+              href="https://wa.me/message/DFUGF3HXISNEF1"
+              variant="secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Let&apos;s build yours
             </Button>
           </div>
 
