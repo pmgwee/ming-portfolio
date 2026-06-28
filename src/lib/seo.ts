@@ -55,8 +55,9 @@ export const SITE = {
   /** X/Twitter @handle without the @. Enables twitter:creator. */
   twitterHandle: "gweeperming",
 
-  /** TODO (optional): Google Search Console verification token (content value). */
-  gscVerification: "",
+  /** Google Search Console verification token (the `content` value of the
+   *  google-site-verification meta tag). Emitted via layout metadata. */
+  gscVerification: "VY-sT_74iIU6P13LMHLRgPbYhsEdm9uOKgkpgg_QtFs",
 
   /** Terms to associate with the brand + person — creative/3D first, AI second. */
   keywords: [
