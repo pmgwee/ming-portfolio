@@ -79,7 +79,7 @@ export function Footer() {
               Ming <span className="text-indigo-400">Creatives</span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-              Awwwards-standard 3D animated websites | AI agents | Automation
+              Awwwards-level 3D animated websites | Generative Ai
               <br />
               Based in {SITE.location}, working worldwide.
             </p>
@@ -88,7 +88,7 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Right — Explore links */}
+          {/* Middle — Explore links */}
           <div className="flex flex-col gap-4">
             <ColTitle>Explore</ColTitle>
             <ul className="flex flex-col gap-3">
@@ -100,6 +100,25 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Right — start a project CTA */}
+          <div className="flex flex-col gap-4">
+            <ColTitle>Start a project</ColTitle>
+            <p className="max-w-[22ch] text-sm leading-relaxed text-zinc-400">
+              Ready to build something that stops the scroll?
+            </p>
+            <a
+              href="https://wa.me/message/DFUGF3HXISNEF1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/4 px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-white/10"
+            >
+              Let&apos;s build yours
+              <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                ↗
+              </span>
+            </a>
           </div>
         </div>
       </div>
