@@ -33,7 +33,7 @@ export function Navbar() {
           href="#"
           className="font-mono text-sm font-semibold tracking-tight text-white"
         >
-          ming<span className="text-indigo-400">.</span>dev
+          ming<span className="text-indigo-400">.</span>creatives
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">

@@ -33,7 +33,7 @@ export function HeroText({
         ref={h1Ref}
         className="mt-6 max-w-[16ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl"
       >
-        Ming Vision
+        Ming Creatives
       </h1>
 
       <p

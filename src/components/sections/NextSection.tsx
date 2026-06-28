@@ -115,7 +115,7 @@ export function NextSection() {
             </p>
           </div>
           <a
-            href="mailto:hello@ming.dev"
+            href="mailto:perminggwee@gmail.com"
             className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-zinc-950 transition-all duration-300 hover:bg-zinc-200"
           >
             Get in touch
