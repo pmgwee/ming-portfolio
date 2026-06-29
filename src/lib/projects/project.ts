@@ -22,6 +22,8 @@ export interface ShowcaseProject {
   category: string;
   /** Live site / demo URL. Empty string = no public link (e.g. mobile app). */
   href?: string;
+  /** Floating UI/UX prototype screenshot shown on card hover (S3 `prototype/`). */
+  prototype?: string;
 }
 
 /** Section-1 hero copy — fades / translates OUT as the fan collapses. */
@@ -47,6 +49,7 @@ export const PROJECTS: ShowcaseProject[] = [
     handle: "@internify",
     category: "Full-Stack / EdTech",
     href: "https://internify-deploy.vercel.app",
+    prototype: mediaUrl("/prototype/Internship_platform.jpg"),
   },
   {
     id: "renowise",
@@ -59,6 +62,7 @@ export const PROJECTS: ShowcaseProject[] = [
     handle: "@renowise",
     category: "Marketplace / PropTech",
     href: "https://renowise-usm.vercel.app/",
+    prototype: mediaUrl("/prototype/Rennovation_marketplace.jpg"),
   },
   {
     id: "study-ai",
@@ -71,6 +75,7 @@ export const PROJECTS: ShowcaseProject[] = [
     handle: "@studyai",
     category: "AI / EdTech",
     href: "https://github.com/pmgwee/Ai-Chatbot",
+    prototype: mediaUrl("/prototype/University_study_ai_agent.jpg"),
   },
   {
     id: "saturun",
@@ -83,6 +88,7 @@ export const PROJECTS: ShowcaseProject[] = [
     handle: "@saturun",
     category: "Mobile / Community",
     href: "https://www.instagram.com/reel/DaIRQ7HTYhY/?igsh=bmFlcndqa3IxNGJp",
+    prototype: mediaUrl("/prototype/Running_community.jpg"),
   },
 ];
 
@@ -124,3 +130,8 @@ export const morphCopy = {
 
 /** Project cover images — the above-the-fold set for preloading. */
 export const PROJECT_IMAGE_URLS: string[] = PROJECTS.map((p) => p.image);
+
+/** Prototype hover-preview images — preloaded so the first hover pops instantly. */
+export const PROTOTYPE_IMAGE_URLS: string[] = PROJECTS.map(
+  (p) => p.prototype,
+).filter((url): url is string => Boolean(url));
