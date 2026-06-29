@@ -57,6 +57,14 @@ export const metadata: Metadata = {
   ...(SITE.gscVerification
     ? { verification: { google: SITE.gscVerification } }
     : {}),
+  // Classic geo meta tags — a local-SEO signal pinning the entity to Muar,
+  // Johor, Malaysia (complements the LocalBusiness JSON-LD).
+  other: {
+    "geo.region": SITE.geo.regionCode,
+    "geo.placename": `${SITE.geo.city}, ${SITE.geo.region}`,
+    "geo.position": `${SITE.geo.latitude};${SITE.geo.longitude}`,
+    ICBM: `${SITE.geo.latitude}, ${SITE.geo.longitude}`,
+  },
 };
 
 export default function RootLayout({

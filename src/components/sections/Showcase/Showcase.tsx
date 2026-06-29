@@ -194,6 +194,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
   return (
     <section
       ref={stageRef}
+      id="showcase"
       className={`showcase-stage relative ${reducedMotion ? "showcase-stage--reduced" : ""}`}
     >
       <div

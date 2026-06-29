@@ -97,9 +97,16 @@ const INVIEW_OPTS = { once: true, amount: 0.3 } as const;
 
 export function WorksMorph() {
   const reduced = useReducedMotion();
-  // Branch BEFORE any morph hook so hook order never changes between renders.
-  if (reduced) return <ReducedMorph />;
-  return <MorphStage />;
+  // `id="works"` lives on this always-rendered wrapper, NOT the inner sections:
+  // the mobile static + desktop pinned variants are mutually `display:none`, so
+  // a shared id on both would be a duplicate that resolves to the hidden one
+  // (which is why the nav/footer "Works" anchor went nowhere). The wrapper has
+  // no layout box of its own, so the anchor lands on whichever variant is shown.
+  return (
+    <div id="works">
+      {reduced ? <ReducedMorph /> : <MorphStage />}
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -130,7 +137,6 @@ function MorphStage() {
       {/* Desktop — pinned, scroll-scrubbed morph. */}
       <section
         ref={sectionRef}
-        id="works"
         className="relative hidden bg-[#07080c] md:block"
         aria-label="Project showcase"
         style={{ height: `${SECTION_VH}vh` }}
@@ -565,7 +571,6 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
     <>
       {/* Section 1 — static fan collapsed to a clean grid. */}
       <section
-        id="works"
         className={`flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center bg-[#07080c] px-6 py-12 text-center${
           hideHero ? " hidden" : ""
         }`}

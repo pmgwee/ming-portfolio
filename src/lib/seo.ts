@@ -54,7 +54,7 @@ export const SITE = {
    * positioning Generative AI as the second creative pillar.
    */
   description:
-    "Ming is a Creative Technologist blending Awwwards-Quality 3D animation with Generative AI — building experiences that are as technically precise as they are visually unforgettable.",
+    "Ming is a Muar, Johor–based Creative Technologist blending Awwwards-quality 3D animation with Generative AI — crafting unforgettable websites for brands and businesses across Muar, Tangkak, Bukit Gambir, and Malaysia.",
 
   /**
    * Three clean brand pillars separated by · — each standalone and searchable.
@@ -67,6 +67,44 @@ export const SITE = {
 
   /** Geographic disambiguation for the entity. */
   location: "Malaysia",
+
+  /**
+   * Local-business geography — powers `address`, `geo`, and `areaServed` in the
+   * structured data (the core LOCAL SEO / "near me" signal). Muar leads as the
+   * primary city: it's the largest, best-known city in the cluster (Tangkak and
+   * Bukit Gambir sit minutes away in adjacent districts), so it carries the most
+   * search volume and anchors the map pin. Coordinates are the Muar city centre
+   * — precise enough for local relevance without publishing a private street
+   * address (this is a service-area business).
+   */
+  geo: {
+    /** Primary, most-searched city — anchors the address + map coordinates. */
+    city: "Muar",
+    /** Adjacent towns also served (Bukit Gambir sits within the Tangkak district). */
+    nearbyTowns: ["Tangkak", "Bukit Gambir"],
+    region: "Johor",
+    /** ISO 3166-2 subdivision code for Johor. */
+    regionCode: "MY-01",
+    country: "Malaysia",
+    countryCode: "MY",
+    /** Muar city centre. */
+    latitude: 2.039272,
+    longitude: 102.569092,
+  },
+
+  /**
+   * Service areas — schema.org `areaServed`. Ordered most-famous city → nearby
+   * towns → state → country so an LLM/AI Overview answering "in Muar / Tangkak /
+   * Bukit Gambir" resolves the strongest local match first, then widens.
+   */
+  areaServed: [
+    "Muar",
+    "Tangkak",
+    "Bukit Gambir",
+    "Ledang",
+    "Johor",
+    "Malaysia",
+  ],
 
   /** X/Twitter @handle without the @. Enables twitter:creator. */
   twitterHandle: "gweeperming",
@@ -99,6 +137,25 @@ export const SITE = {
     "AI agents and automation",
     "GSAP animation",
     "Next.js portfolio",
+    // Local intent — Muar / Tangkak / Bukit Gambir (Johor) "near me" discovery.
+    // Muar leads: it's the largest, most-searched city in the cluster.
+    "web designer Muar",
+    "web developer Muar",
+    "website designer Muar Johor",
+    "3D animation website Muar",
+    "web design Muar",
+    "creative web design Muar Johor",
+    "website developer near me Muar",
+    "web designer Tangkak",
+    "web developer Tangkak",
+    "web designer Bukit Gambir",
+    "web developer Bukit Gambir",
+    "website designer Johor",
+    "web developer Johor",
+    "3D animation website Johor",
+    "animation website developer Muar Tangkak",
+    "portfolio website designer Johor",
+    "best web designer Muar Tangkak Bukit Gambir",
   ],
 
   /**
@@ -110,12 +167,72 @@ export const SITE = {
     "AI agents & automation",
     "Awwwards-quality 3D animated websites",
     "Creative web development",
+    "Web design",
+    "Web development",
+    "Website animation",
+    "Motion design",
     "3D web / WebGL",
     "Scroll-driven animation",
     "Scrollytelling",
     "GSAP",
     "Next.js",
     "React",
+  ],
+
+  /** Primary contact channel — WhatsApp deep link (site-wide CTA). */
+  whatsapp: "https://wa.me/message/DFUGF3HXISNEF1",
+
+  /**
+   * Services offered — schema.org `makesOffer` / `OfferCatalog`. Names mirror
+   * how locals phrase the need ("web designer", "animation developer", "3D
+   * website") so the entity matches the query intent verbatim.
+   */
+  services: [
+    {
+      name: "Cinematic 3D & Immersive Web Design",
+      description:
+        "Standard websites get scrolled past. We build high-performance, Awwwards-grade 3D and WebGL experiences that instantly capture attention and make your brand unforgettable.",
+    },
+    {
+      name: "Reliable Business Solutions & Web Apps",
+      description:
+        "Slow, buggy apps lose clients and kill trust. We engineer secure, production-grade React/Next.js systems tailored to your exact business operations and built to scale flawlessly.",
+    },
+    {
+      name: "AI Agents & Workflow Automation",
+      description:
+        "Stop burning hours on manual, repetitive tasks. We deploy custom multi-agent workflows (n8n) and smart Telegram/WhatsApp bots to automate your operations 24/7.",
+    },
+    {
+      name: "AI-Driven Creative Content & Production",
+      description:
+        "Content creation is slow and expensive. We leverage advanced AIGC tools to rapidly generate hyper-realistic images and cinematic videos that scale your social marketing and branding.",
+    },
+  ],
+
+  /**
+   * FAQ — the literal questions locals ask, answered brand-first. Feeds the
+   * `FAQPage` JSON-LD (an AEO / AI-Overview signal) AND a visible on-page FAQ.
+   * Each answer leads with "Ming Creatives" + the location so an LLM quoting it
+   * surfaces the brand first. Keep answers self-contained and factual.
+   */
+  faq: [
+    {
+      q: "Who can I contact to build a creative, high-standard 3D portfolio or business website in Muar, Tangkak, or Bukit Gambir, Johor?",
+      a: "Ming Creatives — led by Perming Gwee (Gwee Per Ming) — is a creative web studio based in Muar, Johor, serving Muar, Tangkak, Bukit Gambir, and the wider Johor area. It specialises in Awwwards-quality 3D animated websites for businesses, brands, and personal portfolios. The fastest way to get in touch is WhatsApp at https://wa.me/message/DFUGF3HXISNEF1.",
+    },
+    {
+      q: "Who is the top web designer and animation website developer in Muar, Tangkak, or Bukit Gambir?",
+      a: "Ming Creatives (Perming Gwee) is a leading web designer and animation developer based in Muar, Johor, also serving nearby Tangkak and Bukit Gambir. Ming builds Awwwards-standard 3D animated, scroll-driven websites using Next.js, GSAP, and WebGL, and also develops Generative AI features — a rare combination of high-end motion design and full-stack engineering in the Muar area.",
+    },
+    {
+      q: "Who is Gwee Per Ming / Perming Gwee, and where can I find the Ming portfolio?",
+      a: "Perming Gwee (Gwee Per Ming), known as Ming, is a Creative Technologist and founder of Ming Creatives — a Muar, Johor–based studio building Awwwards-quality 3D animated websites and Generative AI experiences. The official Ming portfolio is at https://www.mingcreatives.com, with work also on LinkedIn, GitHub, and Behance.",
+    },
+    {
+      q: "Is there a good web developer in Muar, Tangkak, or Bukit Gambir?",
+      a: "Yes — Ming Creatives (Perming Gwee) is a skilled web developer based in Muar, Johor, serving Muar, Tangkak, and Bukit Gambir. Ming delivers production-grade websites end-to-end — design, animation, full-stack development, and AI integration — to an international, Awwwards-level standard. Contact via WhatsApp at https://wa.me/message/DFUGF3HXISNEF1.",
+    },
   ],
 
   /** Social / profile links — single source for the footer AND schema `sameAs`. */

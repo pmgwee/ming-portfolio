@@ -2,7 +2,9 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { Showcase } from "@/components/sections/Showcase/Showcase";
 import { WorksMorph } from "@/components/sections/works/WorksMorph";
-import { NextSection } from "@/components/sections/NextSection";
+import { WorksShowcase } from "@/components/sections/works/WorksShowcase";
+import { ServicesSection } from "@/components/sections/ServicesSection";
+import { FaqSection } from "@/components/sections/FaqSection";
 import { Footer } from "@/components/sections/Footer";
 import { getShowcaseMedia } from "@/lib/showcase-media";
 
@@ -20,7 +22,9 @@ export default async function Home() {
       <Hero />
       <Showcase media={media} />
       <WorksMorph />
-      <NextSection />
+      <WorksShowcase />
+      <ServicesSection />
+      <FaqSection />
       <Footer />
     </main>
   );

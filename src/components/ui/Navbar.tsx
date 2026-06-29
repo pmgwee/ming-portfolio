@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "@phosphor-icons/react";
+import { scrollToHash } from "@/lib/smooth-scroll";
 
 const LINKS = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Collection", href: "#showcase" },
+  { label: "Works", href: "#works" },
+  { label: "Services", href: "#services" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export function Navbar() {
@@ -21,6 +22,14 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // In-page jumps go through Lenis (see lib/smooth-scroll.ts) — native/Next hash
+  // nav is overridden by Lenis's RAF loop, which is why clicks used to no-op
+  // mid-scroll and produce double-hash URLs.
+  const onNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    scrollToHash(href);
+  };
+
   return (
     <header className="fixed inset-x-0 top-0 z-[60] px-4">
       <nav
@@ -30,7 +39,12 @@ export function Navbar() {
             : "border border-transparent"
         }`}
       >
-        <Link href="#" className="flex items-center gap-2">
+        <a
+          href="#"
+          onClick={(e) => onNavClick(e, "#")}
+          aria-label="Back to top"
+          className="flex items-center gap-2"
+        >
           <Image
             src="/logo-resized.png"
             alt="Ming Creatives"
@@ -41,17 +55,18 @@ export function Navbar() {
           <span className="font-mono text-sm font-semibold tracking-tight text-white">
             ming<span className="text-indigo-400">.</span>creatives
           </span>
-        </Link>
+        </a>
 
         <div className="hidden items-center gap-7 md:flex">
           {LINKS.map((l) => (
-            <Link
+            <a
               key={l.href}
               href={l.href}
+              onClick={(e) => onNavClick(e, l.href)}
               className="text-sm text-zinc-300 transition-colors hover:text-white"
             >
               {l.label}
-            </Link>
+            </a>
           ))}
         </div>
 
@@ -61,7 +76,7 @@ export function Navbar() {
           rel="noopener noreferrer"
           className="group inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-950 transition-all duration-300 hover:bg-zinc-200"
         >
-          Let&apos;s talk
+          Let&apos;s contact
           <ArrowUpRight
             weight="bold"
             className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

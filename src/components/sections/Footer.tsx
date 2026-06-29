@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { SITE } from "@/lib/seo";
+import { scrollToHash } from "@/lib/smooth-scroll";
 
 /**
  * Site footer — social icon row + brand/description on the left, Explore links
@@ -32,9 +33,10 @@ const SOCIAL_ICONS: Record<string, Icon> = {
 };
 
 const EXPLORE = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Collection", href: "#showcase" },
+  { label: "Works", href: "#works" },
+  { label: "Services", href: "#services" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 function ColTitle({ children }: { children: React.ReactNode }) {
@@ -81,7 +83,8 @@ export function Footer() {
             <p className="mt-4 text-sm leading-relaxed text-zinc-400">
               Awwwards-level 3D animated websites | Generative Ai
               <br />
-              Based in {SITE.location}, working worldwide.
+              Based in {SITE.geo.city}, {SITE.geo.region}, {SITE.location} — also
+              serving {SITE.geo.nearbyTowns.join(" & ")}, working worldwide.
             </p>
             <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">
               © {year} Ming Creatives · {SITE.personName}
@@ -94,7 +97,14 @@ export function Footer() {
             <ul className="flex flex-col gap-3">
               {EXPLORE.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} className={linkCls}>
+                  <a
+                    href={l.href}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToHash(l.href);
+                    }}
+                    className={linkCls}
+                  >
                     {l.label}
                   </a>
                 </li>

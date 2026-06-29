@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { setLenis } from "@/lib/smooth-scroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -45,6 +46,10 @@ export function SmoothScrollProvider({
       touchMultiplier: 1.1,
     });
 
+    // Expose the instance so navbar/footer anchor jumps can route through
+    // Lenis (see lib/smooth-scroll.ts for why native hash nav fails here).
+    setLenis(lenis);
+
     // 1) Keep ScrollTrigger in lock-step with Lenis's smoothed position.
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -57,6 +62,7 @@ export function SmoothScrollProvider({
     return () => {
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      setLenis(null);
     };
   }, []);
 
