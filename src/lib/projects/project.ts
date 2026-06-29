@@ -29,7 +29,7 @@ export const heroCopy = {
   title: "Built to ship.",
   titleAccent: "Built to last.",
   subtitle:
-    "Four production platforms I designed, built, and shipped end-to-end — AI agents, real-time marketplaces, and mobile communities.",
+    "From first concept to live deployment. Real products, fully owned by the people we built them for.",
   primaryCta: { label: "Start a project", href: WHATSAPP },
   secondaryCta: { label: "See the work", href: "#work" },
 };
@@ -117,7 +117,7 @@ export const morphCopy = {
   ],
   accentRange: [1, 2, 3, 4],
   subtitle:
-    "From first concept to live deployment — interface, backend, AI, and infrastructure. Real products, in production, owned fully by you.",
+    "User Interface, User Experience, backend, AI, and Infrastructure — I handle the full stack, so you can focus on your product.",
   primaryCta: { label: "Get in touch", href: "https://github.com/pmgwee" },
   secondaryCta: { label: "Let's build yours", href: WHATSAPP },
 };

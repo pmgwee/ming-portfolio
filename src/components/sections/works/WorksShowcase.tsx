@@ -23,7 +23,7 @@ export function WorksShowcase() {
   return (
     <section
       id="work"
-      className="relative z-20 border-t border-white/5 bg-[#07080c] px-6 py-28 md:px-10 md:py-40"
+      className="relative z-20 border-t border-white/5 bg-[#07080c] px-6 py-14 md:px-10 md:py-18"
     >
       <motion.div
         variants={containerVariants}
@@ -39,14 +39,14 @@ export function WorksShowcase() {
           variants={itemVariants}
           className="mt-6 max-w-[20ch] text-4xl font-semibold tracking-tighter md:text-6xl"
         >
-          Four products • All production.
+          Four products • All in production
         </motion.h2>
         <motion.p
           variants={itemVariants}
           className="mt-5 max-w-[52ch] text-lg text-zinc-400"
         >
           EdTech, PropTech, AI, and mobile — each platform solving a real
-          problem, owned by real users.
+          problem, target real users.
         </motion.p>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
