@@ -384,7 +384,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
       {/* Heading — one row, dropped to where the second line used to sit
           (the `mt` leaves the old first-row space as breathing room above). */}
       <motion.div style={{ opacity: headOpacity, y: headY }}>
-        <motion.h1
+        <motion.h2
           className="mt-[1.15em] whitespace-nowrap text-[clamp(2rem,3.6vw+0.4rem,3rem)] font-semibold leading-[1.08] tracking-tighter text-zinc-100"
           initial={false}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
@@ -392,7 +392,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
         >
           {heroCopy.title}{" "}
           {accent && <span className="text-gradient">{accent}</span>}
-        </motion.h1>
+        </motion.h2>
       </motion.div>
 
       {/* Subtitle + buttons */}
@@ -575,10 +575,10 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
           hideHero ? " hidden" : ""
         }`}
       >
-        <h1 className="max-w-2xl text-balance text-[clamp(2rem,3.6vw+0.4rem,3rem)] font-semibold leading-[1.08] tracking-tighter text-zinc-100">
+        <h2 className="max-w-2xl text-balance text-[clamp(2rem,3.6vw+0.4rem,3rem)] font-semibold leading-[1.08] tracking-tighter text-zinc-100">
           {heroCopy.title}{" "}
           <span className="text-gradient">{heroCopy.titleAccent}</span>
-        </h1>
+        </h2>
         <div className="mt-8 grid w-full max-w-md grid-cols-2 gap-3 sm:max-w-xl sm:grid-cols-4">
           {PROJECTS.map((project) => (
             <div

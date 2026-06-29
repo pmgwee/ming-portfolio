@@ -46,7 +46,7 @@ export const SITE = {
    * Ming leads as the brand entity. Awwwards frames the quality standard.
    * Directly addresses "Ming Portfolio" and "Ming Creative" search queries.
    */
-  title: "Ming Creatives | Awwwards 3D Animation & Generative AI",
+  title: "Ming Creatives | Next-Gen 3D Web Animation & Generative AI",
 
   /**
    * ~155 chars. Person-first framing — Ming is the subject, not the portfolio.
@@ -54,7 +54,7 @@ export const SITE = {
    * positioning Generative AI as the second creative pillar.
    */
   description:
-    "Ming is a Muar, Johor–based Creative Technologist blending Awwwards-quality 3D animation with Generative AI — crafting unforgettable websites for brands and businesses across Muar, Tangkak, Bukit Gambir, and Malaysia.",
+    "Ming Creatives builds 3D animated websites with Generative AI for high-growth brands — based in Muar, Johor.Serving brands across Malaysia and nationwide.",
 
   /**
    * Three clean brand pillars separated by · — each standalone and searchable.

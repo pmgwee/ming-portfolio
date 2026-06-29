@@ -430,7 +430,7 @@ export function ImageField({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={src}
-                    alt=""
+                    alt="Creative portfolio visual"
                     className="h-full w-full object-cover"
                     loading="lazy"
                     draggable={false}
@@ -470,7 +470,7 @@ export function ImageField({
                   imgRefs.current[i] = el;
                 }}
                 src={src && !video ? src : undefined}
-                alt=""
+                alt="Creative portfolio visual"
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{ display: video ? "none" : undefined }}
                 loading="lazy"

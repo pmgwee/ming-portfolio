@@ -29,12 +29,12 @@ export function HeroText({
     >
       <EyebrowBadge>Portfolio · 2026</EyebrowBadge>
 
-      <h1
+      <h2
         ref={h1Ref}
         className="mt-6 max-w-[16ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl"
       >
         Ming Creatives
-      </h1>
+      </h2>
 
       <p
         ref={subRef}

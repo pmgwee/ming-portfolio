@@ -83,8 +83,7 @@ export function Footer() {
             <p className="mt-4 text-sm leading-relaxed text-zinc-400">
               Awwwards-level 3D animated websites | Generative Ai
               <br />
-              Based in {SITE.geo.city}, {SITE.geo.region}, {SITE.location} — also
-              serving {SITE.geo.nearbyTowns.join(" & ")}, working worldwide.
+              Based in {SITE.geo.city}, {SITE.geo.region}, {SITE.location} — working worldwide around Malaysia.
             </p>
             <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">
               © {year} Ming Creatives · {SITE.personName}
