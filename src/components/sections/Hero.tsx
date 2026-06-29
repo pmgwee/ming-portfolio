@@ -249,16 +249,21 @@ export function Hero() {
             This site is the proof.
           </p>
           <div className="mt-8 flex items-center gap-3">
-            <Button href="#work" showArrow>
-              See my work
+            <Button
+              href="https://www.linkedin.com/in/gweeperming/"
+              showArrow
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              See my journey
             </Button>
             <Button
-              href="https://wa.me/message/DFUGF3HXISNEF1"
+              href="https://ngl.link/mingcreatives"
               variant="secondary"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Let&apos;s build yours
+              Leave me a comment
             </Button>
           </div>
 

@@ -45,11 +45,21 @@ export function HeroText({
       </p>
 
       <div ref={buttonsRef} className="mt-8 flex items-center gap-3">
-        <Button href="#work" showArrow>
+        <Button
+          href="https://www.instagram.com/perming__/"
+          showArrow
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Watch showreel
         </Button>
-        <Button href="#contact" variant="secondary">
-          Start a project
+        <Button
+          href="https://wa.me/message/DFUGF3HXISNEF1"
+          variant="secondary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Reserve your slot
         </Button>
       </div>
     </div>

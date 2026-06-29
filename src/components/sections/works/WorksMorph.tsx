@@ -402,7 +402,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
         >
           {heroCopy.subtitle}
         </motion.p>
-        <motion.div
+        {/* <motion.div
           className="mt-6 flex flex-wrap items-center justify-center gap-3"
           initial={false}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -423,7 +423,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
           >
             {heroCopy.secondaryCta.label}
           </Button>
-        </motion.div>
+        </motion.div> */}
       </motion.div>
     </div>
   );

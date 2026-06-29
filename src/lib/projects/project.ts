@@ -118,8 +118,8 @@ export const morphCopy = {
   accentRange: [1, 2, 3, 4],
   subtitle:
     "From first concept to live deployment — interface, backend, AI, and infrastructure. Real products, in production, owned fully by you.",
-  primaryCta: { label: "Let's build yours", href: WHATSAPP },
-  secondaryCta: { label: "Get in touch", href: "#contact" },
+  primaryCta: { label: "Get in touch", href: "https://github.com/pmgwee" },
+  secondaryCta: { label: "Let's build yours", href: WHATSAPP },
 };
 
 /** Project cover images — the above-the-fold set for preloading. */
