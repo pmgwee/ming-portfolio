@@ -70,7 +70,7 @@ export const PROJECTS: ShowcaseProject[] = [
     tags: ["LangGraph", "Pinecone", "FastAPI", "Next.js"],
     handle: "@studyai",
     category: "AI / EdTech",
-    href: "",
+    href: "https://github.com/pmgwee/Ai-Chatbot",
   },
   {
     id: "saturun",
@@ -82,7 +82,7 @@ export const PROJECTS: ShowcaseProject[] = [
     tags: ["Expo", "React Native", "Expo Router", "Reanimated"],
     handle: "@saturun",
     category: "Mobile / Community",
-    href: "",
+    href: "https://www.instagram.com/reel/DaIRQ7HTYhY/?igsh=bmFlcndqa3IxNGJp",
   },
 ];
 
