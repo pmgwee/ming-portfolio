@@ -31,16 +31,23 @@ export const metadata: Metadata = {
     title: SITE.title,
     description: SITE.description,
     locale: SITE.locale,
-    // og:image (+ width/height/alt) is injected automatically from the
-    // opengraph-image.tsx file convention — with a cache-busting hash — so it
-    // is intentionally NOT set here to avoid a duplicate/un-hashed URL.
+    // Static share/search thumbnail (public/opengraph-thumbnail.jpg). Resolved
+    // to an absolute URL via metadataBase. Changing the URL away from the old
+    // /opengraph-image route also forces crawlers to refetch (cache bust).
+    images: [
+      {
+        url: "/opengraph-thumbnail.jpg",
+        width: 2048,
+        height: 2048,
+        alt: SITE.title,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE.title,
     description: SITE.description,
-    // twitter:image also derives from opengraph-image.tsx (Next falls back to
-    // it when no twitter-image file exists).
+    images: ["/opengraph-thumbnail.jpg"],
     ...(SITE.twitterHandle ? { creator: `@${SITE.twitterHandle}` } : {}),
   },
   robots: {

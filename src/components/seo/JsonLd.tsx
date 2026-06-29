@@ -16,7 +16,7 @@ export function JsonLd() {
   const orgId = `${SITE.url}/#organization`;
   const siteId = `${SITE.url}/#website`;
   const faqId = `${SITE.url}/#faq`;
-  const image = absoluteUrl("/logo.jpg"); // illustration → represents the person
+  const image = absoluteUrl("/opengraph-thumbnail.jpg"); // entity image for rich results
   const logoUrl = absoluteUrl("/icon.png"); // crystal "M" → the brand logo mark
   const profiles = sameAs();
 
