@@ -243,7 +243,7 @@ export function Hero() {
           <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
             Hi, I&apos;m Ming.
           </h1>
-          <p className="mt-5 max-w-[44ch] text-base text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
+          <p className="mt-5 max-w-[72ch] text-base text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
             I build Awwwards-level 3D animated websites — cinematic,
             high-performance experiences that make brands impossible to ignore.
             This site is the proof.
