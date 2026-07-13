@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ming Creatives — 商业成长方案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 900px;
+    height: 1200px;
+    background: #040404;
+    font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .poster {
+    position: relative;
+    width: 900px;
+    height: 1200px;
+    background: #040404;
+    overflow: hidden;
+  }
+
+  /* ── BACKGROUND LAYERS ── */
+  .bg-noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
+  }
+
+  .bg-glow-top {
+    position: absolute;
+    top: -160px;
+    left: -100px;
+    width: 700px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(34,197,94,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .bg-glow-bottom {
+    position: absolute;
+    bottom: -120px;
+    right: -80px;
+    width: 600px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(34,197,94,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* diagonal accent line */
+  .accent-line {
+    position: absolute;
+    top: 0;
+    right: 160px;
+    width: 1px;
+    height: 340px;
+    background: linear-gradient(to bottom, transparent, rgba(34,197,94,0.25), transparent);
+    pointer-events: none;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    position: relative;
+    z-index: 10;
+    padding: 58px 64px 52px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── NAV BAR ── */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 54px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .logo-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    object-fit: contain;
+  }
+
+  .wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.92);
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 0.5px solid rgba(34,197,94,0.3);
+    border-radius: 100px;
+    padding: 5px 13px;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: rgba(34,197,94,0.8);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 42px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .eyebrow-line {
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: #22c55e;
+    opacity: 0.7;
+  }
+
+  .eyebrow-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(34,197,94,0.85);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .headline {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+
+  .headline .en {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 54px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.12);
+    display: block;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
+    margin-top: 4px;
+  }
+
+  .sub {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.28);
+    letter-spacing: 0.12em;
+    margin-top: 12px;
+  }
+
+  /* ── PRICING TABLE ── */
+  .table-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 36px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .table-head {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    padding: 15px 28px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.015);
+  }
+
+  .th {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .th:last-child { text-align: right; }
+
+  .table-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 4px 0;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    padding: 15px 28px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.04);
+    align-items: center;
+    transition: background 0.15s;
+  }
+
+  .row:last-child { border-bottom: none; }
+
+  .row-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.2);
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .row-name {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14.5px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.68);
+    display: flex;
+    align-items: center;
+  }
+
+  .row-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── TOTAL SECTION ── */
+  .totals {
+    border-top: 0.5px solid rgba(255,255,255,0.07);
+  }
+
+  .market-row {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    padding: 16px 28px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.15);
+  }
+
+  .market-label {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .market-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    text-align: right;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,255,255,0.15);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .today-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 22px 28px;
+    background: rgba(34,197,94,0.04);
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .today-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, #22c55e, rgba(34,197,94,0.3));
+  }
+
+  .today-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .today-label {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #22c55e;
+  }
+
+  .savings-chip {
+    background: rgba(34,197,94,0.1);
+    border: 0.5px solid rgba(34,197,94,0.2);
+    border-radius: 100px;
+    padding: 4px 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(34,197,94,0.7);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .today-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #22c55e;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .footer-left { flex: 1; }
+
+  .tagline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.88);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+
+  .tagline .italic {
+    font-style: italic;
+    color: rgba(255,255,255,0.28);
+  }
+
+  .footer-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer-url {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-divider {
+    width: 1px;
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .footer-wa {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.06em;
+  }
+
+  /* QR */
+  .qr-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .qr-frame {
+    width: 108px;
+    height: 108px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qr-frame img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .qr-label {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <!-- Background layers -->
+  <div class="bg-noise"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow-top"></div>
+  <div class="bg-glow-bottom"></div>
+  <div class="accent-line"></div>
+
+  <div class="content">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="brand">
+        <img
+          class="logo-img"
+          src="https://www.mingcreatives.com/_next/image?url=%2Flogo-resized.png&w=64&q=75"
+          alt="Ming Creatives"
+          crossorigin="anonymous"
+        >
+        <span class="wordmark">ming.creatives</span>
+      </div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        限时专属方案
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Business Growth Plan · 2026</span>
+      </div>
+      <h1 class="headline">
+        商业成长方案
+        <span class="en">Priced to grow.</span>
+      </h1>
+      <p class="sub">逐项拆解 · 透明定价 · 价值最大化</p>
+    </div>
+
+    <!-- Pricing Table -->
+    <div class="table-wrap">
+      <div class="table-head">
+        <span class="th">项目</span>
+        <span class="th">单独购买价格</span>
+      </div>
+
+      <div class="table-body">
+        <div class="row">
+          <span class="row-name">
+            <span class="row-num">01</span>
+            5页专业网站
+          </span>
+          <span class="row-price">RM 4,000</span>
+        </div>
+        <div class="row">
+          <span class="row-name">
+            <span class="row-num">02</span>
+            SEO + GEO + AEO 一次性设置
+          </span>
+          <span class="row-price">RM 1,000</span>
+        </div>
+        <div class="row">
+          <span class="row-name">
+            <span class="row-num">03</span>
+            1个定制功能页面
+          </span>
+          <span class="row-price">RM 1,200</span>
+        </div>
+        <div class="row">
+          <span class="row-name">
+            <span class="row-num">04</span>
+            1支宣传短片
+          </span>
+          <span class="row-price">RM 350</span>
+        </div>
+        <div class="row">
+          <span class="row-name">
+            <span class="row-num">05</span>
+            3个月优先技术支持
+          </span>
+          <span class="row-price">RM 1,000</span>
+        </div>
+      </div>
+
+      <div class="totals">
+        <div class="market-row">
+          <span class="market-label">总市场价值</span>
+          <span class="market-price">RM 7,550</span>
+        </div>
+        <div class="today-row">
+          <div class="today-left">
+            <span class="today-label">今天的价格</span>
+            <span class="savings-chip">节省 RM 3,750</span>
+          </div>
+          <span class="today-price">RM 3,800</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-left">
+        <p class="tagline">
+          Your brand<br>
+          <span class="italic">deserves this.</span>
+        </p>
+        <div class="footer-meta">
+          <span class="footer-url">mingcreatives.com</span>
+          <span class="footer-divider"></span>
+          <span class="footer-wa">WhatsApp to reserve your slot</span>
+        </div>
+      </div>
+
+      <div class="qr-block">
+        <div class="qr-frame">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.mingcreatives.com%2F&color=000000&bgcolor=ffffff&margin=2"
+            alt="Scan to visit mingcreatives.com"
+          >
+        </div>
+        <span class="qr-label">扫码了解更多</span>
+      </div>
+    </footer>
+
+  </div>
+</div>
+</body>
+</html>

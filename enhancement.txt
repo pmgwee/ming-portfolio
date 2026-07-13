@@ -1,0 +1,19 @@
+💡 Optional enhancements (not done — your call)
+Explicit AI-crawler allow rules (GPTBot, ClaudeBot, PerplexityBot) — currently allowed via *, but listing them signals intent for GEO.
+Disallow: /api/ for crawl hygiene.
+location field (e.g. Malaysia) for geographic entity disambiguation.
+
+#4 — Email: should you make a mingcreatives Gmail?
+Better option: a custom-domain email — hello@mingcreatives.com. You already own the domain; set it up free via Cloudflare Email Routing or Zoho Mail (or Google Workspace, paid). A domain email reads far more "high standard" than any @gmail.com and reinforces the brand. It doesn't directly move rankings, but it strengthens trust/E-E-A-T and brand consistency. A mingcreatives@gmail.com is only a fallback. (Your contact link currently uses perminggwee@gmail.com — works fine; swap it once the domain email exists.)
+
+
+this website i created to showcase my portfolio including works/projects , core values ,achievements and my impacts , also to bring out i am focusing on creative mindset
+
+Intention behind :
+1) to hook client /business that might be interested to create their own awwwards level 3D animation website like what they looking now in mingcreatives for their portfolio or business 
+2) i can use this website as the introduction of myself instead of showing them my resume which i can conclude all highlights about myself in a website 
+
+
+To continue NextSection.tsx of current website that showcase my works, i want to clone the ShowcaseMorph components inside the ShowcasePage from @goo-ai/ and work under a new folder called works in components/sections.
+
+Also clone the showcase-content.ts but rename to project.ts , remain only the content parameter regarding to ShowcaseMorph components but write the project content based on the claude.md in current project @lib/projects and currently we only have 4 cards intsead , project photos can fetch from the projects folder on s3 object, rewrite the herocopy and morphcopy to fit and tailor for current project. Meanwhile , change the content and styling(color,theme,classname, so on all regarding design system) title,subtitle,cta button, MORPH_CARDS to mekesure the text displayed and design shown tailor for current project to remain the current awwwards level high standard website quality and continue the impact,intentions ,purpose story telling of current project
