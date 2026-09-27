@@ -8,6 +8,9 @@ export interface EngineeringProject {
   slug: string;
   title: string;
   summary: string;
+  homeLead: string;
+  homeSignal: string;
+  homeSignalLabel: string;
   role: string;
   problem: string;
   contribution: string;
@@ -24,6 +27,9 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     title: "Career Ops",
     summary:
       "An agentic job-search workflow I use to move from role discovery through evaluation, application tailoring, follow-ups, and interview preparation.",
+    homeLead: "A job-search workflow I use to evaluate roles, tailor applications, and manage follow-ups with human review.",
+    homeSignal: "Open-source contributor and operator; two contributions remain open PRs.",
+    homeSignalLabel: "Contribution",
     role: "Contributor and operator, not the original creator",
     problem:
       "A job search spans repeated decisions and handoffs. I wanted a workflow grounded in my profile and CV, while keeping a human review at consequential decision points.",
@@ -58,6 +64,9 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     title: "Personal Always-On AI Agent",
     summary:
       "A governed operations layer around Hermes Agent that coordinates personal workflows while retaining the agent runtime’s native reasoning, memory, and kanban.",
+    homeLead: "A personal agent that turns calendar, mail, and tasks into a morning brief and evening report.",
+    homeSignal: "Two daily reports, running on an always-on Azure VM.",
+    homeSignalLabel: "In operation",
     role: "Architect and operator",
     problem:
       "A general-purpose agent needs personal integrations and operating rules without replacing the underlying agent or granting every workflow the same access.",
@@ -89,6 +98,9 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     title: "Cross-Agent Context Engineering",
     summary:
       "A persistent second brain that carries evidence-cited context between Claude Code and Codex sessions.",
+    homeLead: "A memory system that carries cited project context between Claude Code and Codex sessions.",
+    homeSignal: "96.0% Recall@5 and 0.922 MRR in a 246,750-turn evaluation.",
+    homeSignalLabel: "Measured retrieval",
     role: "System designer and builder",
     problem:
       "Coding-agent sessions lose useful context when work moves between tools or restarts. Raw transcript replay is expensive and does not guarantee relevant, verified recall.",
@@ -121,6 +133,9 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     title: "BersamaAi Community Agents",
     summary:
       "A deployed Discord community bot and automated content pipeline that filters online sources into topic channels and summarizes videos without captions.",
+    homeLead: "Community agents that filter sources, route relevant stories, and summarize videos without captions.",
+    homeSignal: "Curated cards routed to nine Discord channels every three hours.",
+    homeSignalLabel: "In operation",
     role: "Builder and operator",
     problem:
       "A community needs a steady flow of relevant material without relying on someone to manually review every source or transcribe every video.",
@@ -152,6 +167,9 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     title: "INTI-MBA RAG Chatbot",
     summary:
       "A retrieval-augmented study assistant that answers from course materials with citations and keeps its indexed corpus current through scheduled ingestion.",
+    homeLead: "A study assistant that answers course questions with cited source material and updates its own index.",
+    homeSignal: "Four courses; 215+ documents and 3,800+ searchable passages.",
+    homeSignalLabel: "Indexed corpus",
     role: "System designer and builder",
     problem:
       "Students need answers grounded in their course documents, while newly added or changed Canvas materials should not require repeated manual uploads.",

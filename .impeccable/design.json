@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-27T07:50:12Z",
+  "title": "Design System: Ming Creatives Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "night": { "role": "neutral", "displayName": "Night Studio", "canonical": "#07080c", "tonalRamp": ["#07080c", "#17191f", "#292c35", "#424651", "#636875", "#8b909d", "#bdc1ca", "#edeef1"] },
+      "raised-surface": { "role": "neutral", "displayName": "Raised Surface", "canonical": "#101219", "tonalRamp": ["#101219", "#222630", "#353b46", "#4d5662", "#6c7683", "#9199a4", "#bec4cc", "#edf0f2"] },
+      "foreground": { "role": "neutral", "displayName": "Foreground", "canonical": "#f4f4f5", "tonalRamp": ["#202024", "#38383d", "#535359", "#717178", "#929299", "#b4b4bb", "#d5d5da", "#f4f4f5"] },
+      "secondary-text": { "role": "neutral", "displayName": "Secondary Text", "canonical": "#d4d4d8", "tonalRamp": ["#202024", "#38383d", "#535359", "#717178", "#929299", "#b4b4bb", "#d4d4d8", "#f4f4f5"] },
+      "quiet-text": { "role": "neutral", "displayName": "Quiet Text", "canonical": "#a1a1aa", "tonalRamp": ["#202024", "#38383d", "#535359", "#717178", "#929299", "#a1a1aa", "#d5d5da", "#f4f4f5"] },
+      "accent": { "role": "primary", "displayName": "Cool Indigo", "canonical": "#c7d2fe", "tonalRamp": ["#1c2347", "#2b3670", "#40509c", "#6173c3", "#8799dd", "#aabaf0", "#c7d2fe", "#edf0ff"] },
+      "dispatch-paper": { "role": "neutral", "displayName": "Dispatch Paper", "canonical": "#e7ebec", "tonalRamp": ["#172026", "#27343b", "#3e5058", "#60727a", "#87989e", "#b1bec2", "#d4dddf", "#e7ebec"] },
+      "dispatch-ink": { "role": "neutral", "displayName": "Dispatch Ink", "canonical": "#141a20", "tonalRamp": ["#141a20", "#263038", "#3a4750", "#55646d", "#78878f", "#a0abb1", "#c8d0d3", "#f0f2f3"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Personal identity in the opening viewport." },
+      "headline": { "displayName": "Headline", "purpose": "Section entry and key case-study headings." },
+      "body": { "displayName": "Body", "purpose": "Readable explanations and experience." },
+      "label": { "displayName": "Label", "purpose": "Navigation and controls." }
+    },
+    "shadows": [
+      { "name": "workbench", "value": "0 25px 80px rgba(0,0,0,0.32)", "purpose": "Lift the interactive workbench from the night ground." },
+      { "name": "artifact", "value": "0 12px 36px rgba(0,0,0,0.14)", "purpose": "Separate a readable output from its frame." }
+    ],
+    "motion": [
+      { "name": "control-color", "value": "color 200ms ease", "purpose": "A quick acknowledgement on links and buttons." },
+      { "name": "creative-scrub", "value": "scroll-linked", "purpose": "Reserved for the Side Project, Collections, and Studio Room sequences." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main route on dark sections.",
+      "html": "<button class=\"ds-primary\">Explore AI products →</button>",
+      "css": ".ds-primary{min-height:44px;border:0;border-radius:9999px;background:#f4f4f5;color:#07080c;padding:10px 20px;font:600 14px Geist,Arial,sans-serif;cursor:pointer;transition:background .2s}.ds-primary:hover{background:#d4d4d8}.ds-primary:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting route on dark sections.",
+      "html": "<button class=\"ds-secondary\">Creative collections</button>",
+      "css": ".ds-secondary{min-height:44px;border:1px solid rgba(255,255,255,.25);border-radius:9999px;background:#07080c;color:#f4f4f5;padding:10px 20px;font:600 14px Geist,Arial,sans-serif;cursor:pointer;transition:background .2s}.ds-secondary:hover{background:#222630}.ds-secondary:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}"
+    },
+    {
+      "name": "Workbench Tab",
+      "kind": "button",
+      "description": "One of three labelled views in the product walkthrough.",
+      "html": "<button class=\"ds-tab\" aria-selected=\"true\">The brief</button>",
+      "css": ".ds-tab{min-height:44px;border:0;border-bottom:2px solid #c7d2fe;background:transparent;color:#f4f4f5;padding:10px 12px;font:600 14px Geist,Arial,sans-serif;cursor:pointer}.ds-tab:hover{color:#fff}.ds-tab:focus-visible{outline:2px solid #c7d2fe;outline-offset:-2px}"
+    },
+    {
+      "name": "Evidence Surface",
+      "kind": "card",
+      "refersTo": "evidence-surface",
+      "description": "Light document surface for a sample or verified result.",
+      "html": "<article class=\"ds-evidence\"><small>SAMPLE DISPATCH</small><h2>Good morning, Ming.</h2><p>Your day at a glance.</p></article>",
+      "css": ".ds-evidence{border-radius:12px;background:#e7ebec;color:#141a20;padding:28px;box-shadow:0 12px 36px rgba(0,0,0,.14);font-family:Geist,Arial,sans-serif}.ds-evidence small{font-size:11px;font-weight:700;letter-spacing:.12em}.ds-evidence h2{margin:16px 0;font-size:30px;line-height:1.1;letter-spacing:-.025em}.ds-evidence p{font-size:14px;line-height:1.6}"
+    },
+    {
+      "name": "Project Row",
+      "kind": "custom",
+      "description": "Editorial project summary with a concrete result and case-study route.",
+      "html": "<article class=\"ds-row\"><h2><a href=\"#\">Personal Always-On AI Agent</a></h2><p>A morning brief and evening report from connected work sources.</p></article>",
+      "css": ".ds-row{border-top:1px solid rgba(255,255,255,.12);padding:40px 0;color:#f4f4f5;font-family:Geist,Arial,sans-serif}.ds-row h2{margin:0 0 16px;font-size:28px;letter-spacing:-.025em}.ds-row a{color:inherit;text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:5px}.ds-row a:hover{color:#fff}.ds-row a:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}.ds-row p{max-width:60ch;color:#d4d4d8;line-height:1.6}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working Studio",
+    "overview": "A near-black studio surface gives visual work its cinematic setting. When the page presents engineering evidence, a cool, light document surface brings the result into focus. The composition remains spacious and typographic; dense interfaces are reserved for demonstrations.",
+    "keyCharacteristics": ["Large, plain-language headings in Geist Sans with generous surrounding space.", "Dark charcoal surfaces, restrained cool-indigo controls, and a light evidence surface.", "A wide reading grid for projects and experience; immersive motion in the creative sequence.", "Strong visible focus states and readable static content when motion is reduced."],
+    "rules": [
+      { "name": "The Evidence Contrast Rule", "body": "Use the light surface for an output a visitor should inspect. Keep surrounding controls dark so the result has one clear focal point.", "section": "colors" },
+      { "name": "The Result First Rule", "body": "On constrained screens, the proof artifact appears before supporting source detail. Supporting context remains available through labelled controls.", "section": "layout" }
+    ],
+    "dos": ["Do make the outcome the largest visual element inside a product demonstration.", "Do label sample content and distinguish it from real operating status.", "Do use concise project summaries before deeper architecture and proof.", "Do preserve accessible text and navigation through every motion sequence."],
+    "donts": ["Don't make decorative concept art stand in for a product screenshot or benchmark.", "Don't use the bright output treatment for every card; it marks an inspectable artifact.", "Don't let long animation delay the first engineering evidence."]
+  }
+}

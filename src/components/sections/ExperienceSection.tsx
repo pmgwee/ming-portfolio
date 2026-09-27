@@ -9,17 +9,17 @@ export function ExperienceSection() {
     >
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="max-w-3xl">
-          <p className="text-sm font-medium text-indigo-200">Experience / Education</p>
           <h2
             id="experience-heading"
-            className="mt-3 text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+            className="text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
           >
             Where I&apos;ve worked
           </h2>
           <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-zinc-300 md:text-lg">
-            Engineering delivery at iFAST, creative production at Yierming, and
-            experience working across teams. Yierming Production is separate
-            from Ming Creatives.
+            At iFAST, I built a passport-expiry compliance pipeline and mapped
+            an investor-classification change across account journeys. The
+            experience below includes creative production at Yierming, a
+            separate studio from Ming Creatives.
           </p>
         </div>
 

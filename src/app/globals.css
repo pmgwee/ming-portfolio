@@ -53,13 +53,13 @@ body {
   overflow-x: hidden;
 }
 
-.scroll-animation {
-  height: 560vh;
+.studio-room-scroll {
+  height: 280vh;
 }
 
 @media (max-width: 1024px) {
-  .scroll-animation {
-    height: 490vh;
+  .studio-room-scroll {
+    height: 240vh;
   }
 }
 
@@ -70,8 +70,8 @@ body {
 }
 
 @media (max-width: 768px) {
-  .scroll-animation {
-    height: 420vh;
+  .studio-room-scroll {
+    height: 210vh;
   }
 
   .hero-sticky {
@@ -156,7 +156,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scroll-animation {
+  .studio-room-scroll {
     height: auto;
   }
 

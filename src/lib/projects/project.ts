@@ -21,9 +21,9 @@ export const heroCopy = {
   title: "Built to ship.",
   titleAccent: "Built to last.",
   subtitle:
-    "Selected products and prototypes, with each project’s status clearly labeled.",
+    "Earlier products and prototypes that shaped the systems I build today. Each project's status is clearly labelled.",
   primaryCta: { label: "Start a project", href: WHATSAPP },
-  secondaryCta: { label: "See side projects", href: "#side-project" },
+  secondaryCta: { label: "Explore earlier projects", href: "#earlier-work" },
 };
 
 export const PROJECTS: ShowcaseProject[] = [

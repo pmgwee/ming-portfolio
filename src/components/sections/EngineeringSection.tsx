@@ -8,6 +8,16 @@ import { ENGINEERING_PROJECTS } from "@/lib/engineering-projects";
 
 const PREVIEW_WIDTH = 360;
 const PREVIEW_HEIGHT = 300;
+const FEATURED_ORDER = [
+  "personal-ai-agent",
+  "persistent-second-brain",
+  "bersamaai",
+  "inti-mba-rag",
+  "career-ops",
+];
+const HOME_PROJECTS = [...ENGINEERING_PROJECTS].sort(
+  (a, b) => FEATURED_ORDER.indexOf(a.slug) - FEATURED_ORDER.indexOf(b.slug),
+);
 
 export function EngineeringSection() {
   const reducedMotion = useReducedMotion();
@@ -29,7 +39,7 @@ export function EngineeringSection() {
 
   useEffect(() => {
     if (!previewEnabled) return;
-    ENGINEERING_PROJECTS.forEach((project) => {
+    HOME_PROJECTS.forEach((project) => {
       const image = new Image();
       image.src = `/project-previews/${project.slug}.webp`;
     });
@@ -43,7 +53,7 @@ export function EngineeringSection() {
     pointerY.set(nextY);
   };
 
-  const activeProject = ENGINEERING_PROJECTS.find((project) => project.slug === activeSlug);
+  const activeProject = HOME_PROJECTS.find((project) => project.slug === activeSlug);
 
   return (
     <section
@@ -55,29 +65,27 @@ export function EngineeringSection() {
     >
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="max-w-3xl">
-          <p className="text-sm font-medium text-indigo-200">Selected engineering work</p>
           <h2
             id="engineering-heading"
-            className="mt-3 text-[clamp(2rem,4.2vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+            className="text-[clamp(2rem,4.2vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
           >
-            Production AI systems
+            AI products in use.
           </h2>
           <p className="mt-5 max-w-[64ch] text-base leading-relaxed text-zinc-300 md:text-lg">
-            Systems I&apos;ve built, operated, or contributed to—from always-on
-            agents to retrieval and community automation. Open a case study for
-            the full scope and proof.
+            Five systems, each with a different job. Start with what it does;
+            open the case study for my contribution, architecture, and evidence.
           </p>
         </div>
 
         <div className="mt-12 border-t border-white/15">
-          {ENGINEERING_PROJECTS.map((project, index) => (
+          {HOME_PROJECTS.map((project, index) => (
             <article
               key={project.slug}
-              className="grid gap-5 border-b border-white/10 py-9 md:grid-cols-[minmax(15rem,0.75fr)_minmax(0,1.25fr)] md:gap-12 md:py-11"
+              className="grid gap-5 border-b border-white/10 py-9 md:grid-cols-[minmax(15rem,0.75fr)_minmax(0,1.25fr)] md:gap-12 md:py-12"
             >
               <div>
                 <p className="font-mono text-xs tabular-nums text-indigo-200/80">
-                  {String(index + 1).padStart(2, "0")} / 05
+                  {String(index + 1).padStart(2, "0")} / {String(HOME_PROJECTS.length).padStart(2, "0")}
                 </p>
                 <h3 className="mt-3 max-w-[20ch] text-[clamp(1.5rem,2.4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.035em] text-zinc-100">
                   <Link
@@ -101,18 +109,14 @@ export function EngineeringSection() {
               </div>
 
               <div>
-                <p className="max-w-[65ch] text-base leading-relaxed text-zinc-200 md:text-lg">
-                  {project.summary}
-                </p>
-                <p className="mt-4 max-w-[72ch] text-sm leading-relaxed text-zinc-400">
-                  {project.operation}
-                </p>
-                <p className="mt-5 max-w-[72ch] border-l-2 border-indigo-300/70 pl-4 text-sm font-medium leading-relaxed text-zinc-100 md:text-base">
-                  {project.outcome}
+                <p className="max-w-[58ch] text-lg font-medium leading-snug tracking-[-0.01em] text-zinc-100 md:text-xl">{project.homeLead}</p>
+                <p className="mt-5 flex max-w-[64ch] flex-wrap gap-x-3 gap-y-1 border-t border-white/10 pt-4 text-sm leading-relaxed">
+                  <span className="font-medium text-indigo-200">{project.homeSignalLabel}</span>
+                  <span className="text-zinc-300">{project.homeSignal}</span>
                 </p>
                 <Link
                   href={`/work/${project.slug}`}
-                  className="group mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                  className="group mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
                 >
                   Read case study
                   <ArrowUpRight aria-hidden="true" weight="bold" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -148,7 +152,7 @@ export function EngineeringSection() {
                   height="270"
                   className="aspect-[4/3] w-full object-cover"
                 />
-                <figcaption className="border-t border-white/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-300">
+                <figcaption className="border-t border-white/10 px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-zinc-300">
                   Illustrative concept
                 </figcaption>
               </motion.figure>

@@ -81,7 +81,7 @@ export const SITE = {
     },
     {
       q: "What AI and software work can recruiters explore?",
-      a: "The AI Systems section features Career Ops, a Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, and the INTI-MBA RAG Chatbot. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
+      a: "The AI Products section features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
       q: "Which roles is Gwee Per Ming pursuing?",
