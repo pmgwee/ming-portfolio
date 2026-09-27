@@ -1,5 +1,7 @@
-import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+"use client";
+
+import { ArrowRight } from "@phosphor-icons/react";
+import { scrollToHash } from "@/lib/smooth-scroll";
 
 interface ButtonProps {
   href: string;
@@ -19,21 +21,31 @@ export function Button({
   rel,
 }: ButtonProps) {
   const base =
-    "group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300";
+    "group inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200";
   const styles =
     variant === "primary"
       ? "bg-white text-zinc-950 hover:bg-zinc-200"
-      : "border border-white/15 bg-white/[0.04] text-white hover:bg-white/10";
+      : "border border-white/25 bg-black/40 text-white hover:bg-white/10";
 
   return (
-    <Link href={href} target={target} rel={rel} className={`${base} ${styles}`}>
+    <a
+      href={href}
+      target={target}
+      rel={rel}
+      className={`${base} ${styles}`}
+      onClick={href.startsWith("#") ? (event) => {
+        event.preventDefault();
+        scrollToHash(href);
+      } : undefined}
+    >
       {children}
       {showArrow && (
         <ArrowRight
+          aria-hidden="true"
           weight="bold"
-          className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
+          className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
         />
       )}
-    </Link>
+    </a>
   );
 }

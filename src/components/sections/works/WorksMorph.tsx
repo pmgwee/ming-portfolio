@@ -97,13 +97,13 @@ const INVIEW_OPTS = { once: true, amount: 0.3 } as const;
 
 export function WorksMorph() {
   const reduced = useReducedMotion();
-  // `id="works"` lives on this always-rendered wrapper, NOT the inner sections:
+  // `id="side-project"` lives on this always-rendered wrapper, NOT the inner sections:
   // the mobile static + desktop pinned variants are mutually `display:none`, so
   // a shared id on both would be a duplicate that resolves to the hidden one
   // (which is why the nav/footer "Works" anchor went nowhere). The wrapper has
   // no layout box of its own, so the anchor lands on whichever variant is shown.
   return (
-    <div id="works">
+    <div id="side-project" className="scroll-mt-28">
       {reduced ? <ReducedMorph /> : <MorphStage />}
     </div>
   );
@@ -131,6 +131,17 @@ function MorphStage() {
     <>
       {/* Mobile — static stacked fallback (no pin, no scrub). */}
       <div className="md:hidden">
+        <section
+          aria-label="Project showcase"
+          className="flex min-h-[44svh] flex-col items-center justify-center px-6 pb-10 pt-24 text-center"
+        >
+          <h2 className="max-w-[16ch] text-balance text-[clamp(2rem,3.6vw+0.4rem,3rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-zinc-100">
+            {heroCopy.title} {heroCopy.titleAccent}
+          </h2>
+          <p className="mt-5 max-w-[44ch] text-sm leading-relaxed text-zinc-300">
+            {heroCopy.subtitle}
+          </p>
+        </section>
         <StaticSections hideHero />
       </div>
 
@@ -367,7 +378,6 @@ function CardFace({ project }: { project: ShowcaseProject }) {
 /* ------------------------------------------------------------------ */
 
 function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
-  const accent = heroCopy.titleAccent;
   const headOpacity = useTransform(p, [0, 0.18, 0.3, 1], [1, 1, 0, 0]);
   const headY = useTransform(p, [0, 0.3], [0, -56]);
   const tailOpacity = useTransform(p, [0, 0.12, 0.28, 1], [1, 1, 0, 0]);
@@ -378,7 +388,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
 
   return (
     <div
-      className="absolute inset-0 z-20 flex flex-col items-center justify-between px-6 pb-[15vh] pt-5 text-center"
+      className="absolute inset-0 z-20 flex flex-col items-center justify-between px-6 pb-[15vh] pt-16 text-center"
       style={{ pointerEvents: active ? "auto" : "none" }}
     >
       {/* Heading — one row, dropped to where the second line used to sit
@@ -390,8 +400,7 @@ function HeroText({ p, inView }: { p: MotionValue<number>; inView: boolean }) {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 }}
           transition={{ duration: 0.7, ease: EASE, delay: 0.05 }}
         >
-          {heroCopy.title}{" "}
-          {accent && <span className="text-gradient">{accent}</span>}
+          {heroCopy.title} {heroCopy.titleAccent}
         </motion.h2>
       </motion.div>
 
@@ -471,7 +480,6 @@ function EcommerceText({ p }: { p: MotionValue<number> }) {
                 p={p}
                 index={i}
                 word={word}
-                accent={morphCopy.accentRange.includes(i)}
               />
             ))}
           </h2>
@@ -514,19 +522,17 @@ function HeaderWord({
   p,
   index,
   word,
-  accent,
 }: {
   p: MotionValue<number>;
   index: number;
   word: string;
-  accent: boolean;
 }) {
   const start = 0.5 + index * 0.025;
   const opacity = useTransform(p, [start, start + 0.1, 1], [0, 1, 1]);
   const y = useTransform(p, [start, start + 0.1], [12, 0]);
   return (
     <motion.span
-      className={`mr-[0.25em] inline-block ${accent ? "text-gradient" : ""}`}
+      className="mr-[0.25em] inline-block"
       style={{ opacity, y }}
     >
       {word}
@@ -576,8 +582,7 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
         }`}
       >
         <h2 className="max-w-2xl text-balance text-[clamp(2rem,3.6vw+0.4rem,3rem)] font-semibold leading-[1.08] tracking-tighter text-zinc-100">
-          {heroCopy.title}{" "}
-          <span className="text-gradient">{heroCopy.titleAccent}</span>
+          {heroCopy.title} {heroCopy.titleAccent}
         </h2>
         <div className="mt-8 grid w-full max-w-md grid-cols-2 gap-3 sm:max-w-xl sm:grid-cols-4">
           {PROJECTS.map((project) => (
@@ -618,10 +623,7 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
           </p>
           <h2 className="mt-3 max-w-2xl text-[clamp(1.6rem,2.4vw+0.6rem,2.4rem)] font-semibold leading-[1.1] tracking-tighter text-zinc-100">
             {morphCopy.headerWords.map((word, i) => (
-              <span
-                key={`${word}-${i}`}
-                className={morphCopy.accentRange.includes(i) ? "text-gradient" : ""}
-              >
+              <span key={`${word}-${i}`}>
                 {word}{" "}
               </span>
             ))}

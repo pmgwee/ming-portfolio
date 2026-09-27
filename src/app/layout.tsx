@@ -15,40 +15,27 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
     default: SITE.title,
-    template: `%s — ${SITE.name}`,
+    template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
   keywords: [...SITE.keywords],
-  applicationName: SITE.name,
+  applicationName: `${SITE.name} · ${SITE.studioName}`,
   authors: [{ name: SITE.personName, url: SITE.url }],
   creator: SITE.personName,
-  publisher: SITE.name,
+  publisher: SITE.personName,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: SITE.url,
-    siteName: SITE.name,
+    siteName: `${SITE.name} · ${SITE.studioName}`,
     title: SITE.title,
     description: SITE.description,
     locale: SITE.locale,
-    // Static share/search thumbnail (public/opengraph-thumbnail.jpg). Resolved
-    // to an absolute URL via metadataBase. Changing the URL away from the old
-    // /opengraph-image route also forces crawlers to refetch (cache bust).
-    images: [
-      {
-        url: "/opengraph-thumbnail.jpg",
-        width: 2048,
-        height: 2048,
-        alt: SITE.title,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE.title,
     description: SITE.description,
-    images: ["/opengraph-thumbnail.jpg"],
-    ...(SITE.twitterHandle ? { creator: `@${SITE.twitterHandle}` } : {}),
   },
   robots: {
     index: true,
@@ -64,14 +51,6 @@ export const metadata: Metadata = {
   ...(SITE.gscVerification
     ? { verification: { google: SITE.gscVerification } }
     : {}),
-  // Classic geo meta tags — a local-SEO signal pinning the entity to Muar,
-  // Johor, Malaysia (complements the LocalBusiness JSON-LD).
-  other: {
-    "geo.region": SITE.geo.regionCode,
-    "geo.placename": `${SITE.geo.city}, ${SITE.geo.region}`,
-    "geo.position": `${SITE.geo.latitude};${SITE.geo.longitude}`,
-    ICBM: `${SITE.geo.latitude}, ${SITE.geo.longitude}`,
-  },
 };
 
 export default function RootLayout({
@@ -79,12 +58,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>
+      <body id="top">
         {/* Warm up the CloudFront connection (DNS + TLS) before the media
             requests fire. No crossOrigin — media is fetched non-CORS (see
             DEPLOYMENT.md). React hoists this <link> into <head>. */}
         {MEDIA_BASE ? <link rel="preconnect" href={MEDIA_BASE} /> : null}
         <JsonLd />
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
         <Analytics />
         <SpeedInsights />

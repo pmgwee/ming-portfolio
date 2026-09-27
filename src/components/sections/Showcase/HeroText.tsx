@@ -1,6 +1,5 @@
 "use client";
 
-import { EyebrowBadge } from "@/components/ui/EyebrowBadge";
 import { Button } from "@/components/ui/Button";
 
 /**
@@ -14,12 +13,10 @@ import { Button } from "@/components/ui/Button";
 export function HeroText({
   wrapRef,
   h1Ref,
-  subRef,
   buttonsRef,
 }: {
   wrapRef: React.RefObject<HTMLDivElement | null>;
   h1Ref: React.RefObject<HTMLHeadingElement | null>;
-  subRef: React.RefObject<HTMLParagraphElement | null>;
   buttonsRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
@@ -27,7 +24,7 @@ export function HeroText({
       ref={wrapRef}
       className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
     >
-      <EyebrowBadge>Portfolio · 2026</EyebrowBadge>
+      <p className="text-sm font-medium text-zinc-200">Creative work by Gwee Per Ming</p>
 
       <h2
         ref={h1Ref}
@@ -36,22 +33,12 @@ export function HeroText({
         Ming Creatives
       </h2>
 
-      <p
-        ref={subRef}
-        className="mt-5 max-w-[44ch] text-base text-zinc-300 md:text-lg"
-      >
-        {/* A reel of real-time 3D, scroll choreography, and interface work — built
-        in the browser, no compromises. */}
-      </p>
-
       <div ref={buttonsRef} className="mt-8 flex items-center gap-3">
         <Button
-          href="https://www.instagram.com/perming__/"
+          href="#services"
           showArrow
-          target="_blank"
-          rel="noopener noreferrer"
         >
-          Watch showreel
+          Explore the studio
         </Button>
         <Button
           href="https://wa.me/message/DFUGF3HXISNEF1"
@@ -59,7 +46,7 @@ export function HeroText({
           target="_blank"
           rel="noopener noreferrer"
         >
-          Reserve your slot
+          Start a project
         </Button>
       </div>
     </div>

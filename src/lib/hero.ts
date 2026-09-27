@@ -15,7 +15,6 @@ export const FRAMES_VERSION = "v1";
 export const frameSrc = (i: number) =>
   mediaUrl(`/frames/${FRAMES_VERSION}/frame_${String(i).padStart(4, "0")}.jpg`);
 
-/* Hero text finishes fading out by this scroll progress (first 8%). */
 export const HERO_TEXT_FADE_END = 0.08;
 
 export type Annotation = {
@@ -25,36 +24,35 @@ export type Annotation = {
   eyebrow: string;
   title: string;
   body: string;
-  /* Horizontal anchor within the hero — defaults to "left". */
   position?: "left" | "center" | "right";
 };
 
-/* Scroll-position zones where each annotation card is visible. */
+// Keep the production hero's three scroll beats and timing, with current copy.
 export const ANNOTATIONS: Annotation[] = [
   {
-    id: "intro",
+    id: "systems",
     show: 0.1,
     hide: 0.3,
-    eyebrow: "01 — Ming Creatives",
-    title: "Your brand deserves this.",
-    body: "This isn't a demo — it's the product. I build Awwwards-level 3D animated websites that make brands impossible to ignore.",
+    eyebrow: "01 — Production systems",
+    title: "Beyond the prototype.",
+    body: "Agentic workflows and software designed to keep working after launch.",
   },
   {
-    id: "skill",
+    id: "craft",
     show: 0.38,
     hide: 0.58,
     eyebrow: "02 — The craft",
-    title: "Cinema meets engineering.",
-    body: "The kind of website your visitors explore instead of skim — every movement deliberate, every detail obsessed over. No templates, no shortcuts.",
+    title: "Engineering meets imagination.",
+    body: "Computer Science foundations with a creative technologist's visual instinct.",
     position: "right",
   },
   {
-    id: "work",
+    id: "paths",
     show: 0.66,
     hide: 0.86,
-    eyebrow: "03 — Let's build yours",
-    title: "What should your website say?",
-    body: "Portfolios, product launches, creative studios — I turn your vision into a site that stops the scroll. Let's talk.",
+    eyebrow: "03 — Explore",
+    title: "One person. Two paths.",
+    body: "Explore my AI systems and experience, or discover Ming Creatives' studio work.",
     position: "center",
   },
 ];

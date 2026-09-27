@@ -94,18 +94,19 @@ export function VideoStage({
   const next = useCallback(() => setActiveIndex((i) => (i + 1) % M), [M]);
   const prev = useCallback(() => setActiveIndex((i) => (i - 1 + M) % M), [M]);
 
-  // --- Playback: only the active clip plays; the rest pause (perf). --------
+  // Start video only after its panel is revealed; reduced-motion users get a
+  // still frame until they explicitly choose the video control.
   useEffect(() => {
     videoRefs.current.forEach((v, i) => {
       if (!v) return;
-      if (i === activeIndex) {
+      if (i === activeIndex && settled && !reducedMotion) {
         v.muted = muted;
         void v.play().catch(() => {});
       } else {
         v.pause();
       }
     });
-  }, [activeIndex, muted]);
+  }, [activeIndex, muted, reducedMotion, settled]);
 
   // --- Hover target → fed to the parallax/transform loop on mediaRef. ------
   useEffect(() => {
@@ -206,7 +207,7 @@ export function VideoStage({
               muted
               loop
               playsInline
-              preload={i === 0 ? "auto" : "metadata"}
+              preload={i === 0 && settled && !reducedMotion ? "auto" : "metadata"}
             />
           ))}
         </div>

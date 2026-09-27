@@ -1,45 +1,52 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
-import { EyebrowBadge } from "@/components/ui/EyebrowBadge";
 import { Button } from "@/components/ui/Button";
-import {
-  ANNOTATIONS,
-  FRAME_COUNT,
-  HERO_TEXT_FADE_END,
-  frameSrc,
-} from "@/lib/hero";
+import { ANNOTATIONS, FRAME_COUNT, HERO_TEXT_FADE_END, frameSrc } from "@/lib/hero";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const heroTextRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
-
   const tickingRef = useRef(false);
   const currentFrameRef = useRef(-1);
-  const prevVisibleRef = useRef("");
-  // Map of frameIndex → nearest loaded frameIndex; null when every frame loaded.
+  const previousVisibleRef = useRef("");
   const nearestUsableRef = useRef<Int16Array | null>(null);
-
+  const [motionAllowed, setMotionAllowed] = useState(false);
   const [visibleCards, setVisibleCards] = useState<string[]>([]);
 
-  const { imagesRef, progress, loaded, failedFrames } = useImagePreloader(
-    FRAME_COUNT,
-    frameSrc,
-  );
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = () => setMotionAllowed(!reducedMotion.matches);
+    updateMotion();
+    window.addEventListener("resize", updateMotion);
+    reducedMotion.addEventListener("change", updateMotion);
+    return () => {
+      window.removeEventListener("resize", updateMotion);
+      reducedMotion.removeEventListener("change", updateMotion);
+    };
+  }, []);
 
-  /* Draw one frame, cover-fit + centered, in device-pixel space (DPR-aware). */
+  const frameCount = motionAllowed ? FRAME_COUNT : 1;
+  const { imagesRef, loaded, firstFrameReady, failedFrames } =
+    useImagePreloader(frameCount, frameSrc);
+
+  useEffect(() => {
+    if (motionAllowed || !heroTextRef.current) return;
+    heroTextRef.current.style.opacity = "1";
+    heroTextRef.current.inert = false;
+    previousVisibleRef.current = "";
+    setVisibleCards([]);
+  }, [motionAllowed]);
+
   const drawFrame = useCallback(
     (index: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
       let img: HTMLImageElement | undefined = imagesRef.current?.[index];
-      // If this frame failed to load, fall back to the nearest frame that did —
-      // keeps the scrub coherent across gaps instead of freezing on a stale frame.
       if (!img || !img.complete || img.naturalWidth === 0) {
         const fallback = nearestUsableRef.current?.[index] ?? -1;
         img = fallback >= 0 ? imagesRef.current?.[fallback] : undefined;
@@ -49,13 +56,12 @@ export function Hero() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const cw = canvas.width; // already × dpr
+      const cw = canvas.width;
       const ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
 
       const imgRatio = img.naturalWidth / img.naturalHeight;
       const canvasRatio = cw / ch;
-
       let drawW: number;
       let drawH: number;
       if (canvasRatio > imgRatio) {
@@ -66,77 +72,63 @@ export function Hero() {
         drawW = ch * imgRatio;
       }
 
-      // Mobile: zoom 1.3× to keep the subject prominent on small screens.
       if (window.innerWidth <= 768) {
         drawW *= 1.3;
         drawH *= 1.3;
       }
 
-      const drawX = (cw - drawW) / 2;
-      const drawY = (ch - drawH) / 2;
-      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      ctx.drawImage(img, (cw - drawW) / 2, (ch - drawH) / 2, drawW, drawH);
     },
     [imagesRef],
   );
 
-  /* DPR-aware sizing — internal resolution scaled, CSS size left in px. */
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
     if (currentFrameRef.current >= 0) drawFrame(currentFrameRef.current);
   }, [drawFrame]);
 
-  /* The hot path — runs inside one RAF per scroll burst. */
   const update = useCallback(() => {
+    if (!motionAllowed) return;
+
     const section = sectionRef.current;
     if (!section) return;
-
     const rect = section.getBoundingClientRect();
     const scrollable = section.offsetHeight - window.innerHeight;
-    const progressVal =
-      scrollable > 0
-        ? Math.min(1, Math.max(0, -rect.top / scrollable))
-        : 0;
-
-    // 1) Canvas frame (direct draw, only when the index changes).
+    const progress =
+      scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0;
     const frameIndex = Math.min(
-      FRAME_COUNT - 1,
-      Math.floor(progressVal * FRAME_COUNT),
+      frameCount - 1,
+      Math.floor(progress * frameCount),
     );
+
     if (frameIndex !== currentFrameRef.current) {
       currentFrameRef.current = frameIndex;
       drawFrame(frameIndex);
     }
-
-    // 2) Hero text fade over the first 8% (direct DOM, no React state).
-    if (heroTextRef.current) {
-      const o = Math.max(0, 1 - progressVal / HERO_TEXT_FADE_END);
-      heroTextRef.current.style.opacity = String(o);
-      heroTextRef.current.style.pointerEvents = o < 0.05 ? "none" : "auto";
-    }
-
-    // 3) Scrub progress bar (direct DOM transform).
     if (progressBarRef.current) {
-      progressBarRef.current.style.transform = `scaleX(${progressVal})`;
+      progressBarRef.current.style.transform = `scaleX(${progress})`;
     }
-
-    // 4) Annotation visibility — React state only when the set changes.
+    if (heroTextRef.current) {
+      const opacity = Math.max(0, 1 - progress / HERO_TEXT_FADE_END);
+      heroTextRef.current.style.opacity = String(opacity);
+      heroTextRef.current.inert = opacity < 0.05;
+    }
     const visible = ANNOTATIONS.filter(
-      (a) => progressVal >= a.show && progressVal < a.hide,
-    ).map((a) => a.id);
+      (card) => progress >= card.show && progress < card.hide,
+    ).map((card) => card.id);
     const key = visible.join(",");
-    if (key !== prevVisibleRef.current) {
-      prevVisibleRef.current = key;
+    if (key !== previousVisibleRef.current) {
+      previousVisibleRef.current = key;
       setVisibleCards(visible);
     }
-  }, [drawFrame]);
+  }, [drawFrame, frameCount, motionAllowed]);
 
-  /* Wire up scroll + resize with RAF throttling. */
   useEffect(() => {
     resizeCanvas();
     update();
@@ -162,190 +154,129 @@ export function Hero() {
     };
   }, [resizeCanvas, update]);
 
-  /* Once frames settle, build a nearest-usable lookup so any frame that failed
-     to load falls back to the closest one that did — and loudly warn which frames
-     are missing (a silent gap is exactly what froze the scrub at ~frame 119). */
   useEffect(() => {
-    if (!loaded) return;
-    if (failedFrames.length === 0) {
-      nearestUsableRef.current = null; // clean load — no fallback needed
+    if (!firstFrameReady) return;
+    currentFrameRef.current = motionAllowed ? -1 : 0;
+    resizeCanvas();
+    update();
+  }, [firstFrameReady, motionAllowed, resizeCanvas, update]);
+
+  useEffect(() => {
+    if (!loaded || failedFrames.length === 0) {
+      nearestUsableRef.current = null;
       return;
     }
 
-    console.warn(
-      `[Hero] ${failedFrames.length}/${FRAME_COUNT} frames failed to load — ` +
-        `scrub will fall back to the nearest loaded frame. Missing:\n` +
-        failedFrames.map((i) => frameSrc(i + 1)).join("\n"),
-    );
-
     const imgs = imagesRef.current ?? [];
-    const usable = (i: number) => {
-      const im = imgs[i];
-      return !!im && im.complete && im.naturalWidth > 0;
-    };
-    const map = new Int16Array(FRAME_COUNT).fill(-1);
-    // Forward pass: nearest usable frame at or before i.
-    let prev = -1;
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      if (usable(i)) prev = i;
-      map[i] = prev;
+    const map = new Int16Array(frameCount).fill(-1);
+    let previous = -1;
+    for (let i = 0; i < frameCount; i++) {
+      const img = imgs[i];
+      if (img?.complete && img.naturalWidth > 0) previous = i;
+      map[i] = previous;
     }
-    // Backward pass: prefer the next usable frame when it's strictly closer.
     let next = -1;
-    for (let i = FRAME_COUNT - 1; i >= 0; i--) {
-      if (usable(i)) next = i;
-      const before = map[i];
-      if (next >= 0 && (before < 0 || next - i < i - before)) map[i] = next;
+    for (let i = frameCount - 1; i >= 0; i--) {
+      const img = imgs[i];
+      if (img?.complete && img.naturalWidth > 0) next = i;
+      if (next >= 0 && (map[i] < 0 || next - i < i - map[i])) map[i] = next;
     }
     nearestUsableRef.current = map;
-  }, [loaded, failedFrames, imagesRef]);
-
-  /* Once frames finish loading, force a repaint of the current frame. */
-  useEffect(() => {
-    if (!loaded) return;
     currentFrameRef.current = -1;
-    resizeCanvas();
     update();
-  }, [loaded, resizeCanvas, update]);
+  }, [failedFrames, frameCount, imagesRef, loaded, update]);
 
   return (
-    <section ref={sectionRef} className="scroll-animation relative">
-      <div
-        className="sticky top-0 h-screen w-full overflow-hidden"
-        style={{ willChange: "transform", transform: "translateZ(0)" }}
-      >
-        {/* Frame-sequence canvas */}
+    <section ref={sectionRef} className="scroll-animation relative" aria-labelledby="hero-heading">
+      <div className="hero-sticky relative w-full overflow-hidden bg-[#07080c]">
         <canvas
           ref={canvasRef}
-          className="block h-full w-full"
-          style={{ willChange: "contents", transform: "translateZ(0)" }}
+          aria-hidden="true"
+          className="absolute inset-0 block h-full w-full"
         />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_40%,transparent_25%,rgba(7,8,12,0.68)_100%)]" />
+        <p className="absolute bottom-4 left-6 z-20 text-[10px] text-zinc-300/80 md:left-10">
+          Animated studio artwork · not a portrait
+        </p>
 
-        {/* Cinematic vignette / gradient overlays for text legibility */}
-        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
-        <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(120%_80%_at_50%_40%,transparent_40%,rgba(7,8,12,0.55)_100%)]" />
+        {motionAllowed && (
+          <div aria-hidden="true" className="absolute left-0 top-0 z-20 h-0.5 w-full bg-white/10">
+            <div
+              ref={progressBarRef}
+              className="h-full origin-left bg-indigo-300"
+              style={{ transform: "scaleX(0)" }}
+            />
+          </div>
+        )}
 
-        {/* Scrub progress bar (pinned to top of viewport) */}
-        <div className="absolute left-0 top-0 z-40 h-[3px] w-full bg-white/5">
-          <div
-            ref={progressBarRef}
-            className="h-full origin-left bg-gradient-to-r from-indigo-500 to-violet-500"
-            style={{ transform: "scaleX(0)" }}
-          />
-        </div>
-
-        {/* Hero text — fades out over the first 8% of scroll */}
-        <div
-          ref={heroTextRef}
-          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
-        >
-          <EyebrowBadge>Creative Technologist · Ming Creatives</EyebrowBadge>
-          <h1 className="mt-6 max-w-[15ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl">
-            Hi, I&apos;m Ming.
-          </h1>
-          <p className="mt-5 max-w-[72ch] text-base text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
-            I build Awwwards-level 3D animated websites — cinematic,
-            high-performance experiences that make brands impossible to ignore.
-            This site is the proof.
+        <div ref={heroTextRef} className="absolute inset-0 z-20 mx-auto flex w-full max-w-[1400px] flex-col items-center justify-center px-6 py-24 text-center md:px-10">
+          <p className="text-sm font-medium tracking-[0.12em] text-zinc-200">
+            Production AI Builder <span aria-hidden="true">·</span> Creative Technologist
           </p>
-          <div className="mt-8 flex items-center gap-3">
-            <Button
-              href="https://www.linkedin.com/in/gweeperming/"
-              showArrow
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              See my journey
+          <h1
+            id="hero-heading"
+            className="mt-5 text-[clamp(3rem,8vw,6.75rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-white"
+          >
+            Gwee Per Ming
+          </h1>
+          <p className="mt-6 max-w-[62ch] text-base leading-relaxed text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
+            I build AI systems and software that go beyond the prototype. Through
+            Ming Creatives, I also make cinematic 3D web experiences and visual
+            work for brands.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button href="#ai-systems" showArrow>
+              Explore AI products
             </Button>
-            <Button
-              href="https://ngl.link/mingcreatives"
-              variant="secondary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Leave me a comment
+            <Button href="#showcase" variant="secondary">
+              View collections
             </Button>
           </div>
-
-          {/* Scroll hint */}
-          <motion.div
-            className="absolute bottom-10 flex flex-col items-center gap-2 text-zinc-400"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          <p className="mt-10 max-w-[46ch] text-xs leading-relaxed text-zinc-300">
+            Computer Science graduate · Malaysia
+          </p>
+          <div
+            aria-hidden="true"
+            className="absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-zinc-300/80"
           >
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em]">
-              Scroll
+            <span className="font-mono text-[9px] uppercase tracking-[0.28em]">Scroll</span>
+            <span className="flex h-8 w-5 justify-center rounded-full border border-zinc-400/50 pt-1">
+              <span className="hero-scroll-dot h-1.5 w-1 rounded-full bg-zinc-200" />
             </span>
-            <span className="flex h-8 w-5 justify-center rounded-full border border-zinc-500/60 pt-1.5">
-              <motion.span
-                className="h-1.5 w-1 rounded-full bg-zinc-300"
-                animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
-                transition={{
-                  duration: 1.6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </span>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Annotation cards — CSS transitions, anchored bottom-left */}
-        <div className="absolute inset-x-0 bottom-0 z-30 px-6 pb-10 md:px-10 md:pb-14">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-6 pb-10 md:px-10 md:pb-14">
           <div className="relative mx-auto h-48 max-w-[1400px] md:h-44">
-            {ANNOTATIONS.map((a) => {
-              const visible = visibleCards.includes(a.id);
-              const position = a.position ?? "left";
-              const anchor =
-                position === "right"
-                  ? "right-0"
-                  : position === "center"
-                    ? "left-1/2 -translate-x-1/2"
-                    : "left-0";
+            {motionAllowed && ANNOTATIONS.map((card) => {
+              const visible = visibleCards.includes(card.id);
+              const position = card.position ?? "left";
+              const anchor = position === "right"
+                ? "right-0"
+                : position === "center"
+                  ? "left-1/2 -translate-x-1/2"
+                  : "left-0";
               return (
                 <div
-                  key={a.id}
-                  className={`absolute bottom-0 w-[min(92vw,440px)] rounded-xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl transition-all duration-500 ${anchor} ${
-                    visible
-                      ? "translate-y-0 opacity-100"
-                      : "pointer-events-none translate-y-6 opacity-0"
+                  key={card.id}
+                  aria-hidden={!visible}
+                  className={`absolute bottom-0 w-[min(92vw,440px)] rounded-xl border border-white/15 bg-[#101116]/85 p-6 shadow-2xl backdrop-blur-xl transition-[opacity,transform] duration-500 ${anchor} ${
+                    visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
                   }`}
-                  style={{ boxShadow: "var(--card-shadow)" }}
+                  style={{
+                    transitionDuration: visible ? "500ms, 500ms" : "180ms, 360ms",
+                    transitionDelay: visible ? "0ms, 0ms" : "360ms, 0ms",
+                  }}
                 >
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-indigo-300">
-                    {a.eyebrow}
-                  </div>
-                  <h2 className="mt-2 text-xl font-semibold tracking-tight md:text-2xl">
-                    {a.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                    {a.body}
-                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-indigo-200">{card.eyebrow}</p>
+                  <h2 className="mt-2 text-xl font-semibold tracking-tight text-white md:text-2xl">{card.title}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-200">{card.body}</p>
                 </div>
               );
             })}
           </div>
         </div>
-
-        {/* Loading overlay — blocks until EVERY frame is loaded, so the scrub
-            never lands on a blank/half-loaded frame even if the user scrolls
-            immediately. */}
-        {!loaded && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#07080c]">
-            <div className="font-mono text-[11px] uppercase tracking-[0.35em] text-zinc-400">
-              Loading experience
-            </div>
-            <div className="mt-5 h-px w-56 overflow-hidden bg-white/10">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-[width] duration-200 ease-out"
-                style={{ width: `${Math.round(progress * 100)}%` }}
-              />
-            </div>
-            <div className="mt-3 font-mono text-[10px] tabular-nums text-zinc-500">
-              {Math.round(progress * 100)}%
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

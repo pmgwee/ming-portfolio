@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useReducedMotion,
-} from "framer-motion";
+import { useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import {
   PROJECTS,
@@ -15,162 +10,128 @@ import {
 } from "@/lib/projects/project";
 import { ProjectCursorPreview } from "./ProjectCursorPreview";
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
-  },
-} as const;
-
-// Cursor-follow feel — a touch of lag for the premium spring trail.
 const FOLLOW_SPRING = { stiffness: 260, damping: 28, mass: 0.6 };
 
 export function WorksShowcase() {
   const reduced = useReducedMotion();
   const [canHover, setCanHover] = useState(false);
   const [active, setActive] = useState<ShowcaseProject | null>(null);
-
-  // Raw cursor (viewport coords) → spring-followed for the floating preview.
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springX = useSpring(mouseX, FOLLOW_SPRING);
   const springY = useSpring(mouseY, FOLLOW_SPRING);
   const initRef = useRef(false);
-
-  // The popout is a desktop-only flourish — skip it on touch / reduced motion.
   const enabled = canHover && !reduced;
 
   useEffect(() => {
-    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const update = () => setCanHover(mq.matches);
+    const query = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setCanHover(query.matches);
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
 
-  // Preload prototype images so the first hover pops with no load flash.
   useEffect(() => {
     if (!enabled) return;
     PROTOTYPE_IMAGE_URLS.forEach((url) => {
-      const img = new Image();
-      img.src = url;
+      const image = new Image();
+      image.src = url;
     });
   }, [enabled]);
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (event: React.PointerEvent) => {
     if (!enabled) return;
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-    // Snap the springs to the cursor on the first move so the preview never
-    // slides in from (0,0) on the very first hover.
+    mouseX.set(event.clientX);
+    mouseY.set(event.clientY);
     if (!initRef.current) {
-      springX.jump(e.clientX);
-      springY.jump(e.clientY);
+      springX.jump(event.clientX);
+      springY.jump(event.clientY);
       initRef.current = true;
     }
   };
 
   return (
     <section
-      id="work"
+      id="earlier-work"
+      aria-labelledby="earlier-work-heading"
       onPointerMove={handlePointerMove}
       onMouseLeave={() => setActive(null)}
-      className="relative z-20 border-t border-white/5 bg-[#07080c] px-6 py-14 md:px-10 md:py-18"
+      className="scroll-mt-28 relative z-20 border-t border-white/10 bg-[#07080c] px-6 py-20 md:px-10 md:py-24"
     >
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        className="mx-auto max-w-[1400px]"
-      >
-        <motion.h2
-          variants={itemVariants}
-          className="max-w-[20ch] text-4xl font-semibold tracking-tighter md:text-6xl"
+      <div className="mx-auto w-full max-w-[1400px]">
+        <p className="text-sm font-medium text-indigo-200">Selected archive</p>
+        <h2
+          id="earlier-work-heading"
+          className="mt-3 text-[clamp(2rem,4.2vw,3.75rem)] font-semibold tracking-[-0.04em] text-zinc-100"
         >
-          Four products • All in production
-        </motion.h2>
-        <motion.p
-          variants={itemVariants}
-          className="mt-5 max-w-[52ch] text-lg text-zinc-400"
-        >
-          EdTech, PropTech, AI, and mobile — each platform solving a real
-          problem, target real users.
-        </motion.p>
+          Side projects
+        </h2>
+        <p className="mt-4 max-w-[64ch] text-base leading-relaxed text-zinc-300">
+          Early products and prototypes that shaped the work I build today.
+          Each card shows its current status.
+        </p>
 
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {PROJECTS.map((p) => {
-            const Wrapper = p.href ? "a" : ("div" as "a" | "div");
-            const linkProps = p.href
-              ? { href: p.href, target: "_blank", rel: "noopener noreferrer" }
-              : {};
-            // While one card is hovered, the others recede a touch (focus).
-            const dim = enabled && active !== null && active.id !== p.id;
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {PROJECTS.map((project) => {
+            const card = (
+              <>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-medium text-indigo-200">{project.category}</p>
+                    <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-100">
+                      {project.title}
+                    </h3>
+                  </div>
+                  {project.href ? (
+                    <ArrowUpRight aria-hidden="true" weight="bold" className="size-5 shrink-0 text-zinc-300" />
+                  ) : null}
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-zinc-300">
+                  {project.description}
+                </p>
+                <p className="mt-5 border-t border-white/10 pt-4 text-xs font-medium text-zinc-300">
+                  {project.status}
+                </p>
+                <ul aria-label={`${project.title} technologies`} className="mt-4 flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <li key={tag} className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-zinc-300">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            );
+
             return (
-              <motion.div
-                key={p.id}
-                variants={itemVariants}
-                onMouseEnter={() => {
-                  if (enabled) setActive(p);
-                }}
-                onMouseLeave={() => setActive(null)}
-                className="group flex flex-col justify-between rounded-[20px] border border-white/10 bg-white/[0.03] p-7 transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.05]"
+              <article
+                key={project.id}
+                onMouseEnter={() => enabled && setActive(project)}
+                onFocus={() => enabled && setActive(project)}
+                onBlur={() => setActive(null)}
+                className={`rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] ${
+                  enabled && active && active.id !== project.id ? "opacity-70" : "opacity-100"
+                }`}
                 style={{ boxShadow: "var(--card-shadow)" }}
               >
-                <Wrapper
-                  {...linkProps}
-                  className={`flex flex-col gap-4 transition-opacity duration-300 ${
-                    dim ? "opacity-50" : "opacity-100"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="font-mono text-xs font-semibold uppercase tracking-wider text-indigo-300">
-                      {p.category}
-                    </span>
-                    <ArrowUpRight
-                      weight="bold"
-                      className={`size-5 shrink-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${
-                        p.href ? "text-zinc-400 group-hover:text-white" : "text-zinc-700"
-                      }`}
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold tracking-tight text-zinc-100">
-                    {p.title}
-                  </h3>
-                  <p className="line-clamp-3 text-sm leading-relaxed text-zinc-400">
-                    {p.description}
-                  </p>
-                  <div className="mt-auto flex flex-wrap gap-1.5">
-                    {p.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[10px] text-zinc-400"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </Wrapper>
-              </motion.div>
+                {project.href ? (
+                  <a
+                    href={project.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${project.title}: open public project demo`}
+                    className="block rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                  >
+                    {card}
+                  </a>
+                ) : card}
+              </article>
             );
           })}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Cursor-following prototype preview (desktop / motion-allowed only). */}
       {enabled && (
-        <ProjectCursorPreview
-          active={active}
-          springX={springX}
-          springY={springY}
-        />
+        <ProjectCursorPreview active={active} springX={springX} springY={springY} />
       )}
     </section>
   );

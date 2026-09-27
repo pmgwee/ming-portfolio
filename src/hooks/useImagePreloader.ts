@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 export interface PreloadedSequence {
   /** Cached <img> elements, index 0 = frame 1. */
   imagesRef: React.RefObject<HTMLImageElement[]>;
-  /** 0 → 1 load progress, drives the loading bar. */
-  progress: number;
   /** True once every frame has settled (loaded OR errored) — safe to start drawing. */
   loaded: boolean;
+  /** True as soon as frame one loads, so the canvas can paint before the sequence is ready. */
+  firstFrameReady: boolean;
   /** 0-based indices of frames that failed to load (onerror). Empty on a clean load. */
   failedFrames: number[];
 }
@@ -29,8 +29,8 @@ export function useImagePreloader(
   srcFor: (frame: number) => string,
 ): PreloadedSequence {
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const [progress, setProgress] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [firstFrameReady, setFirstFrameReady] = useState(false);
   const [failedFrames, setFailedFrames] = useState<number[]>([]);
 
   useEffect(() => {
@@ -38,11 +38,13 @@ export function useImagePreloader(
     let done = 0;
     const failed: number[] = [];
     const imgs: HTMLImageElement[] = [];
+    setLoaded(false);
+    setFirstFrameReady(false);
+    setFailedFrames([]);
 
     const onSettled = () => {
       if (cancelled) return;
       done += 1;
-      setProgress(done / frameCount);
       if (done === frameCount) {
         setLoaded(true);
         if (failed.length) setFailedFrames([...failed].sort((a, b) => a - b));
@@ -53,8 +55,13 @@ export function useImagePreloader(
       const img = new Image();
       const frameIndex = i - 1; // 0-based, matches imagesRef indexing
       img.decoding = "async";
-      img.onload = onSettled;
+      img.onload = () => {
+        if (cancelled) return;
+        if (frameIndex === 0) setFirstFrameReady(true);
+        onSettled();
+      };
       img.onerror = () => {
+        if (cancelled) return;
         failed.push(frameIndex);
         onSettled();
       };
@@ -72,5 +79,5 @@ export function useImagePreloader(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frameCount]);
 
-  return { imagesRef, progress, loaded, failedFrames };
+  return { imagesRef, loaded, firstFrameReady, failedFrames };
 }

@@ -1,132 +1,87 @@
-"use client";
-
-import {
-  BehanceLogo,
-  GithubLogo,
-  InstagramLogo,
-  LinkedinLogo,
-  ThreadsLogo,
-  XLogo,
-} from "@phosphor-icons/react";
+import { GithubLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
 import type { Icon } from "@phosphor-icons/react";
+import { AnchorLink } from "@/components/ui/AnchorLink";
 import { SITE } from "@/lib/seo";
-import { scrollToHash } from "@/lib/smooth-scroll";
 
-/**
- * Site footer — social icon row + brand/description on the left, Explore links
- * on the right, with the © line tucked under the description.
- *
- * Doubles as an SEO/GEO surface: it's where the exact brand ("Ming Creatives")
- * and real name ("Perming Gwee") appear in visible body text, and every profile
- * link carries `rel="me"` to reinforce the same-entity signal the JSON-LD
- * `sameAs` declares.
- */
-
-// Brand icons for the social row (Xiaohongshu has no icon → omitted here).
 const SOCIAL_ICONS: Record<string, Icon> = {
   LinkedIn: LinkedinLogo,
   GitHub: GithubLogo,
-  Behance: BehanceLogo,
-  Instagram: InstagramLogo,
-  Threads: ThreadsLogo,
-  X: XLogo,
 };
 
 const EXPLORE = [
-  { label: "Collection", href: "#showcase" },
-  { label: "Works", href: "#works" },
-  { label: "Services", href: "#services" },
-  { label: "FAQ", href: "#faq" },
+  { label: "AI Products", href: "#ai-systems" as const },
+  { label: "Experience", href: "#experience" as const },
+  { label: "Side Project", href: "#side-project" as const },
+  { label: "Collections", href: "#showcase" as const },
+  { label: "Services", href: "#services" as const },
+  { label: "FAQs", href: "#faq" as const },
 ];
 
-function ColTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-white">
-      {children}
-    </h3>
-  );
-}
-
-const linkCls = "text-sm text-zinc-400 transition-colors hover:text-white";
+const linkClass =
+  "text-sm text-zinc-300 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-white/10 bg-[#07080c] px-6 py-16 md:px-10 md:py-20">
-      <div className="mx-auto max-w-[1400px]">
-        <div className="flex flex-col gap-14 md:flex-row md:justify-between md:gap-10">
-          {/* Left — social icons + brand + description + © line */}
-          <div className="max-w-sm">
-            <div className="flex items-center gap-5">
-              {SITE.socials.map((s) => {
-                const LogoIcon = SOCIAL_ICONS[s.label];
-                if (!LogoIcon) return null;
-                return (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer me"
-                    aria-label={s.label}
-                    className="text-zinc-400 transition-colors hover:text-white"
-                  >
-                    <LogoIcon weight="regular" className="size-5" />
-                  </a>
-                );
-              })}
-            </div>
-
-            <div className="mt-8 font-mono text-lg font-semibold tracking-tight text-white">
-              Ming <span className="text-indigo-400">Creatives</span>
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
-              Awwwards-level 3D animated websites | Generative Ai
-              <br />
-              Based in {SITE.geo.city}, {SITE.geo.region}, {SITE.location} — working worldwide around Malaysia.
-            </p>
-            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">
-              © {year} Ming Creatives · {SITE.personName}
-            </p>
+    <footer className="border-t border-white/10 bg-[#07080c] px-6 py-14 md:px-10 md:py-16">
+      <div className="mx-auto grid w-full max-w-[1400px] gap-12 md:grid-cols-[1.2fr_0.8fr_1fr] md:gap-10">
+        <div>
+          <div className="flex items-center gap-5">
+            {SITE.socials.map((social) => {
+              const IconComponent = SOCIAL_ICONS[social.label];
+              if (!IconComponent) return null;
+              return (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  aria-label={`${social.label} profile for Gwee Per Ming`}
+                  className="rounded-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                >
+                  <IconComponent aria-hidden="true" weight="regular" className="size-5" />
+                </a>
+              );
+            })}
           </div>
+          <p className="mt-7 text-base font-semibold tracking-tight text-white">Gwee Per Ming</p>
+          <p className="mt-1 text-sm text-zinc-300">Ming Creatives · creative studio</p>
+          <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-zinc-400">
+            I build AI systems and software. Ming Creatives is my separate
+            studio identity for web experiences, 3D animation, AI workflow
+            automation, and generative-AI creative work.
+          </p>
+          <p className="mt-6 text-xs text-zinc-500">
+            © {year} Gwee Per Ming · Malaysia
+          </p>
+        </div>
 
-          {/* Middle — Explore links */}
-          <div className="flex flex-col gap-4">
-            <ColTitle>Explore</ColTitle>
-            <ul className="flex flex-col gap-3">
-              {EXPLORE.map((l) => (
-                <li key={l.href}>
-                  <a
-                    href={l.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToHash(l.href);
-                    }}
-                    className={linkCls}
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div>
+          <h2 className="text-sm font-semibold text-white">Explore</h2>
+          <ul className="mt-4 space-y-3">
+            {EXPLORE.map((item) => (
+              <li key={item.href}>
+                <AnchorLink href={item.href} className={linkClass}>
+                  {item.label}
+                </AnchorLink>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Right — start a project CTA */}
-          <div className="flex flex-col gap-4">
-            <ColTitle>Start a project</ColTitle>
-            <p className="max-w-[22ch] text-sm leading-relaxed text-zinc-400">
-              Ready to build something that stops the scroll?
-            </p>
-            <a
-              href="https://wa.me/message/DFUGF3HXISNEF1"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/4 px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-white/10"
-            >
-              Let&apos;s build yours
-              <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                ↗
-              </span>
+        <div>
+          <h2 className="text-sm font-semibold text-white">The right conversation</h2>
+          <p className="mt-4 max-w-[34ch] text-sm leading-relaxed text-zinc-400">
+            Engineering teams can explore my systems, experience, and public
+            profiles. Creative clients can start a project with Ming Creatives.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+            <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer me" className={linkClass}>
+              Engineering profile
+            </a>
+            <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Creative inquiry
             </a>
           </div>
         </div>

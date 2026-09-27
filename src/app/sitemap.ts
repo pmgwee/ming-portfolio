@@ -1,14 +1,20 @@
 import type { MetadataRoute } from "next";
+import { ENGINEERING_PROJECTS } from "@/lib/engineering-projects";
 import { SITE } from "@/lib/seo";
 
-// Single-route site → one entry. Served at /sitemap.xml; referenced by robots.ts.
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: SITE.url,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 1,
-    },
+  const pages = [
+    { url: SITE.url, priority: 1 },
+    ...ENGINEERING_PROJECTS.map((project) => ({
+      url: `${SITE.url}/work/${project.slug}`,
+      priority: 0.8,
+    })),
   ];
+
+  return pages.map(({ url, priority }) => ({
+    url,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority,
+  }));
 }

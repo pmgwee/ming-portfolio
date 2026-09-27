@@ -27,7 +27,6 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
   const fieldWrapRef = useRef<HTMLDivElement>(null);
   const heroWrapRef = useRef<HTMLDivElement>(null);
   const h1Ref = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -94,9 +93,8 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
             // every ScrollTrigger.refresh(); refreshing while scrolled into
             // the range jerked the full-bleed video panel by ~220vh — which
             // Vercel Speed Insights flagged as the site's entire CLS (4.69).
-            // Sticky stays in normal flow → zero layout shift, with identical
-            // geometry (the 320vh stage yields the same ~220vh of travel the
-            // pin duration produced, so the scrub mapping is unchanged).
+            // Sticky stays in normal flow → zero layout shift. Scrub distance
+            // is controlled by `.showcase-stage` in global.css.
             onUpdate: (self) => {
               // Gate interactivity once the video is essentially full-bleed.
               const s = self.progress >= PHASES.settledAt;
@@ -129,13 +127,12 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           PHASES.hingeStart,
         )
           .to(
-            [subRef.current, buttonsRef.current],
+            buttonsRef.current,
             {
               y: -32,
               autoAlpha: 0,
               ease: "power3.inOut",
               duration: 0.1,
-              stagger: 0.04,
             },
             PHASES.hingeStart,
           )
@@ -215,7 +212,6 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
         <HeroText
           wrapRef={heroWrapRef}
           h1Ref={h1Ref}
-          subRef={subRef}
           buttonsRef={buttonsRef}
         />
 

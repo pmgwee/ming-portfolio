@@ -5,7 +5,7 @@ import { SITE } from "@/lib/seo";
 // (src/app/icon.png, apple-icon.png) — add the logo files to populate them.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: SITE.name,
+    name: `${SITE.name} · ${SITE.studioName}`,
     short_name: SITE.shortName,
     description: SITE.description,
     start_url: "/",

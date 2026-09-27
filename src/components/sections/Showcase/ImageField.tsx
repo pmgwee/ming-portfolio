@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FIELD, hash01, hashCycle } from "@/lib/showcase";
 
 /** A field tile is a short looping clip (vs. a still image) when it matches. */
@@ -59,10 +59,17 @@ export function ImageField({
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Pool size depends on viewport (set once on mount).
-  const isMobile =
-    typeof window !== "undefined" && window.innerWidth <= 768;
-  const N = isMobile ? FIELD.N_MOBILE : FIELD.N_DESKTOP;
+  // Start with the same count on server and client to keep hydration stable,
+  // then reduce the animation pool on small screens after mount.
+  const [N, setN] = useState<number>(FIELD.N_DESKTOP);
+  useEffect(() => {
+    const viewport = window.matchMedia("(max-width: 768px)");
+    const updatePoolSize = () =>
+      setN(viewport.matches ? FIELD.N_MOBILE : FIELD.N_DESKTOP);
+    updatePoolSize();
+    viewport.addEventListener("change", updatePoolSize);
+    return () => viewport.removeEventListener("change", updatePoolSize);
+  }, []);
 
   // Deterministic shuffle of the FULL (S3-listed) tile pool. Used for the
   // initial per-card assignment so the first populated paint already shows a
