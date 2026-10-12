@@ -53,13 +53,14 @@ body {
   overflow-x: hidden;
 }
 
+/* Original production scrub distances: shortening these speeds up the hero. */
 .scroll-animation {
-  height: 280vh;
+  height: 560vh;
 }
 
 @media (max-width: 1024px) {
   .scroll-animation {
-    height: 240vh;
+    height: 490vh;
   }
 }
 
@@ -71,7 +72,7 @@ body {
 
 @media (max-width: 768px) {
   .scroll-animation {
-    height: 210vh;
+    height: 420vh;
   }
 
   .hero-sticky {
