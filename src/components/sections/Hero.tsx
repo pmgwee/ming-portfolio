@@ -187,7 +187,7 @@ export function Hero() {
   }, [failedFrames, frameCount, imagesRef, loaded, update]);
 
   return (
-    <section id="top" ref={sectionRef} className="scroll-animation relative" aria-labelledby="hero-heading">
+    <section ref={sectionRef} className="scroll-animation relative" aria-labelledby="hero-heading">
       <div className="hero-sticky relative w-full overflow-hidden bg-[#07080c]">
         {/* Keep the opening frame visible while the canvas sequence loads. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
