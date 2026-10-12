@@ -7,11 +7,11 @@ import { AnchorLink } from "@/components/ui/AnchorLink";
 import { SITE } from "@/lib/seo";
 
 const LINKS = [
+  { label: "Collections", href: "#showcase" as const },
+  { label: "Services", href: "#services" as const },
   { label: "AI Products", href: "#ai-systems" as const },
   { label: "Experience", href: "#experience" as const },
   { label: "Side Project", href: "#side-project" as const },
-  { label: "Collections", href: "#showcase" as const },
-  { label: "Services", href: "#services" as const },
 ];
 
 const linkClass =

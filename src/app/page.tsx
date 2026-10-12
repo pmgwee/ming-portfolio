@@ -24,13 +24,13 @@ export default async function Home() {
     <main id="main-content" tabIndex={-1}>
       <Navbar />
       <Hero />
+      <Showcase media={media} />
+      <StudioRoom />
+      <ServicesSection />
       <EngineeringSection />
       <ExperienceSection />
       <WorksMorph />
       <WorksShowcase />
-      <Showcase media={media} />
-      <StudioRoom />
-      <ServicesSection />
       <FaqSection />
       <AudiencePaths />
       <Footer />
