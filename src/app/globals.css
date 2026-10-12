@@ -53,12 +53,12 @@ body {
   overflow-x: hidden;
 }
 
-.studio-room-scroll {
+.scroll-animation {
   height: 280vh;
 }
 
 @media (max-width: 1024px) {
-  .studio-room-scroll {
+  .scroll-animation {
     height: 240vh;
   }
 }
@@ -70,7 +70,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .studio-room-scroll {
+  .scroll-animation {
     height: 210vh;
   }
 
@@ -156,7 +156,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .studio-room-scroll {
+  .scroll-animation {
     height: auto;
   }
 

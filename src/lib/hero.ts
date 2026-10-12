@@ -27,32 +27,32 @@ export type Annotation = {
   position?: "left" | "center" | "right";
 };
 
-// Three short beats in the creative studio room sequence.
+// Keep the production hero's three scroll beats and timing, with current copy.
 export const ANNOTATIONS: Annotation[] = [
   {
-    id: "visuals",
+    id: "systems",
     show: 0.1,
     hide: 0.3,
-    eyebrow: "Studio practice",
-    title: "Built to catch the eye.",
-    body: "Motion and 3D create a visual identity people remember.",
+    eyebrow: "01 — Production systems",
+    title: "Beyond the prototype.",
+    body: "Agentic workflows and software designed to keep working after launch.",
   },
   {
     id: "craft",
     show: 0.38,
     hide: 0.58,
-    eyebrow: "Interaction",
-    title: "Designed to be used.",
-    body: "Creative direction and implementation meet in the same build.",
+    eyebrow: "02 — The craft",
+    title: "Engineering meets imagination.",
+    body: "Computer Science foundations with a creative technologist's visual instinct.",
     position: "right",
   },
   {
-    id: "services",
+    id: "paths",
     show: 0.66,
     hide: 0.86,
-    eyebrow: "Ming Creatives",
-    title: "Bring an idea to life.",
-    body: "Explore the studio's web, animation, and creative production services.",
+    eyebrow: "03 — Explore",
+    title: "One person. Two paths.",
+    body: "Explore my AI systems and experience, or discover Ming Creatives' studio work.",
     position: "center",
   },
 ];

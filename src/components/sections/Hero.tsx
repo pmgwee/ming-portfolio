@@ -1,228 +1,286 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CalendarBlank,
-  EnvelopeSimple,
-  Notepad,
-} from "@phosphor-icons/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { Button } from "@/components/ui/Button";
-
-type View = "brief" | "sources" | "routing";
-
-const VIEWS: { id: View; label: string }[] = [
-  { id: "brief", label: "The brief" },
-  { id: "sources", label: "Source notes" },
-  { id: "routing", label: "How it works" },
-];
-
-const SAMPLE_SOURCES = [
-  {
-    label: "Calendar",
-    detail: "09:30 · Product review / 14:00 · Build time",
-    icon: CalendarBlank,
-  },
-  {
-    label: "Gmail",
-    detail: "Design review notes need a reply",
-    icon: EnvelopeSimple,
-  },
-  {
-    label: "Notion",
-    detail: "Prepare the demo handoff checklist",
-    icon: Notepad,
-  },
-] as const;
+import { ANNOTATIONS, FRAME_COUNT, HERO_TEXT_FADE_END, frameSrc } from "@/lib/hero";
 
 export function Hero() {
-  const [view, setView] = useState<View>("brief");
+  const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const tickingRef = useRef(false);
+  const currentFrameRef = useRef(-1);
+  const previousVisibleRef = useRef("");
+  const nearestUsableRef = useRef<Int16Array | null>(null);
+  const [motionAllowed, setMotionAllowed] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<string[]>([]);
 
-  const changeWithArrow = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    event.preventDefault();
-    const delta = event.key === "ArrowRight" ? 1 : -1;
-    const next = (index + delta + VIEWS.length) % VIEWS.length;
-    setView(VIEWS[next].id);
-    document.getElementById(`brief-tab-${VIEWS[next].id}`)?.focus();
-  };
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotion = () => setMotionAllowed(!reducedMotion.matches);
+    updateMotion();
+    window.addEventListener("resize", updateMotion);
+    reducedMotion.addEventListener("change", updateMotion);
+    return () => {
+      window.removeEventListener("resize", updateMotion);
+      reducedMotion.removeEventListener("change", updateMotion);
+    };
+  }, []);
+
+  const frameCount = motionAllowed ? FRAME_COUNT : 1;
+  const { imagesRef, loaded, firstFrameReady, failedFrames } =
+    useImagePreloader(frameCount, frameSrc);
+
+  useEffect(() => {
+    if (motionAllowed || !heroTextRef.current) return;
+    heroTextRef.current.style.opacity = "1";
+    heroTextRef.current.inert = false;
+    previousVisibleRef.current = "";
+    setVisibleCards([]);
+  }, [motionAllowed]);
+
+  const drawFrame = useCallback(
+    (index: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      let img: HTMLImageElement | undefined = imagesRef.current?.[index];
+      if (!img || !img.complete || img.naturalWidth === 0) {
+        const fallback = nearestUsableRef.current?.[index] ?? -1;
+        img = fallback >= 0 ? imagesRef.current?.[fallback] : undefined;
+      }
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const cw = canvas.width;
+      const ch = canvas.height;
+      ctx.clearRect(0, 0, cw, ch);
+
+      const imgRatio = img.naturalWidth / img.naturalHeight;
+      const canvasRatio = cw / ch;
+      let drawW: number;
+      let drawH: number;
+      if (canvasRatio > imgRatio) {
+        drawW = cw;
+        drawH = cw / imgRatio;
+      } else {
+        drawH = ch;
+        drawW = ch * imgRatio;
+      }
+
+      if (window.innerWidth <= 768) {
+        drawW *= 1.3;
+        drawH *= 1.3;
+      }
+
+      ctx.drawImage(img, (cw - drawW) / 2, (ch - drawH) / 2, drawW, drawH);
+    },
+    [imagesRef],
+  );
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    if (currentFrameRef.current >= 0) drawFrame(currentFrameRef.current);
+  }, [drawFrame]);
+
+  const update = useCallback(() => {
+    if (!motionAllowed) return;
+
+    const section = sectionRef.current;
+    if (!section) return;
+    const rect = section.getBoundingClientRect();
+    const scrollable = section.offsetHeight - window.innerHeight;
+    const progress =
+      scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0;
+    const frameIndex = Math.min(
+      frameCount - 1,
+      Math.floor(progress * frameCount),
+    );
+
+    if (frameIndex !== currentFrameRef.current) {
+      currentFrameRef.current = frameIndex;
+      drawFrame(frameIndex);
+    }
+    if (progressBarRef.current) {
+      progressBarRef.current.style.transform = `scaleX(${progress})`;
+    }
+    if (heroTextRef.current) {
+      const opacity = Math.max(0, 1 - progress / HERO_TEXT_FADE_END);
+      heroTextRef.current.style.opacity = String(opacity);
+      heroTextRef.current.inert = opacity < 0.05;
+    }
+    const visible = ANNOTATIONS.filter(
+      (card) => progress >= card.show && progress < card.hide,
+    ).map((card) => card.id);
+    const key = visible.join(",");
+    if (key !== previousVisibleRef.current) {
+      previousVisibleRef.current = key;
+      setVisibleCards(visible);
+    }
+  }, [drawFrame, frameCount, motionAllowed]);
+
+  useEffect(() => {
+    resizeCanvas();
+    update();
+
+    const onScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(() => {
+        update();
+        tickingRef.current = false;
+      });
+    };
+    const onResize = () => {
+      resizeCanvas();
+      update();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [resizeCanvas, update]);
+
+  useEffect(() => {
+    if (!firstFrameReady) return;
+    currentFrameRef.current = motionAllowed ? -1 : 0;
+    resizeCanvas();
+    update();
+  }, [firstFrameReady, motionAllowed, resizeCanvas, update]);
+
+  useEffect(() => {
+    if (!loaded || failedFrames.length === 0) {
+      nearestUsableRef.current = null;
+      return;
+    }
+
+    const imgs = imagesRef.current ?? [];
+    const map = new Int16Array(frameCount).fill(-1);
+    let previous = -1;
+    for (let i = 0; i < frameCount; i++) {
+      const img = imgs[i];
+      if (img?.complete && img.naturalWidth > 0) previous = i;
+      map[i] = previous;
+    }
+    let next = -1;
+    for (let i = frameCount - 1; i >= 0; i--) {
+      const img = imgs[i];
+      if (img?.complete && img.naturalWidth > 0) next = i;
+      if (next >= 0 && (map[i] < 0 || next - i < i - map[i])) map[i] = next;
+    }
+    nearestUsableRef.current = map;
+    currentFrameRef.current = -1;
+    update();
+  }, [failedFrames, frameCount, imagesRef, loaded, update]);
 
   return (
-    <section
-      id="top"
-      aria-labelledby="hero-heading"
-      className="relative isolate min-h-[100svh] overflow-hidden border-b border-white/10 bg-[#07080c] px-6 pb-20 pt-32 md:px-10 md:pb-24 md:pt-36"
-    >
-      <div aria-hidden="true" className="pointer-events-none absolute -right-32 top-0 h-[42rem] w-[42rem] rounded-full bg-indigo-500/[0.055] blur-[110px]" />
-      <div className="relative mx-auto grid w-full max-w-[1400px] items-start gap-12 lg:min-h-[calc(100svh-15rem)] lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-12 xl:gap-20">
-        <div className="max-w-xl lg:pt-6">
-          <h1 id="hero-heading" className="text-balance text-[clamp(3.25rem,6.2vw,6rem)] font-semibold leading-[0.98] tracking-[-0.04em] text-white">
-            Gwee<br />Per Ming<span className="text-indigo-200">.</span>
-          </h1>
-          <p className="mt-8 max-w-[17ch] text-[clamp(1.4rem,2.1vw,2rem)] font-medium leading-[1.18] tracking-[-0.025em] text-zinc-100">
-            AI systems built to keep working after launch.
-          </p>
-          <p className="mt-6 max-w-[48ch] text-base leading-relaxed text-zinc-300">
-            I&apos;m a Computer Science graduate who builds and operates AI agents and software. I also bring the visual instincts of a creative technologist to the work.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button href="#ai-systems" showArrow>Explore AI products</Button>
-            <Button href="#showcase" variant="secondary">Creative collections</Button>
+    <section id="top" ref={sectionRef} className="scroll-animation relative" aria-labelledby="hero-heading">
+      <div className="hero-sticky relative w-full overflow-hidden bg-[#07080c]">
+        {/* Keep the opening frame visible while the canvas sequence loads. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={frameSrc(1)} alt="" loading="eager" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className="absolute inset-0 block h-full w-full"
+        />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_40%,transparent_25%,rgba(7,8,12,0.68)_100%)]" />
+        <p className="absolute bottom-4 left-6 z-20 text-xs text-zinc-300/80 md:left-10">
+          Animated studio artwork · not a portrait
+        </p>
+
+        {motionAllowed && (
+          <div aria-hidden="true" className="absolute left-0 top-0 z-20 h-0.5 w-full bg-white/10">
+            <div
+              ref={progressBarRef}
+              className="h-full origin-left bg-indigo-300"
+              style={{ transform: "scaleX(0)" }}
+            />
           </div>
-          <p className="mt-9 text-sm text-zinc-400">Gwee Per Ming · Ming · Malaysia</p>
+        )}
+
+        <div ref={heroTextRef} className="absolute inset-0 z-20 mx-auto flex w-full max-w-[1400px] flex-col items-center justify-center px-6 py-24 text-center md:px-10">
+          <p className="text-sm font-medium tracking-[0.12em] text-zinc-200">
+            Production AI Builder <span aria-hidden="true">·</span> Creative Technologist
+          </p>
+          <h1
+            id="hero-heading"
+            className="mt-5 text-[clamp(3rem,8vw,6.75rem)] font-semibold leading-[0.98] tracking-[-0.055em] text-white"
+          >
+            Gwee Per Ming
+          </h1>
+          <p className="mt-6 max-w-[62ch] text-base leading-relaxed text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
+            I build AI systems and software that go beyond the prototype. Through
+            Ming Creatives, I also make cinematic 3D web experiences and visual
+            work for brands.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button href="#ai-systems" showArrow>
+              Explore AI products
+            </Button>
+            <Button href="#showcase" variant="secondary">
+              View collections
+            </Button>
+          </div>
+          <p className="mt-10 max-w-[46ch] text-xs leading-relaxed text-zinc-300">
+            Computer Science graduate · Malaysia
+          </p>
+          <div
+            aria-hidden="true"
+            className="absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-zinc-300/80"
+          >
+            <span className="font-mono text-xs uppercase tracking-[0.2em]">Scroll</span>
+            <span className="flex h-8 w-5 justify-center rounded-full border border-zinc-400/50 pt-1">
+              <span className="hero-scroll-dot h-1.5 w-1 rounded-full bg-zinc-200" />
+            </span>
+          </div>
         </div>
 
-        <div className="min-w-0">
-          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-lg font-semibold tracking-[-0.02em] text-zinc-100">A day begins with a decision.</h2>
-            <span className="text-xs text-zinc-400">Personal Always-On AI Agent</span>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-6 pb-10 md:px-10 md:pb-14">
+          <div className="relative mx-auto h-48 max-w-[1400px] md:h-44">
+            {motionAllowed && ANNOTATIONS.map((card) => {
+              const visible = visibleCards.includes(card.id);
+              const position = card.position ?? "left";
+              const anchor = position === "right"
+                ? "right-0"
+                : position === "center"
+                  ? "left-1/2 -translate-x-1/2"
+                  : "left-0";
+              return (
+                <div
+                  key={card.id}
+                  aria-hidden={!visible}
+                  className={`absolute bottom-0 w-[min(92vw,440px)] rounded-xl border border-white/15 bg-[#101116]/85 p-6 shadow-2xl backdrop-blur-xl transition-[opacity,transform] duration-500 ${anchor} ${
+                    visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                  }`}
+                  style={{
+                    transitionDuration: visible ? "500ms, 500ms" : "180ms, 360ms",
+                    transitionDelay: visible ? "0ms, 0ms" : "360ms, 0ms",
+                  }}
+                >
+                  <p className="font-mono text-xs uppercase tracking-[0.16em] text-indigo-200">{card.eyebrow}</p>
+                  <h2 className="mt-2 text-xl font-semibold tracking-tight text-white md:text-2xl">{card.title}</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-200">{card.body}</p>
+                </div>
+              );
+            })}
           </div>
-          <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#101219] shadow-[0_25px_80px_rgba(0,0,0,0.32)]">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-5 py-4 sm:px-6">
-              <div className="flex items-center gap-3">
-                <span aria-hidden="true" className="inline-flex size-7 items-center justify-center rounded-md bg-indigo-200 text-xs font-bold text-[#111522]">M</span>
-                <span className="text-sm font-semibold text-zinc-100">Morning brief</span>
-              </div>
-              <span className="rounded-full border border-white/15 px-3 py-1 text-xs text-zinc-300">Interactive example · sample data</span>
-            </div>
-
-            <div className="grid min-h-[30rem] lg:grid-cols-[minmax(12rem,0.36fr)_minmax(0,0.64fr)]">
-              <div className="hidden border-r border-white/10 p-6 lg:block">
-                <p className="text-sm font-semibold text-zinc-100">Real workflow, sample inputs</p>
-                <p className="mt-2 max-w-[30ch] text-sm leading-relaxed text-zinc-400">
-                  The operating agent coordinates calendar, mail, and tasks across accounts. This walkthrough uses fictional entries.
-                </p>
-                <div className="mt-7 space-y-3">
-                  {SAMPLE_SOURCES.map(({ label, detail, icon: Icon }) => (
-                    <div key={label} className="flex gap-3 border-t border-white/10 pt-3">
-                      <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-indigo-200" weight="regular" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-zinc-200">{label}</p>
-                        <p className="mt-1 text-xs leading-relaxed text-zinc-400">{detail}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex min-w-0 flex-col">
-                <div role="tablist" aria-label="Explore the morning brief" className="flex gap-1 overflow-x-auto border-b border-white/10 px-4 pt-4 sm:px-5">
-                  {VIEWS.map((item, index) => (
-                    <button
-                      key={item.id}
-                      id={`brief-tab-${item.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={view === item.id}
-                      aria-controls="brief-panel"
-                      tabIndex={view === item.id ? 0 : -1}
-                      onClick={() => setView(item.id)}
-                      onKeyDown={(event) => changeWithArrow(event, index)}
-                      className={`min-h-11 shrink-0 border-b-2 px-3 pb-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-200 ${view === item.id ? "border-indigo-200 text-white" : "border-transparent text-zinc-400 hover:text-zinc-200"}`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-                <div id="brief-panel" role="tabpanel" aria-labelledby={`brief-tab-${view}`} className="flex-1 px-5 py-6 sm:px-7 sm:py-7">
-                  {view === "brief" && <BriefView />}
-                  {view === "sources" && <SourcesView />}
-                  {view === "routing" && <RoutingView />}
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-4 sm:px-7">
-                  <p className="text-xs text-zinc-400">Illustrative walkthrough · no accounts connected</p>
-                  <button
-                    type="button"
-                    onClick={() => setView(view === "brief" ? "sources" : view === "sources" ? "routing" : "brief")}
-                    className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-indigo-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
-                  >
-                    {view === "routing" ? "Back to the brief" : "Explore next step"}
-                    <ArrowRight aria-hidden="true" className="size-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <Link
-            href="/work/personal-ai-agent"
-            className="group mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
-          >
-            See what I built and operate
-            <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </Link>
         </div>
       </div>
     </section>
-  );
-}
-
-function BriefView() {
-  return (
-    <div className="h-full rounded-xl bg-[#e7ebec] px-5 py-5 text-[#141a20] shadow-[0_12px_36px_rgba(0,0,0,0.14)] sm:px-7 sm:py-7">
-      <div className="flex items-start justify-between gap-4 border-b border-[#bcc6c9] pb-5">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#46545b]">Sample dispatch</p>
-          <h3 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">Good morning, Ming.</h3>
-        </div>
-        <span className="shrink-0 text-xs font-medium text-[#46545b]">Monday · 09:00</span>
-      </div>
-      <p className="mt-5 text-sm leading-relaxed text-[#334149]">Your day has one scheduled review, one message needing attention, and protected build time.</p>
-      <ol className="mt-6 space-y-4">
-        <li className="grid grid-cols-[1.5rem_1fr] gap-3 border-t border-[#c4cdd0] pt-4">
-          <span className="text-xs font-bold tabular-nums text-[#52616b]">01</span>
-          <div><p className="text-sm font-semibold">Prepare for the 09:30 product review</p><p className="mt-1 text-sm text-[#46545b]">Use the handoff checklist as the starting point.</p></div>
-        </li>
-        <li className="grid grid-cols-[1.5rem_1fr] gap-3 border-t border-[#c4cdd0] pt-4">
-          <span className="text-xs font-bold tabular-nums text-[#52616b]">02</span>
-          <div><p className="text-sm font-semibold">Reply to the design review notes</p><p className="mt-1 text-sm text-[#46545b]">Follow up before the afternoon build block.</p></div>
-        </li>
-        <li className="grid grid-cols-[1.5rem_1fr] gap-3 border-t border-[#c4cdd0] pt-4">
-          <span className="text-xs font-bold tabular-nums text-[#52616b]">03</span>
-          <div><p className="text-sm font-semibold">Keep 14:00 free for building</p><p className="mt-1 text-sm text-[#46545b]">No conflicting sample calendar events.</p></div>
-        </li>
-      </ol>
-    </div>
-  );
-}
-
-function SourcesView() {
-  return (
-    <div>
-      <h3 className="text-2xl font-semibold tracking-[-0.025em] text-white">Three sources. One useful brief.</h3>
-      <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-zinc-300">The real system uses provider adapters and explicit account routing. These entries are fictional and show the kind of information the agent coordinates.</p>
-      <div className="mt-7 space-y-3">
-        {SAMPLE_SOURCES.map(({ label, detail, icon: Icon }) => (
-          <div key={label} className="flex items-start gap-4 rounded-xl bg-white/[0.05] p-4">
-            <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-indigo-200" />
-            <div><p className="text-sm font-semibold text-white">{label}</p><p className="mt-1 text-sm text-zinc-300">{detail}</p></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function RoutingView() {
-  return (
-    <div>
-      <h3 className="text-2xl font-semibold tracking-[-0.025em] text-white">A governed layer around the agent.</h3>
-      <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-zinc-300">I built the Real-Ming control and governance layer around Hermes Agent, preserving its native reasoning, memory, and workspaces.</p>
-      <div className="mt-8 space-y-0">
-        {[
-          ["01", "Route", "Provider adapters select the right connected account."],
-          ["02", "Compose", "Calendar, mail, and tasks become a morning brief."],
-          ["03", "Operate", "The assistant runs on an always-on Azure VM and also prepares an evening report."],
-        ].map(([number, title, detail]) => (
-          <div key={number} className="grid grid-cols-[2rem_5rem_1fr] gap-3 border-t border-white/15 py-4 text-sm sm:grid-cols-[2rem_6rem_1fr]">
-            <span className="font-mono text-xs text-indigo-200">{number}</span>
-            <span className="font-semibold text-white">{title}</span>
-            <span className="text-zinc-300">{detail}</span>
-          </div>
-        ))}
-      </div>
-      <p className="mt-5 text-xs text-zinc-400">Architecture and operating status are documented in the case study.</p>
-    </div>
   );
 }

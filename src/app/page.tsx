@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/ui/Navbar";
 import { Hero } from "@/components/sections/Hero";
-import { StudioRoom } from "@/components/sections/StudioRoom";
 import { EngineeringSection } from "@/components/sections/EngineeringSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { Showcase } from "@/components/sections/Showcase/Showcase";
@@ -25,7 +24,6 @@ export default async function Home() {
       <Navbar />
       <Hero />
       <Showcase media={media} />
-      <StudioRoom />
       <ServicesSection />
       <EngineeringSection />
       <ExperienceSection />
