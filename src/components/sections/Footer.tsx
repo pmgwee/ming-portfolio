@@ -1,4 +1,4 @@
-import { GithubLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
+import { GithubLogo, InstagramLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
 import type { Icon } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { SITE } from "@/lib/seo";
@@ -6,6 +6,7 @@ import { SITE } from "@/lib/seo";
 const SOCIAL_ICONS: Record<string, Icon> = {
   LinkedIn: LinkedinLogo,
   GitHub: GithubLogo,
+  Instagram: InstagramLogo,
 };
 
 const EXPLORE = [
@@ -48,12 +49,12 @@ export function Footer() {
           <p className="mt-7 text-base font-semibold tracking-tight text-white">Gwee Per Ming</p>
           <p className="mt-1 text-sm text-zinc-300">Ming Creatives · creative studio</p>
           <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-zinc-400">
-            I build AI systems and software. Ming Creatives is my separate
-            studio identity for web experiences, 3D animation, AI workflow
-            automation, and generative-AI creative work.
+            I am a Malaysian Data &amp; AI Consultant and content creator.
+            Ming Creatives is my studio for web experiences, 3D animation,
+            AI agents and data engineering, and generative-AI creative work.
           </p>
           <p className="mt-6 text-xs text-zinc-500">
-            © {year} Gwee Per Ming · Malaysia
+            © {year} Gwee Per Ming · {SITE.nationality}
           </p>
         </div>
 

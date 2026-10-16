@@ -2,6 +2,9 @@
  * Public identity, metadata, and studio details used across the portfolio.
  * Gwee Per Ming is the person; Ming Creatives is the separate creative studio.
  */
+const BIOGRAPHY =
+  "Gwee Per Ming (Ming) is a Malaysian Data & AI Consultant with a Computer Science background and fintech software engineering internship experience. He builds and scales production AI agents and agentic solutions using emerging AI technologies. He is also building his content creation practice through @ming.creatives on Instagram.";
+
 export const SITE = {
   url: "https://www.mingcreatives.com",
   name: "Gwee Per Ming",
@@ -9,20 +12,34 @@ export const SITE = {
   studioName: "Ming Creatives",
   personName: "Gwee Per Ming",
   alternateNames: ["Ming", "Perming Gwee"],
-  title: "Gwee Per Ming | Production AI Builder & Creative Technologist",
+  title: "Gwee Per Ming | Data & AI Consultant",
   description:
-    "Gwee Per Ming is a Malaysia-based Computer Science graduate and production AI builder. He builds and operates AI systems and software; Ming Creatives is his separate studio for 3D web design, business apps, AI workflow automation, and generative-AI creative work.",
-  jobTitle: "Production AI Builder and Creative Technologist",
-  location: "Malaysia",
+    "Gwee Per Ming is a Malaysian Data & AI Consultant building production AI agents and agentic solutions. CS graduate, former fintech engineering intern, and content creator at Ming Creatives.",
+  // Current independent identity confirmed by Ming on 2026-10-16, not an
+  // employer-held role or a replacement title for the iFAST internship.
+  jobTitle: "Data & AI Consultant",
+  headline: "Data & AI Consultant · Content Creator",
+  biography: BIOGRAPHY,
+  introduction:
+    "I build and scale production AI agents and agentic solutions using emerging AI technologies. My work combines data engineering with software development.",
+  background: "Malaysian · Computer Science graduate · Former fintech engineering intern",
+  studioDescription:
+    "Ming Creatives is Gwee Per Ming's studio for immersive web design, business websites and apps, AI agents and data engineering, and generative-AI creative production.",
+  nationality: "Malaysian",
   locale: "en_MY",
   linkedin: "https://www.linkedin.com/in/gweeperming/",
   github: "https://github.com/pmgwee",
+  instagram: "https://www.instagram.com/ming.creatives/",
   whatsapp: "https://wa.me/message/DFUGF3HXISNEF1",
   gscVerification: "VY-sT_74iIU6P13LMHLRgPbYhsEdm9uOKgkpgg_QtFs",
   keywords: [
     "Gwee Per Ming",
     "Ming",
-    "Production AI Builder",
+    "Data & AI Consultant",
+    "Data engineering",
+    "Content creator",
+    "ming.creatives",
+    "Production AI agents",
     "AI agent systems",
     "RAG systems",
     "Creative Technologist",
@@ -37,12 +54,14 @@ export const SITE = {
     "AI system evaluation",
     "Context engineering",
     "Software engineering",
+    "Data engineering",
     "Cloud infrastructure",
     "Web design and development",
     "3D web animation",
     "Business web application development",
-    "AI agents and workflow automation",
+    "AI agents and agentic solutions",
     "Generative-AI creative work",
+    "Content creation",
   ],
   services: [
     {
@@ -56,9 +75,9 @@ export const SITE = {
         "Custom websites and web applications shaped around business goals, customer needs, and real workflows.",
     },
     {
-      name: "AI agents & workflow automation",
+      name: "AI agents & data engineering",
       description:
-        "AI agent integrations and workflow automation designed to reduce repetitive tasks and connect the tools teams use.",
+        "Production AI agent integrations and data pipelines that connect source data to useful tools, retrieval systems, and business applications.",
     },
     {
       name: "AI-driven creative content & production",
@@ -69,32 +88,41 @@ export const SITE = {
   faq: [
     {
       q: "Who is Gwee Per Ming?",
-      a: "Gwee Per Ming is a Malaysian Computer Science graduate and production AI builder. He builds and operates AI systems and software, bringing a creative-technologist background in 3D and interactive web experiences.",
+      a: BIOGRAPHY,
     },
     {
       q: "What is Ming Creatives?",
-      a: "Ming Creatives is Gwee Per Ming’s creative studio identity for client-facing digital and visual work. Gwee Per Ming is the person; Ming Creatives is the studio. His production AI engineering work is presented separately.",
+      a: "Ming Creatives is Gwee Per Ming's studio identity for client-facing digital and visual work, and the name of his @ming.creatives content channel. Gwee Per Ming is the person. Ming Creatives is the studio. Yierming Production is separate past experience.",
     },
     {
       q: "What services does Ming Creatives offer?",
-      a: "Cinematic 3D and immersive web design; business websites and web apps; AI agents and workflow automation; and AI-driven creative content and production.",
+      a: "Ming Creatives offers cinematic 3D and immersive web design, business websites and web apps, AI agents and data engineering, and AI-driven creative content and production.",
     },
     {
       q: "What AI and software work can recruiters explore?",
       a: "The AI Products section features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
-      q: "Which roles is Gwee Per Ming pursuing?",
-      a: "He is targeting AI Engineer and AI/Data Consultant roles. These are career directions, not positions he is presenting as past employment.",
+      q: "What does his Data & AI consulting focus on?",
+      a: "His independent practice focuses on building and scaling production AI agents and agentic solutions. Data engineering and software development support the work, from source-data pipelines and retrieval to deployment and operation.",
+    },
+    {
+      q: "What is his fintech engineering background?",
+      a: "Gwee Per Ming completed a six-month Automation Engineer internship at iFAST Capital from March to August 2024. His work covered a Spring Batch compliance pipeline, an end-to-end investor-classification enhancement, and collaboration on fintech releases.",
+    },
+    {
+      q: "Where can I follow Ming's content?",
+      a: "Gwee Per Ming is building his content creation practice on Instagram as @ming.creatives, alongside his Data & AI consulting and creative studio work. The Instagram profile is linked in the studio section and footer.",
     },
     {
       q: "How can I discuss a Ming Creatives project?",
-      a: "Use the creative project contact link on this page to reach Ming Creatives about web, 3D, AI automation, or generative-AI production work.",
+      a: "Use the creative project contact link on this page to reach Ming Creatives about web, 3D, AI agents, data engineering, or generative-AI production work.",
     },
   ],
   socials: [
     { label: "LinkedIn", href: "https://www.linkedin.com/in/gweeperming/" },
     { label: "GitHub", href: "https://github.com/pmgwee" },
+    { label: "Instagram", href: "https://www.instagram.com/ming.creatives/" },
   ],
 } as const;
 
@@ -103,5 +131,5 @@ export function absoluteUrl(path = "/"): string {
 }
 
 export function sameAs(): string[] {
-  return [SITE.linkedin, SITE.github];
+  return [SITE.linkedin, SITE.github, SITE.instagram];
 }

@@ -23,9 +23,10 @@ export function AudiencePaths() {
               Building an AI or software team?
             </h3>
             <p className="mt-4 max-w-[55ch] text-sm leading-relaxed text-zinc-300">
-              Explore the systems, engineering contributions, experience, and
-              education behind my current direction toward AI Engineer and
-              AI/Data Consultant roles.
+              Explore the production AI agents, data engineering work, and
+              software experience behind my independent Data &amp; AI consulting
+              practice. My background includes a Computer Science degree and a
+              fintech engineering internship.
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
               <AnchorLink
@@ -60,7 +61,7 @@ export function AudiencePaths() {
             </h3>
             <p className="mt-4 max-w-[55ch] text-sm leading-relaxed text-zinc-300">
               Ming Creatives offers immersive web design, business websites and
-              apps, AI workflow automation, and generative-AI creative
+              apps, AI agents and data engineering, and generative-AI creative
               production. Explore the work, then reach out to discuss a project.
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">

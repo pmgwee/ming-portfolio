@@ -38,9 +38,16 @@ export function ServicesSection() {
             Ming Creatives studio
           </h2>
           <p className="mt-6 max-w-[68ch] text-base leading-relaxed text-zinc-300 md:text-lg">
-            I&apos;ve designed, built, and shipped end-to-end production AI
-            systems and solutions. Ming Creatives is my studio for the creative
-            work below.
+            Ming Creatives is my studio for digital and creative work. Alongside
+            my Data &amp; AI consulting, I am building my content creation practice as{" "}
+            <a
+              href={SITE.instagram}
+              target="_blank"
+              rel="noopener noreferrer me"
+              className="text-zinc-100 underline decoration-white/40 underline-offset-4 hover:decoration-white"
+            >
+              @ming.creatives on Instagram
+            </a>.
           </p>
         </motion.div>
 

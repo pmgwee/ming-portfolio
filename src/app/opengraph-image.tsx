@@ -3,8 +3,7 @@ import { SITE } from "@/lib/seo";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt =
-  "Gwee Per Ming, Production AI Builder and Creative Technologist. Ming Creatives studio identity.";
+export const alt = `${SITE.personName}, ${SITE.jobTitle} and content creator. Ming Creatives studio identity.`;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -55,11 +54,11 @@ export default function OpenGraphImage() {
             {SITE.personName}
           </div>
           <div style={{ display: "flex", fontSize: 34, color: "#d4d4d8" }}>
-            Production AI Builder · Creative Technologist
+            {SITE.headline}
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 22, color: "#a1a1aa" }}>
-          AI systems · Software · 3D web studio · {SITE.location}
+          Production AI agents · Data engineering · {SITE.nationality}
         </div>
       </div>
     ),

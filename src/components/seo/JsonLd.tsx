@@ -34,8 +34,9 @@ export function JsonLd() {
       name: SITE.personName,
       alternateName: [...SITE.alternateNames],
       jobTitle: SITE.jobTitle,
-      description: SITE.description,
+      description: SITE.biography,
       url: SITE.url,
+      nationality: { "@type": "Country", name: "Malaysia" },
       knowsAbout: [...SITE.expertise],
       alumniOf: {
         "@type": "CollegeOrUniversity",
@@ -49,8 +50,8 @@ export function JsonLd() {
       "@id": studioId,
       name: SITE.studioName,
       url: SITE.url,
-      description:
-        "The creative studio identity of Gwee Per Ming for immersive web design, business websites and apps, AI workflow automation, and generative-AI creative production.",
+      description: SITE.studioDescription,
+      sameAs: [SITE.instagram],
       logo: {
         "@type": "ImageObject",
         url: absoluteUrl("/icon.png"),

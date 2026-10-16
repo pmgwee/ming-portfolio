@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { Button } from "@/components/ui/Button";
 import { ANNOTATIONS, FRAME_COUNT, HERO_TEXT_FADE_END, frameSrc } from "@/lib/hero";
+import { SITE } from "@/lib/seo";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -215,7 +216,7 @@ export function Hero() {
 
         <div ref={heroTextRef} className="absolute inset-0 z-20 mx-auto flex w-full max-w-[1400px] flex-col items-center justify-center px-6 py-24 text-center md:px-10">
           <p className="text-sm font-medium tracking-[0.12em] text-zinc-200">
-            Production AI Builder <span aria-hidden="true">·</span> Creative Technologist
+            {SITE.headline}
           </p>
           <h1
             id="hero-heading"
@@ -224,9 +225,7 @@ export function Hero() {
             Gwee Per Ming
           </h1>
           <p className="mt-6 max-w-[62ch] text-base leading-relaxed text-zinc-100 [text-shadow:0_1px_14px_rgba(0,0,0,0.95)] md:text-lg">
-            I build AI systems and software that go beyond the prototype. Through
-            Ming Creatives, I also make cinematic 3D web experiences and visual
-            work for brands.
+            {SITE.introduction}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button href="#ai-systems" showArrow>
@@ -237,7 +236,7 @@ export function Hero() {
             </Button>
           </div>
           <p className="mt-10 max-w-[46ch] text-xs leading-relaxed text-zinc-300">
-            Computer Science graduate · Malaysia
+            {SITE.background}
           </p>
           <div
             aria-hidden="true"

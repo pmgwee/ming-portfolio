@@ -6,14 +6,14 @@
 web
 
 ## Users
-- Recruiters and engineering teams evaluating Gwee Per Ming (Ming) for AI Engineer, AI/Data Consultant, and related software roles. They need to understand what he personally built, what operates beyond a prototype, and where to inspect evidence and experience.
-- Creative clients evaluating Ming Creatives for immersive websites, business websites and applications, AI workflow automation, and generative-AI creative production. They need to see representative work and find a direct inquiry route.
+- Recruiters, engineering teams, and consulting clients evaluating Gwee Per Ming (Ming). They need to understand what he personally built, what operates beyond a prototype, and where to inspect evidence and experience.
+- Creative clients evaluating Ming Creatives for immersive websites, business websites and applications, AI agents and data engineering, and generative-AI creative production. They need to see representative work and find a direct inquiry route.
 
 ## Product Purpose
 Present Ming's current engineering work and creative practice in one coherent portfolio. A successful visit answers who he is, what his systems do, what he contributed, how claims are supported, and which contact route fits the visitor.
 
 ## Positioning
-Gwee Per Ming is a Computer Science graduate who builds and operates production AI systems and brings a creative technologist's visual craft to software. Ming Creatives is his separate studio identity for client-facing creative and digital work. AI Engineer and AI/Data Consultant are target roles, not positions he has held.
+Gwee Per Ming is a Malaysian Data & AI Consultant who builds and scales production AI agents and agentic solutions, with a Computer Science background and fintech engineering internship experience. Data & AI Consultant is his current independent professional identity, explicitly confirmed by Ming on 2026-10-16. It is not an employer-held position or a replacement title for the iFAST internship. He is building his content creation practice through @ming.creatives on Instagram. Ming Creatives remains his separate studio identity for client-facing creative and digital work, with a creative technologist's visual craft as a distinctive strength. Describe his nationality as Malaysian without adding a hometown or home address.
 
 ## Operating Context
 - Recruiters often scan the first screen and a small number of project examples before opening a case study, CV, GitHub, or LinkedIn.
