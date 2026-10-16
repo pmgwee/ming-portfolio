@@ -105,7 +105,7 @@ export const CAROUSEL = {
 export const FIELD = {
   /** Card-pool size — desktop / mobile. */
   N_DESKTOP: 24,
-  N_MOBILE: 12,
+  N_MOBILE: 16,
   /**
    * IDLE advance rate per second — the field's drift pace when the user is
    * NOT scrolling. Scrolling boosts this via SCROLL_VEL_GAIN (below). At idle
@@ -131,8 +131,7 @@ export const FIELD = {
   SCROLL_BOOST_MAX: 0.5,
   /** Fraction of the pool assigned to the fast "burst" tier. */
   BURST_FRACTION: 0.5,
-  /** Base card size (CSS vw); height via aspect-ratio in the component. */
-  CARD_W_VW: 14,
+  // Responsive card dimensions live in `.showcase-tile` in globals.css.
   /**
    * Per-cycle angular jitter (radians, ±) layered on each BASE card's
    * golden-angle base angle — same idea as BURST_ANGLE_JITTER. ~0.18 rad ≈

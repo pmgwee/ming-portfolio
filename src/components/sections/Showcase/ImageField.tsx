@@ -63,7 +63,7 @@ export function ImageField({
   // then reduce the animation pool on small screens after mount.
   const [N, setN] = useState<number>(FIELD.N_DESKTOP);
   useEffect(() => {
-    const viewport = window.matchMedia("(max-width: 768px)");
+    const viewport = window.matchMedia("(max-width: 1024px)");
     const updatePoolSize = () =>
       setN(viewport.matches ? FIELD.N_MOBILE : FIELD.N_DESKTOP);
     updatePoolSize();
@@ -140,12 +140,30 @@ export function ImageField({
     let lastScrollY = window.scrollY;
     let scrollVel = 0;
 
-    // 1 CSS vmax in px — cached here, refreshed on resize (cheap to multiply).
-    let vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
-    const onResize = () => {
-      vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
+    // Desktop keeps its original circular field. On compact screens, fit the
+    // flight paths to the actual stage: a portrait viewport shouldn't send
+    // most cards off its narrow sides before their scale-up becomes visible.
+    // Cache geometry outside the animation loop (no per-frame layout reads).
+    let travelX = 0;
+    let travelY = 0;
+    const updateGeometry = () => {
+      const root = rootRef.current;
+      const width = root?.clientWidth ?? window.innerWidth;
+      const height = root?.clientHeight ?? window.innerHeight;
+      const vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
+      if (window.matchMedia("(max-width: 1024px)").matches) {
+        const cardWidth = cardRefs.current[0]?.offsetWidth ?? 0;
+        // Include the largest card's half-size and diagonal exit clearance.
+        travelX = ((width / 2 + cardWidth * 1.25) * Math.SQRT2) / 100;
+        travelY = ((height / 2 + cardWidth * 1.65) * Math.SQRT2) / 100;
+      } else {
+        travelX = vmaxPx;
+        travelY = vmaxPx;
+      }
     };
-    window.addEventListener("resize", onResize);
+    updateGeometry();
+    const geometryObserver = new ResizeObserver(updateGeometry);
+    if (rootRef.current) geometryObserver.observe(rootRef.current);
 
     // --- Tile sequencer (shuffle bag) ----------------------------------
     // Draws every tile exactly once, in a random order, before any repeat —
@@ -302,14 +320,14 @@ export function ImageField({
             FIELD.BURST_START_MAX_VMAX,
             hashCycle(i, cycle, 2),
           );
-          const radius = lerp(startRadius, FIELD.BURST_END_VMAX, phase) * vmaxPx;
+          const radius = lerp(startRadius, FIELD.BURST_END_VMAX, phase);
           // Gentle 1.2× scale-up, only in the second half of travel — each
           // card exits scaled up relative to its OWN initial size (variety
           // preserved, not a uniform growth curve).
           const bump = smoothstep(FIELD.BURST_BUMP_START, 1, phase);
           scale = size0 * lerp(1, FIELD.BURST_SCALE_END_MULT, bump);
-          x = cos * radius;
-          y = sin * radius;
+          x = cos * radius * travelX;
+          y = sin * radius * travelY;
           // Duty gate: only emit on a per-cycle subset of cycles so the burst
           // stream thins out and adjacent bursts rarely co-emit (kills the
           // 0.2–0.3s same-trajectory follow). Off-duty cycles stay invisible.
@@ -327,7 +345,7 @@ export function ImageField({
             FIELD.BASE_START_MAX_VMAX,
             hashCycle(i, cycle, 2),
           );
-          const radius = lerp(startRadius, FIELD.BASE_END_VMAX, phase) * vmaxPx;
+          const radius = lerp(startRadius, FIELD.BASE_END_VMAX, phase);
           const cardScale = lerp(
             FIELD.BASE_CARD_SCALE_MIN,
             FIELD.BASE_CARD_SCALE_MAX,
@@ -335,8 +353,8 @@ export function ImageField({
           );
           const bump = smoothstep(FIELD.BASE_BUMP_START, 1, phase);
           scale = cardScale * lerp(1, FIELD.BASE_SCALE_END_MULT, bump);
-          x = cos * radius;
-          y = sin * radius;
+          x = cos * radius * travelX;
+          y = sin * radius * travelY;
           // Fade out as the card travels outward: a slow quadratic ease-in
           // that starts at BASE_FADE_START and reaches exactly 0 at phase 1
           // (= BASE_END_VMAX = off-screen), so the card dims gradually on its
@@ -401,7 +419,7 @@ export function ImageField({
       running = false;
       cancelAnimationFrame(rafId);
       io.disconnect();
-      window.removeEventListener("resize", onResize);
+      geometryObserver.disconnect();
     };
   }, [reducedMotion, N, cards, tiles]);
 
@@ -425,9 +443,8 @@ export function ImageField({
             return (
               <div
                 key={i}
-                className="absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10 opacity-30"
+                className="showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10 opacity-30"
                 style={{
-                  width: `${FIELD.CARD_W_VW}vw`,
                   aspectRatio: "3 / 4",
                   transform: `translate(calc(-50% + ${x}vmin), calc(-50% + ${y}vmin)) scale(0.9)`,
                   boxShadow: "var(--card-shadow)",
@@ -459,9 +476,8 @@ export function ImageField({
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10"
+              className="showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10"
               style={{
-                width: `${FIELD.CARD_W_VW}vw`,
                 aspectRatio: "3 / 4",
                 opacity: 0,
                 willChange: "transform, opacity",

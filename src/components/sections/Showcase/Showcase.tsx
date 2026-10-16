@@ -43,10 +43,19 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
   // the initial HTML and downloads begin at first paint, no client fetch.
 
   useEffect(() => {
-    setReducedMotion(
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    );
-    setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = window.matchMedia("(max-width: 1024px)");
+    const update = () => {
+      setReducedMotion(motion.matches);
+      setIsMobile(mobile.matches);
+    };
+    update();
+    motion.addEventListener("change", update);
+    mobile.addEventListener("change", update);
+    return () => {
+      motion.removeEventListener("change", update);
+      mobile.removeEventListener("change", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -196,7 +205,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
     >
       <div
         ref={pinnedRef}
-        className="sticky top-0 h-screen w-full overflow-hidden bg-[#07080c]"
+        className="showcase-viewport sticky top-0 w-full overflow-hidden bg-[#07080c]"
       >
         {/* Faint oversized background glow (z0) */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">

@@ -102,9 +102,40 @@ body {
   height: 230vh;
 }
 
+.showcase-viewport {
+  height: 100vh;
+}
+
+.showcase-tile {
+  width: 14vw;
+}
+
+@media (max-width: 1024px) {
+  /* Keep a real fly-through on touch screens, not a one-swipe video reveal.
+     Stable viewport units prevent browser chrome from retiming the sequence. */
+  .showcase-stage {
+    height: 300vh;
+    height: 300svh;
+  }
+
+  .showcase-viewport {
+    height: 100vh;
+    height: 100svh;
+  }
+
+  .showcase-tile {
+    width: clamp(156px, 30vw, 240px);
+  }
+}
+
 @media (max-width: 768px) {
   .showcase-stage {
-    height: 180vh;
+    height: 360vh;
+    height: 360svh;
+  }
+
+  .showcase-tile {
+    width: clamp(148px, 42vw, 210px);
   }
 }
 

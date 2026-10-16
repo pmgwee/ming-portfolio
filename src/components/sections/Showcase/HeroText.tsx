@@ -28,12 +28,12 @@ export function HeroText({
 
       <h2
         ref={h1Ref}
-        className="mt-6 max-w-[16ch] text-5xl font-semibold leading-[1.02] tracking-tighter md:text-7xl lg:text-8xl"
+        className="mt-6 max-w-[16ch] text-[clamp(2.5rem,11.5vw,3rem)] font-semibold leading-[1.02] tracking-[-0.04em] md:text-7xl lg:text-8xl"
       >
         Ming Creatives
       </h2>
 
-      <div ref={buttonsRef} className="mt-8 flex items-center gap-3">
+      <div ref={buttonsRef} className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Button
           href="#services"
           showArrow
