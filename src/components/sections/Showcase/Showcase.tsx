@@ -22,6 +22,7 @@ gsap.registerPlugin(ScrollTrigger);
  */
 export function Showcase({ media }: { media: ShowcaseMedia }) {
   const stageRef = useRef<HTMLElement>(null);
+  const revealRangeRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef<HTMLDivElement>(null);
 
   const fieldWrapRef = useRef<HTMLDivElement>(null);
@@ -93,6 +94,9 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           defaults: { ease: "none" },
           scrollTrigger: {
             trigger: stageRef.current,
+            // Mobile reserves a separate sticky viewing tail after the
+            // reveal; never stretch this timeline across that extra space.
+            endTrigger: revealRangeRef.current,
             start: "top top",
             end: "bottom bottom",
             scrub: 0.5,
@@ -103,7 +107,8 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
             // the range jerked the full-bleed video panel by ~220vh — which
             // Vercel Speed Insights flagged as the site's entire CLS (4.69).
             // Sticky stays in normal flow → zero layout shift. Scrub distance
-            // is controlled by `.showcase-stage` in global.css.
+            // is controlled by `.showcase-reveal-range` in globals.css.
+            // `.showcase-stage` also includes the mobile video-viewing hold.
             onUpdate: (self) => {
               // Gate interactivity once the video is essentially full-bleed.
               const s = self.progress >= PHASES.settledAt;
@@ -203,6 +208,11 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
       id="showcase"
       className={`showcase-stage relative ${reducedMotion ? "showcase-stage--reduced" : ""}`}
     >
+      <div
+        ref={revealRangeRef}
+        className="showcase-reveal-range pointer-events-none absolute inset-x-0 top-0"
+        aria-hidden="true"
+      />
       <div
         ref={pinnedRef}
         className="showcase-viewport sticky top-0 w-full overflow-hidden bg-[#07080c]"

@@ -99,7 +99,15 @@ body {
 }
 
 .showcase-stage {
-  height: 230vh;
+  --showcase-reveal-height: 230vh;
+  --showcase-video-hold: 0px;
+  height: calc(var(--showcase-reveal-height) + var(--showcase-video-hold));
+}
+
+/* The reveal ends independently of the sticky stage. Its extra tail holds
+   the finished video in view without slowing down the card fly-through. */
+.showcase-reveal-range {
+  height: var(--showcase-reveal-height);
 }
 
 .showcase-viewport {
@@ -114,8 +122,8 @@ body {
   /* Keep a real fly-through on touch screens, not a one-swipe video reveal.
      Stable viewport units prevent browser chrome from retiming the sequence. */
   .showcase-stage {
-    height: 300vh;
-    height: 300svh;
+    --showcase-reveal-height: 300vh;
+    --showcase-video-hold: 140vh;
   }
 
   .showcase-viewport {
@@ -130,12 +138,28 @@ body {
 
 @media (max-width: 768px) {
   .showcase-stage {
-    height: 360vh;
-    height: 360svh;
+    --showcase-reveal-height: 360vh;
+    --showcase-video-hold: 180vh;
   }
 
   .showcase-tile {
     width: clamp(148px, 42vw, 210px);
+  }
+}
+
+@supports (height: 1svh) {
+  @media (max-width: 1024px) {
+    .showcase-stage {
+      --showcase-reveal-height: 300svh;
+      --showcase-video-hold: 140svh;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .showcase-stage {
+      --showcase-reveal-height: 360svh;
+      --showcase-video-hold: 180svh;
+    }
   }
 }
 
@@ -147,6 +171,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .showcase-stage {
     height: auto;
+  }
+
+  .showcase-reveal-range {
+    display: none;
   }
 }
 
