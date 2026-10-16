@@ -21,7 +21,7 @@ export const SITE = {
   headline: "Data & AI Consultant · Content Creator",
   biography: BIOGRAPHY,
   introduction:
-    "I build and scale production AI agents and agentic solutions using emerging AI technologies. My work combines data engineering with software development.",
+    "I build and scale production AI agents and agentic solutions using emerging AI technologies. My expertise combines applied AI and data engineering to build AI system.",
   background: "Malaysian · Computer Science graduate · Former fintech engineering intern",
   studioDescription:
     "Ming Creatives is Gwee Per Ming's studio for immersive web design, business websites and apps, AI agents and data engineering, and generative-AI creative production.",
