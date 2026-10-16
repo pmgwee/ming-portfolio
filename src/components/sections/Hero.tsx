@@ -228,11 +228,11 @@ export function Hero() {
             {SITE.introduction}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button href="#ai-systems" showArrow>
-              Explore AI products
+            <Button href={SITE.instagram} showArrow target="_blank" rel="noopener noreferrer">
+              Let&apos;s Connect
             </Button>
-            <Button href="#showcase" variant="secondary">
-              View collections
+            <Button href={SITE.whatsapp} variant="secondary" target="_blank" rel="noopener noreferrer">
+              Consultation
             </Button>
           </div>
           <p className="mt-10 max-w-[46ch] text-xs leading-relaxed text-zinc-300">

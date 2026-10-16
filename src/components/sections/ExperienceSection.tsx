@@ -13,14 +13,8 @@ export function ExperienceSection() {
             id="experience-heading"
             className="text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
           >
-            Where I&apos;ve worked
+            My Career
           </h2>
-          <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-zinc-300 md:text-lg">
-            At iFAST, I built a passport-expiry compliance pipeline and mapped
-            an investor-classification change across account journeys. The
-            experience below includes creative production at Yierming, a
-            separate studio from Ming Creatives.
-          </p>
         </div>
 
         <div className="mt-12 border-t border-white/15">

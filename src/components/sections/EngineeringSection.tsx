@@ -69,12 +69,8 @@ export function EngineeringSection() {
             id="engineering-heading"
             className="text-[clamp(2rem,4.2vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
           >
-            AI products in use.
+            My Works
           </h2>
-          <p className="mt-5 max-w-[64ch] text-base leading-relaxed text-zinc-300 md:text-lg">
-            Five systems, each with a different job. Start with what it does;
-            open the case study for my contribution, architecture, and evidence.
-          </p>
         </div>
 
         <div className="mt-12 border-t border-white/15">

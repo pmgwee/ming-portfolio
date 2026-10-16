@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { SITE } from "@/lib/seo";
 
 /**
  * Layer 2 — the sharp centered headline that sits in front of the image field
@@ -35,8 +36,10 @@ export function HeroText({
 
       <div ref={buttonsRef} className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Button
-          href="#services"
+          href={SITE.studioExploreUrl}
           showArrow
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Explore the studio
         </Button>

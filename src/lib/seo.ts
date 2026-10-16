@@ -21,7 +21,7 @@ export const SITE = {
   headline: "Data & AI Consultant · Content Creator",
   biography: BIOGRAPHY,
   introduction:
-    "I build and scale production AI agents and agentic solutions using emerging AI technologies. My expertise combines applied AI and data engineering to build AI system.",
+    "I build and scale production AI agents and data solutions using emerging AI technologies. I translate real-world business needs into end-to-end systems, combining applied AI with data engineering.",
   background: "Malaysian · Computer Science graduate · Former fintech engineering intern",
   studioDescription:
     "Ming Creatives is Gwee Per Ming's studio for immersive web design, business websites and apps, AI agents and data engineering, and generative-AI creative production.",
@@ -30,6 +30,7 @@ export const SITE = {
   linkedin: "https://www.linkedin.com/in/gweeperming/",
   github: "https://github.com/pmgwee",
   instagram: "https://www.instagram.com/ming.creatives/",
+  studioExploreUrl: "https://www.instagram.com/yier.ming/",
   whatsapp: "https://wa.me/message/DFUGF3HXISNEF1",
   gscVerification: "VY-sT_74iIU6P13LMHLRgPbYhsEdm9uOKgkpgg_QtFs",
   keywords: [
@@ -100,7 +101,7 @@ export const SITE = {
     },
     {
       q: "What AI and software work can recruiters explore?",
-      a: "The AI Products section features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
+      a: "My Works features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
       q: "What does his Data & AI consulting focus on?",
@@ -112,7 +113,7 @@ export const SITE = {
     },
     {
       q: "Where can I follow Ming's content?",
-      a: "Gwee Per Ming is building his content creation practice on Instagram as @ming.creatives, alongside his Data & AI consulting and creative studio work. The Instagram profile is linked in the studio section and footer.",
+      a: "Gwee Per Ming is building his content creation practice on Instagram as @ming.creatives, alongside his Data & AI consulting and creative studio work. The profile is linked through Let's Connect in the introduction and the Instagram link in the footer.",
     },
     {
       q: "How can I discuss a Ming Creatives project?",

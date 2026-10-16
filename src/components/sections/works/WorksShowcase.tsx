@@ -64,12 +64,8 @@ export function WorksShowcase() {
           id="earlier-work-heading"
           className="mt-3 text-[clamp(2rem,4.2vw,3.75rem)] font-semibold tracking-[-0.04em] text-zinc-100"
         >
-          Side projects
+          Prototype/MVP
         </h2>
-        <p className="mt-4 max-w-[64ch] text-base leading-relaxed text-zinc-300">
-          Early products and prototypes that shaped the work I build today.
-          Each card shows its current status.
-        </p>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PROJECTS.map((project) => {

@@ -41,12 +41,12 @@ export function ServicesSection() {
             Ming Creatives is my studio for digital and creative work. Alongside
             my Data &amp; AI consulting, I am building my content creation practice as{" "}
             <a
-              href={SITE.instagram}
+              href={SITE.studioExploreUrl}
               target="_blank"
               rel="noopener noreferrer me"
               className="text-zinc-100 underline decoration-white/40 underline-offset-4 hover:decoration-white"
             >
-              @ming.creatives on Instagram
+              @yier.ming on Instagram
             </a>.
           </p>
         </motion.div>
