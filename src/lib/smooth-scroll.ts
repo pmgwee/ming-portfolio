@@ -16,6 +16,14 @@ export function setLenis(instance: Lenis | null) {
   lenisInstance = instance;
 }
 
+/** Suspend the existing scroll owner while a native gallery dialog is open. */
+export function suspendPageScroll() {
+  const instance = lenisInstance;
+  const wasStopped = instance?.isStopped;
+  instance?.stop();
+  return () => { if (instance && !wasStopped) instance.start(); };
+}
+
 /** Chapter controls use the existing scroll owner; its speed settings stay intact. */
 export function scrollToPosition(top: number) {
   if (typeof window === "undefined") return;

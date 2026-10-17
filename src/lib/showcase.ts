@@ -129,6 +129,14 @@ export const FIELD = {
   SCROLL_VEL_GAIN: 0.0002,
   /** Cap on the scroll boost (added advance-rate) so frantic scrolling can't overclock the field. */
   SCROLL_BOOST_MAX: 0.5,
+  /**
+   * Hovering a card never stops the field: it eases the whole flow down to
+   * this fraction of its pace so the focused card stays easy to click, then
+   * eases back when the pointer leaves. Set to 1 for no slowdown.
+   */
+  HOVER_FLOW_MULT: 0.45,
+  /** Time constant (s) of that ease in and out. */
+  HOVER_EASE_S: 0.35,
   /** Fraction of the pool assigned to the fast "burst" tier. */
   BURST_FRACTION: 0.5,
   // Responsive card dimensions live in `.showcase-tile` in globals.css.
