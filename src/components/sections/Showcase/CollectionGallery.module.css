@@ -56,8 +56,17 @@
 .field { --pull: cubic-bezier(.16, 1, .3, 1); }
 .tile {
   cursor: pointer; padding: 0; background: #101219;
-  transition: filter 600ms var(--pull), box-shadow 500ms var(--pull);
+  transition: box-shadow 500ms var(--pull);
 }
+/* The field recedes under ONE veil that fades, never a filter on every
+   moving card. A filter transition across ~23 cards kept their styles dirty,
+   so the loop's per-frame hit test forced a synchronous recalc of all of
+   them and frames dropped every time focus was released. */
+.veil {
+  position: absolute; inset: 0; z-index: 55; pointer-events: none;
+  background: rgb(7 8 12 / .58); opacity: 0; transition: opacity 600ms var(--pull);
+}
+.tile:focus-visible, .staticField .tile:hover { z-index: 61 !important; }
 .tile img, .tile video { pointer-events: none; transform: scale(1.001); transition: transform 1100ms var(--pull); }
 .tile::after {
   content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
@@ -73,9 +82,9 @@
 }
 .tileLabel svg { width: 16px; height: 16px; transform: translate(-3px, 3px); transition: transform 620ms var(--pull); }
 
-.field[data-focus] .tile:not([data-hovered]),
-.field:has(.tile:focus-visible) .tile:not(:focus-visible),
-.staticField:has(.tile:hover) .tile:not(:hover) { filter: brightness(.42) saturate(.7); }
+.field[data-focus] > .veil,
+.field:has(.tile:focus-visible) .veil,
+.staticField:has(.tile:hover) > .veil { opacity: 1; }
 
 .tile[data-hovered], .tile:focus-visible, .staticField .tile:hover {
   --card-shadow: 0 28px 56px -18px rgb(0 0 0 / .75), 0 10px 22px -10px rgb(0 0 0 / .55);

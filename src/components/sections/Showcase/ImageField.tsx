@@ -543,9 +543,12 @@ export function ImageField({
               </button>
             );
           })}
+          <span className={styles.veil} aria-hidden="true" />
         </div>
       ) : (
-        Array.from({ length: N }).map((_, i) => {
+        <>
+        <span className={styles.veil} aria-hidden="true" />
+        {Array.from({ length: N }).map((_, i) => {
           const src = tileAt(i);
           // A card holds both elements; only the one matching the current tile
           // is shown. The rAF loop toggles them via applyMedia() on each cycle.
@@ -610,7 +613,8 @@ export function ImageField({
               <span className={styles.tileLabel} aria-hidden="true"><ArrowUpRight /></span>
             </button>
           );
-        })
+        })}
+        </>
       )}
     </div>
   );
