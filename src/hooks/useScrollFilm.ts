@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { HERO_FILM } from "@/lib/hero-story";
+import { HERO_FILM, filmTimeAt } from "@/lib/hero-story";
 
 /** One seek in flight; captions advance only when its frame is decoded. */
 export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
@@ -47,7 +47,7 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
       const travel = section.offsetHeight - window.innerHeight;
       const progress = travel > 0 ? Math.min(1, Math.max(0, -section.getBoundingClientRect().top / travel)) : 0;
       const duration = Number.isFinite(video.duration) ? video.duration : HERO_FILM.duration;
-      desired = progress * Math.max(0, Math.min(duration, HERO_FILM.duration) - 1 / 30);
+      desired = Math.min(filmTimeAt(progress), Math.max(0, Math.min(duration, HERO_FILM.duration) - 1 / 30));
       seek();
     };
     const onScroll = () => { if (!scrollFrame) scrollFrame = requestAnimationFrame(update); };

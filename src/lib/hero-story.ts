@@ -4,7 +4,7 @@ import { SITE } from "./seo";
 export const HERO_FILM = {
   desktop: "/hero/studio-journey-v1/film-1080.mp4",
   mobile: "/hero/studio-journey-v1/film-720.mp4",
-  poster: "/hero/studio-journey-v1/poster.webp",
+  poster: "/hero/studio-journey-v1/opening.webp",
   ending: "/hero/studio-journey-v1/ending.webp",
   duration: 15,
 } as const;
@@ -32,7 +32,7 @@ export const HERO_CHAPTERS = [
     id: "explore", number: "04", label: "Explore", title: "Choose your next chapter.",
     body: "Explore my engineering work, step inside the studio, or tell me what you want to build.",
     action: "Start a conversation", href: "#contact",
-    start: 12.95, end: 15.5, jump: 14.2, side: "index",
+    start: 13.4, end: 15.5, jump: 14.2, side: "index",
   },
 ] as const;
 
@@ -43,6 +43,47 @@ export const HERO_DESTINATIONS = [
   { label: "Experience", href: "#experience", detail: "Background & practice" },
   { label: "Side Project", href: "#side-project", detail: "Earlier experiments" },
 ] as const;
+
+/**
+ * Film time → share of the hero's scroll travel, interpolated linearly between
+ * keyframes (user request, 17 Oct 2026). The curtain/opening (0–2.5s) takes about
+ * half its former scroll; the glass "ming" lettering forming (12.2–13.4s) takes
+ * about 1.6x, before 04 Explore appears. Everything between keeps roughly the
+ * previous rate, so section heights and Lenis settings stay unchanged.
+ */
+export const HERO_PACING = [
+  [0, 0],
+  [2.5, 0.085],
+  [12.2, 0.759],
+  [13.4, 0.889],
+  [15, 1],
+] as const;
+
+export function filmTimeAt(progress: number) {
+  const p = Math.min(1, Math.max(0, progress));
+  for (let i = 1; i < HERO_PACING.length; i++) {
+    const [t0, p0] = HERO_PACING[i - 1];
+    const [t1, p1] = HERO_PACING[i];
+    if (p <= p1) return t0 + (t1 - t0) * ((p - p0) / (p1 - p0));
+  }
+  return HERO_FILM.duration;
+}
+
+export function progressAt(time: number) {
+  const t = Math.min(HERO_FILM.duration, Math.max(0, time));
+  for (let i = 1; i < HERO_PACING.length; i++) {
+    const [t0, p0] = HERO_PACING[i - 1];
+    const [t1, p1] = HERO_PACING[i];
+    if (t <= t1) return p0 + (p1 - p0) * ((t - t0) / (t1 - t0));
+  }
+  return 1;
+}
+
+/** Chapter shown on the timeline for a film time ("Prologue" before 01). */
+export function chapterLabelAt(time: number) {
+  const chapter = [...HERO_CHAPTERS].reverse().find((item) => time >= item.start);
+  return chapter ? `${chapter.number} · ${chapter.label}` : "Prologue";
+}
 
 export function chapterOpacity(time: number, start: number, end: number) {
   const fade = 0.22;

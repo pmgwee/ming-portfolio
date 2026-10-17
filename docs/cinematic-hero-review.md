@@ -29,6 +29,32 @@ Current screenshots: `.impeccable/review/curtain-refinement/`. No production set
 
 Finish-pass screenshots use the `final-` prefix in `.impeccable/review/curtain-refinement/` (desktop closed/hover/returned/ending, mobile returned, landscape open and 4s/6s/9s/14.95s chapters).
 
+### Feedback round — curtain brightness, timeline labels, pacing curve
+
+User feedback on the preview: the closed curtain looked darker than the film, the opened introduction hid the room behind a dark field, the timeline's chapter/clock labels should appear only on hover, the opening took four to five scrolls before the film began, and the glass “ming” lettering should get about two scrolls before 04 Explore.
+
+- **Curtain matches the film.** `poster.webp` was frame 0, still inside the film's fade-up (average luma 39 against about 80 a quarter-second later). It is replaced by `opening.webp`, frame 8 (0.27s) from the supplied source: fully bright, with the curtain still closed. This frame is the hero still, loading/failure image and curtain source. Beads are extracted at full strength, the plate is unblurred while closed (up to 3px as strands part), and both canvases use the film's 45% framing. Closed, the canvas now recomposes the film frame.
+- **Room stays visible when opened.** The opening scrim dropped from 68% to 38% centre opacity and fades to transparent. A two-layer text shadow keeps the copy legible, and buttons carry no shadow.
+- **Timeline labels on hover.** The fixed chapter label and clock are gone. A scrub tip shows the chapter and time only while the rail is hovered, keyboard-focused or dragged. A mouse previews the hovered position; otherwise the tip sits at the thumb. `aria-valuetext` now includes the chapter name.
+- **Pacing curve (user-requested).** Section heights stay 1320/1140/950vh and Lenis is unchanged. Scroll now maps to film time through the piecewise-linear `HERO_PACING`:
+  - 0–2.5s (curtain and opening): 8.5% of travel, about 104vh on desktop, down from about 203vh.
+  - 12.2–13.4s (glass lettering): 13%.
+  - 04 Explore moved from 12.95s to 13.4s, so the lettering holds the screen alone for about 150vh (previously about 53vh).
+  - The cushion, TV and passenger section keeps roughly its earlier rate.
+  - Timeline jumps use the inverse curve.
+- **Spacing.** At 1920x982 “Scroll to step inside” sat right on top of the curtain control. The opening's bottom padding grew, and heights at or below 700px (from 650px) hide the scroll prompt; 1366x660 previously touched.
+- **Verified** with headless Chromium on a local production build:
+  - The real pointer sweep opens the curtain to 0.9.
+  - The tip is hidden at rest, reads “02 · The studio / 00:06 / 00:15” when hovering 40% along the rail, and hides again on leave.
+  - Pacing samples land on the curve (8.5% → 2.50s; 75.9% → 12.20s; 88.9% → 13.40s), and Explore stays hidden until after 13.4s.
+  - Range End still reaches 15s, and the reader round trip returns closed.
+  - Intro/control clearance holds at 1920x982, 1440x900, 1366x768, 1280x720, 1366x660 and 1024x768; portrait mobile and landscape were also checked.
+  - The earlier regression suite (navbar reveal/reverse, mobile tap, reader focus) still passes, with no horizontal overflow.
+  - Build and `tsc` pass. The only console item remains the out-of-scope framer-motion #418 under reduced motion.
+- **Unverified:** physical iPhone Safari / Instagram behavior, and how “one scroll” feels on the user's own trackpad or mouse. The curve's scroll lengths are measured in vh, not gestures.
+
+Screenshots: `v2-` prefix in `.impeccable/review/curtain-refinement/`.
+
 ## Film and live content
 
 The film is Ming's supplied `hf_20261017_041740_2fe5f4c1-8436-4c2f-b484-7a33b69d8210.mp4`. All 450 frames retain the original order and 30fps timing. Two silent H.264 encodes (1080p desktop, 720p mobile) add frequent keyframes for seeking. No zooms, fades, cuts or face changes were added to the film. Any ambiguity in the generated glass lettering or character remains in the supplied source.
@@ -41,7 +67,7 @@ The introductory identity, corner studio branding, numbering, headings, paragrap
 | 01 About me | 2.90–4.95s | Malaysian CS graduate and production AI/software work → Experience |
 | 02 The studio | 5.05–6.35s | Ming Creatives, immersive sites, apps, 3D and generative-AI creative work → Collections |
 | 03 Production AI | 7.35–10.55s | Current SITE introduction, agent/data work → AI Products |
-| 04 Explore | 12.95s to end | Collections, Services, AI Products, Experience, Side Project; studio inquiry |
+| 04 Explore | 12.95s to end (13.4s since the feedback round) | Collections, Services, AI Products, Experience, Side Project; studio inquiry |
 
 The in-between moments intentionally leave the artwork unobstructed, including the TV portal and passenger/light transition. Cue intervals are maintained in `src/lib/hero-story.ts`; readable copy is tailored from the existing `SITE` identity and public portfolio facts. No new metrics, awards or employer-held roles were introduced.
 

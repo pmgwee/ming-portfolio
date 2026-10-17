@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FilmStrip } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { useScrollFilm } from "@/hooks/useScrollFilm";
-import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterOpacity } from "@/lib/hero-story";
+import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, progressAt } from "@/lib/hero-story";
 import { SITE } from "@/lib/seo";
 import { scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
@@ -12,8 +12,9 @@ import { CurtainLayer, type CurtainController } from "./CurtainLayer";
 
 /**
  * Experience: the supplied curtain/TV/ship film leads; HTML restores its four
- * chapters. The film-only section height (1320/1140/950vh) is a user-requested
- * slower mapping; Lenis settings are unchanged.
+ * chapters. The film-only section height (1320/1140/950vh) and the HERO_PACING
+ * curve (short opening, long glass-lettering reveal) are user-requested; Lenis
+ * settings are unchanged.
  * Signature: decoded video frames, rather than timers, drive the chapter copy.
  * First viewport: artwork first; the introduction sits behind an interactive
  * curtain layer, with a bottom timeline rail framing the film.
@@ -28,11 +29,12 @@ export function Hero() {
   const openingRef = useRef<HTMLDivElement>(null);
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLInputElement>(null);
-  const timeRef = useRef<HTMLSpanElement>(null);
+  const tipRef = useRef<HTMLSpanElement>(null);
+  const tipLabelRef = useRef<HTMLSpanElement>(null);
+  const tipTimeRef = useRef<HTMLSpanElement>(null);
+  const previewingRef = useRef(false);
   const readButtonRef = useRef<HTMLButtonElement>(null);
   const wasReadingRef = useRef(false);
-  const activeRef = useRef("intro");
-  const [active, setActive] = useState("intro");
   const [reduced, setReduced] = useState(false);
   const [reading, setReading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -77,6 +79,14 @@ export function Hero() {
     paintOpening();
   }, [staticMode, paintOpening]);
 
+  // Streaming-style scrub tip: chapter + time at a film position, placed along the rail.
+  const placeTip = useCallback((time: number) => {
+    const fraction = Math.min(1, Math.max(0, time / HERO_FILM.duration));
+    tipRef.current?.style.setProperty("--tip", String(fraction));
+    if (tipLabelRef.current) tipLabelRef.current.textContent = chapterLabelAt(time);
+    if (tipTimeRef.current) tipTimeRef.current.textContent = `00:${String(time > 14.9 ? 15 : Math.floor(time)).padStart(2, "0")} / 00:15`;
+  }, []);
+
   const paint = useCallback((time: number) => {
     filmTimeRef.current = time;
     curtainRef.current?.setTime(time);
@@ -95,18 +105,25 @@ export function Hero() {
     if (progressRef.current) {
       progressRef.current.value = String(time);
       progressRef.current.style.setProperty("--played", `${time / HERO_FILM.duration * 100}%`);
-      progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds`);
+      progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds, ${chapterLabelAt(time)}`);
     }
-    if (timeRef.current) timeRef.current.textContent = `00:${String(time > 14.9 ? 15 : Math.floor(time)).padStart(2, "0")} / 00:15`;
+    if (!previewingRef.current) placeTip(time);
     if (sectionRef.current) {
       sectionRef.current.dataset.chapter = next;
       sectionRef.current.style.setProperty("--film-focus", time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%");
     }
-    if (activeRef.current !== next) {
-      activeRef.current = next;
-      setActive(next);
-    }
-  }, [paintOpening]);
+  }, [paintOpening, placeTip]);
+
+  const preview = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    previewingRef.current = true;
+    placeTip((event.clientX - rect.left) / rect.width * HERO_FILM.duration);
+  };
+  const endPreview = () => {
+    previewingRef.current = false;
+    placeTip(Number(progressRef.current?.value ?? 0));
+  };
 
   const { ready, failed, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint });
 
@@ -115,7 +132,7 @@ export function Hero() {
     if (!section) return;
     const travel = section.offsetHeight - window.innerHeight;
     const top = window.scrollY + section.getBoundingClientRect().top;
-    scrollToPosition(top + Math.max(0, travel) * (time / HERO_FILM.duration));
+    scrollToPosition(top + Math.max(0, travel) * progressAt(time));
   };
 
   const toggleReading = () => {
@@ -181,8 +198,8 @@ export function Hero() {
 
         <div className={styles.toolbar}>
           <div className={styles.timeline}>
-            <div className={styles.timelineLabel}><span>{active === "intro" ? "Prologue" : `${HERO_CHAPTERS.find((chapter) => chapter.id === active)?.number} · ${HERO_CHAPTERS.find((chapter) => chapter.id === active)?.label}`}</span><span ref={timeRef}>00:00 / 00:15</span></div>
-            <div className={styles.rail}>
+            <div className={styles.rail} onPointerMove={preview} onPointerLeave={endPreview}>
+              <span ref={tipRef} className={styles.tip} aria-hidden="true"><span ref={tipLabelRef}>Prologue</span><span ref={tipTimeRef}>00:00 / 00:15</span></span>
               <input ref={progressRef} type="range" min="0" max="15" step="0.1" defaultValue="0" aria-label="Film position" onChange={(event) => jump(Number(event.currentTarget.value))} />
               <div className={styles.ticks} aria-hidden="true">{HERO_CHAPTERS.map((chapter) => <i key={chapter.id} style={{ left: `${chapter.start / HERO_FILM.duration * 100}%` }} />)}</div>
             </div>

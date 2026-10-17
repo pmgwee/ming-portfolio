@@ -5,7 +5,8 @@
 .curtain, .openingBackdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .openingBackdrop { z-index: 1; }
 .curtain { z-index: 3; }
-.opening { position: absolute; inset: 0; z-index: 2; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 110px 32px 150px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 68%), rgb(5 7 14 / 12%) 75%); }
+/* Light scrim only: the room behind the drawn curtain stays visible; text-shadow carries legibility. */
+.opening { position: absolute; inset: 0; z-index: 2; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 110px 32px 210px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 38%), transparent 70%); text-shadow: 0 2px 18px rgb(0 0 0 / 70%), 0 1px 3px rgb(0 0 0 / 50%); }
 .curtainTrigger { position: absolute; z-index: 4; left: 50%; bottom: 142px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; min-height: 44px; padding: 8px 4px; border-bottom: 1px solid rgb(255 255 255 / 35%); font-size: 12px; color: #f4f4f5; cursor: pointer; transition: opacity 220ms, visibility 220ms; }
 .curtainTrigger:hover { border-color: #fff; }
 .hero:not([data-chapter="intro"]) .curtainTrigger { opacity: 0; visibility: hidden; }
@@ -15,6 +16,7 @@
 .openingBody { max-width: 56ch; margin-top: 14px; font-size: 16px; line-height: 1.7; color: #eeeef1; }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
 .primary, .secondary { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-radius: 999px; padding: 11px 22px; font-size: 14px; line-height: 1.4; font-weight: 600; transition: background 180ms ease, color 180ms ease; }
+.primary, .secondary { text-shadow: none; }
 .primary { background: #fff; color: #101219; }
 .primary:hover { background: #e4e4e7; }
 .secondary { border: 1px solid rgb(255 255 255 / 50%); background: rgb(7 8 12 / 55%); }
@@ -43,9 +45,11 @@
 .contact > span { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #fff; }
 .toolbar { position: absolute; inset: auto 40px 30px; z-index: 4; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
 .timeline { width: min(480px, 60vw); }
-.timelineLabel { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 3px; font-size: 11px; color: #e4e4e7; }
-.timelineLabel > span:last-child { font-variant-numeric: tabular-nums; color: #d4d4d8; }
 .rail { position: relative; height: 44px; display: flex; align-items: center; }
+/* Chapter + time appear only while the rail is hovered, focused or dragged. */
+.tip { --tip: 0; position: absolute; z-index: 2; bottom: 34px; left: calc(var(--tip) * 100%); transform: translateX(calc(var(--tip) * -100%)); display: flex; flex-direction: column; gap: 2px; white-space: nowrap; font-size: 11px; line-height: 1.3; color: #f4f4f5; text-shadow: 0 1px 8px rgb(0 0 0 / 85%); opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+.tip > span:last-child { font-variant-numeric: tabular-nums; color: #d4d4d8; }
+.rail:hover .tip, .rail:has(input:focus-visible) .tip, .rail:has(input:active) .tip { opacity: 1; }
 .rail input { --played: 0%; position: relative; z-index: 1; appearance: none; width: 100%; height: 44px; margin: 0; border: 0; border-radius: 0; background: transparent; cursor: ew-resize; }
 .rail input::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(to right, #fff var(--played), rgb(255 255 255 / 28%) var(--played)); }
 .rail input::-moz-range-track { height: 2px; background: rgb(255 255 255 / 28%); }
@@ -110,8 +114,10 @@
   .reader { padding: 145px 24px 64px; }
   .readerChapter { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
 }
-@media (max-height: 650px) and (min-width: 769px) {
-  .opening { padding-top: 105px; padding-bottom: 85px; }
+@media (max-height: 700px) and (min-width: 769px) {
+  /* Keep the introduction clear of the curtain control above the timeline. */
+  .opening { padding-top: 96px; padding-bottom: 196px; }
+  .scrollPrompt { display: none; }
   .opening h1 { font-size: 3.5rem; margin-top: 12px; }
   .openingLine { margin-top: 14px; }
   .openingBody { font-size: 14px; }

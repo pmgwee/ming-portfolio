@@ -50,12 +50,16 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
       const scale = width <= 768 ? Math.min(width / texture.width, height / texture.height) : Math.max(width / texture.width, height / texture.height);
       const sceneWidth = texture.width * scale;
       const sceneHeight = texture.height * scale;
-      const ox = (width - sceneWidth) / 2;
+      // Same framing as the film: object-position 45% (desktop) / center 20% (mobile contain).
+      const ox = (width - sceneWidth) * (width <= 768 ? 0.5 : 0.45);
       const oy = (height - sceneHeight) * (width <= 768 ? 0.2 : 0.5);
       backContext.globalAlpha = Math.min(1, Math.max(0, (2.5 - time) / 0.35));
       backContext.fillStyle = "#07080c";
       backContext.fillRect(0, 0, width, height);
-      backContext.filter = "blur(5px)";
+      // Closed, plate + strands recompose the film frame exactly; a slight blur
+      // only grows as strands part, softening the reconstructed gaps.
+      const blur = Math.min(1, open) * 3;
+      backContext.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
       backContext.drawImage(cleanPlate, ox, oy, sceneWidth, sceneHeight);
       backContext.filter = "none";
       const strip = width <= 768 ? 16 : 10;
@@ -138,7 +142,7 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
         const r = pixels.data[i], g = pixels.data[i + 1], b = pixels.data[i + 2];
         const gold = r > 18 && g / Math.max(r, 1) > 0.68 && b / Math.max(r, 1) < 0.78 && r > b + 5;
         mask[i / 4] = gold ? 1 : 0;
-        pixels.data[i + 3] = gold ? Math.min(255, (r - b) * 11) : 0;
+        pixels.data[i + 3] = gold ? 255 : 0;
       }
       source.putImageData(pixels, 0, 0);
       // Reconstruct only the narrow strand pixels from neighboring room pixels.

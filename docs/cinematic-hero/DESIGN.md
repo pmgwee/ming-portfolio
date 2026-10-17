@@ -138,19 +138,21 @@ The static reader has its own readable hierarchy: identity (`clamp(2.5rem, 6vw, 
 
 The moving version has one sticky stage of (100svh). At the user's explicit request for slower playback, this film-only section is (1320vh) above tablet width, (1140vh) at widths at or below (1024px), and (950vh) at or below (768px). These override the global `.scroll-animation` defaults (560/490/420vh), which remain unchanged in `globals.css`. Usable travel is about 2.65 times the first preview. Film progress uses `section.offsetHeight - window.innerHeight`; these heights are playback settings, not spare whitespace.
 
+Scroll maps to film time through `HERO_PACING` in `hero-story.ts`, a piecewise-linear curve the user asked for. The curtain and opening (0–2.5s) take (8.5%) of travel, about 104vh on desktop and roughly half the earlier share. The glass “ming” lettering forming (12.2–13.4s) takes (13%), so it holds the screen for about 150vh before 04 Explore appears. The film between keeps roughly its earlier rate. `filmTimeAt` drives seeking; `progressAt` inverts it for timeline jumps.
+
 Desktop uses a cover-fit film, a centered opening identity (hidden until the curtain opens), a centered “Draw the curtain” control above the toolbar, and a bottom toolbar with the timeline on the left and “Read without motion” on the right. There are no corner captions or wordmark over the film. Chapter overlays alternate left, right, left, then expand into an ending index. Regular chapter width is `min(530px, 44vw)`, aligned against a centered (1320px) composition with a minimum (40px) chapter inset. The desktop index has five equal destination columns. Film focal position changes with decoded time: (45%) before (5.1s), (36%) until (6.7s), then (50%).
 
 Tablet widths (769–1024px) keep the cover-fit desktop framing, so some scene edges are cropped there. At (768px) and below, the complete landscape film uses `object-fit: contain` and `object-position: center 20%` above the lower reading area. Preserve the TV, passenger and ending lettering in frame. Copy uses the mobile gutter; destination links become two columns and hide supplementary detail, and the toolbar stacks a full-width timeline above the read button. Do not substitute a portrait cover crop.
 
-Short desktop viewports, at heights up to (650px) and widths from (769px), tighten vertical spacing and type to keep copy above the toolbar. Viewports up to (500px) tall, such as landscape phones, go further: the opening is top-aligned without the scroll prompt, the curtain control moves to the free top-right corner, and chapter/index type is compacted so headings stay in frame above the timeline. These are height adaptations, not changes to film duration or scroll distance.
+Short desktop viewports, at heights up to (700px) and widths from (769px), tighten vertical spacing and type and hide the scroll prompt, keeping copy clear of the curtain control above the toolbar. Viewports up to (500px) tall, such as landscape phones, go further: the opening is top-aligned without the scroll prompt, the curtain control moves to the free top-right corner, and chapter/index type is compacted so headings stay in frame above the timeline. These are height adaptations, not changes to film duration or scroll distance.
 
 The static reader collapses the outer height to auto, hides the sticky stage, and exposes identity followed by all four chapters. Its centered container is capped at (1400px), with desktop padding (160px 40px 80px); chapter rows use a (1:3) grid. Mobile padding becomes (145px 24px 64px) and rows stack into one column.
 
-**The Pacing Rule.** The 1320/1140/950vh travel is a user-authorized motion setting. Keep it, and Lenis at wheel multiplier (1), touch multiplier (1.1) and lerp (0.1), unless the user asks for a pacing change; layout refinement does not authorize retiming the film.
+**The Pacing Rule.** The 1320/1140/950vh travel and the `HERO_PACING` curve are user-authorized motion settings. Keep it, and Lenis at wheel multiplier (1), touch multiplier (1.1) and lerp (0.1), unless the user asks for a pacing change; layout refinement does not authorize retiming the film.
 
 ## Elevation & Depth
 
-Depth comes from the supplied CGI scene, not invented floating UI panels. A directional dark film scrim and local radial contrast fields support live text. The ending index uses a broader bottom gradient; mobile chapter copy uses a denser linear scrim. These are readability layers, not replacement effects applied to the film.
+Depth comes from the supplied CGI scene, not invented floating UI panels. A directional dark film scrim and local radial contrast fields support live text. Behind the opened introduction the field is deliberately light (`rgb(5 7 14 / 38%)` fading to transparent) so the room stays visible; a two-layer text shadow carries legibility. Buttons have no text shadow. The ending index uses a broader bottom gradient; mobile chapter copy uses a denser linear scrim. These are readability layers, not replacement effects applied to the film.
 
 The curtain is the one deliberate foreground layer: canvas strands (z-index 3) above the introduction (2), with a softly blurred reconstructed room plate (1) behind it. Chapter text uses a subtle black text shadow. Controls separate through translucency and fine white rules, without a card-shadow system or backdrop blur. The sidecar records actual shadow and gradient extensions; no new shadow scale is implied.
 
@@ -168,7 +170,7 @@ The opening routes are “Explore AI Products” to `#ai-systems` and “Enter t
 
 ### Interactive curtain
 
-The opening identity starts hidden, inert and `aria-hidden`. `CurtainLayer` extracts warm, low-saturation gold bead pixels from the actual opening poster into a strand texture and reconstructs a room plate behind them from neighbouring pixels. Strands are sliced into short rows and pulled sideways by a spring toward the target opening; pointer proximity adds independent sway.
+The opening identity starts hidden, inert and `aria-hidden`. `CurtainLayer` takes `opening.webp`, the film at 0.27s: the first fully bright frame after the fade-up, with the curtain still closed. It extracts the gold bead pixels at full strength into a strand texture and reconstructs a room plate behind them from neighbouring pixels. Both are drawn with the film's own framing (45% horizontal focus on desktop; contain, center 20% on mobile). Closed, plate and strands recompose the film frame exactly, at the film's brightness and without blur. Strands are sliced into short rows and pulled sideways by a spring toward the target opening; pointer proximity adds independent sway. As they part, the plate gains at most (3px) of blur to soften the reconstructed gaps.
 
 - **Pointer:** fine pointers reveal up to (0.9) while hovering and close on leave.
 - **Touch and keyboard:** a native “Draw the curtain” / “Close the curtain” button (`aria-controls="hero-introduction"`, `aria-expanded`) latches the curtain fully open or closed.
@@ -179,7 +181,7 @@ It is an image-derived effect, not cloth physics, and the MP4 files are unchange
 
 ### Signature scroll film and cues
 
-The source is the user-supplied `hf_20261017_041740_2fe5f4c1-8436-4c2f-b484-7a33b69d8210.mp4`. The review records (450 frames), original (30fps) timing and (15s) duration. Silent H.264 review encodes and the poster are versioned under `public/hero/studio-journey-v1/`; desktop uses `film-1080.mp4`, mobile uses `film-720.mp4`, and loading/failure and the curtain texture use `poster.webp`. An `ending.webp` path is declared but is not rendered by this Hero. These assets are independent of the old CloudFront frame sequence.
+The source is the user-supplied `hf_20261017_041740_2fe5f4c1-8436-4c2f-b484-7a33b69d8210.mp4`. The review records (450 frames), original (30fps) timing and (15s) duration. Silent H.264 review encodes and the poster are versioned under `public/hero/studio-journey-v1/`; desktop uses `film-1080.mp4`, mobile uses `film-720.mp4`, and the hero still, loading/failure state and curtain texture use `opening.webp` (frame 8). It replaced `poster.webp`, which was frame 0, still darkened by the opening fade-up. An `ending.webp` path is declared but is not rendered by this Hero. These assets are independent of the old CloudFront frame sequence.
 
 No zoom, cut, face alteration, or additional film fade was introduced. The artwork is decorative (`aria-hidden` video, empty-alt poster). The former visible captions (“ming.creatives / Independent mind. Creative studio.” and “AI-created studio film · imagined character”) were removed at the user's request; the source remains AI-generated artwork and is not presented as a documentary portrait or a product screenshot.
 
@@ -189,17 +191,18 @@ No zoom, cut, face alteration, or additional film fade was introduced. The artwo
 | 01 About me | 2.90–4.95s | Left; Experience |
 | 02 The studio | 5.05–6.35s | Right; Collections |
 | 03 Production AI | 7.35–10.55s | Left; AI Products |
-| 04 Explore | 12.95s through film end | Wide ending index; portfolio destinations / studio inquiry |
+| Glass “ming” lettering (artwork only) | 12.2–13.4s | No overlay; lengthened in scroll |
+| 04 Explore | 13.4s through film end | Wide ending index; portfolio destinations / studio inquiry |
 
-The final cue's configured end is (15.5s), intentionally beyond the media duration so it remains readable at the end. Chapter fade-in/out uses (0.22s) of film time with at most (10px) vertical reveal. Artwork-only gaps preserve the cushion, TV portal and passenger/light transitions. The `jump` values in `hero-story.ts` belonged to the removed chapter buttons and are currently unused.
+04 Explore moved from 12.95s to 13.4s so the glass lettering finishes forming before the index appears. The final cue's configured end is (15.5s), intentionally beyond the media duration so it remains readable at the end. Chapter fade-in/out uses (0.22s) of film time with at most (10px) vertical reveal. Artwork-only gaps preserve the cushion, TV portal and passenger/light transitions. The `jump` values in `hero-story.ts` belonged to the removed chapter buttons and are currently unused.
 
-Scroll maps linearly into the media duration minus one (1/30s) frame. Only one seek is in flight; `seeked` and the loaded frame's `currentTime` drive the text, focal position, curtain time and timeline. Copy does not follow a separate timer or independent interpolation loop. Stopping scroll holds the chapter; reversing it retraces the story. Lenis is driven by the existing GSAP ticker.
+Scroll maps through `HERO_PACING` into the media duration minus one (1/30s) frame. Only one seek is in flight; `seeked` and the loaded frame's `currentTime` drive the text, focal position, curtain time and timeline. Copy does not follow a separate timer or independent interpolation loop. Stopping scroll holds the chapter; reversing it retraces the story. Lenis is driven by the existing GSAP ticker.
 
 ### Timeline and focus
 
-The bottom toolbar holds one minimalist streaming-style timeline and “Read without motion.” It replaces the earlier top progress line and chapter-pill menu. The timeline is a native range input labelled “Film position” (0–15s in 0.1s steps, `aria-valuetext` in seconds) with a visually thin rail inside a (44px) interaction height. Above it sit the current chapter name (“Prologue” before 01, then “01 · About me” and so on) and a decoded-frame elapsed clock that reads 00:15 / 00:15 at the end; tick marks sit at each chapter start.
+The bottom toolbar holds one minimalist streaming-style timeline and “Read without motion.” It replaces the earlier top progress line and chapter-pill menu. The timeline is a native range input labelled “Film position” (0–15s in 0.1s steps, `aria-valuetext` in seconds) with a visually thin rail inside a (44px) interaction height; tick marks sit at each chapter start. At rest only the rail shows. A streaming-style scrub tip appears above the rail while it is hovered, keyboard-focused or dragged. It shows the chapter name (“Prologue” before 01, then “01 · About me” and so on) and the time (00:06 / 00:15). With a mouse or pen it follows the cursor and previews the hovered position. Otherwise it sits at the thumb with the decoded-frame current values, reading 00:15 / 00:15 at the end. The tip keeps its edges inside the rail. The input's `aria-valuetext` includes the chapter name, so the hidden labels lose no information for assistive technology.
 
-Changing the range calculates the matching position in the section travel and uses immediate `scrollToPosition` through Lenis, falling back to native instant scrolling. It does not start playback or add another scroll owner. Hidden opening/chapter content becomes `inert` and `aria-hidden` below opacity (0.1); its links must not remain in the keyboard sequence.
+Changing the range calculates the matching position in the section travel through `progressAt` and uses immediate `scrollToPosition` through Lenis, falling back to native instant scrolling. It does not start playback or add another scroll owner. Hidden opening/chapter content becomes `inert` and `aria-hidden` below opacity (0.1); its links must not remain in the keyboard sequence.
 
 ### Ending destinations
 
@@ -221,7 +224,7 @@ The poster loads eagerly with high fetch priority. The video begins with `preloa
 
 - **Do** preserve the supplied film's order and timing, and keep it framed as AI-generated artwork without documentary claims.
 - **Do** keep Gwee Per Ming, Ming Creatives and essential chapter copy in readable live DOM text.
-- **Do** preserve the authorized 1320/1140/950vh travel and the shared scroll owner when refining this hero.
+- **Do** preserve the authorized 1320/1140/950vh travel, the `HERO_PACING` curve and the shared scroll owner when refining this hero.
 - **Do** keep the curtain's button and scroll alternatives, and reset its state whenever the layer remounts.
 - **Do** retain full landscape framing above the mobile reading area and verify chapter/control clearance, including landscape phones.
 - **Do** preserve inert hidden chapters, visible keyboard focus and the complete static reader.
@@ -233,5 +236,6 @@ The poster loads eagerly with high fetch priority. The video begins with `preloa
 - **Don't** crop the mobile film into portrait, change the supplied character, or add unrequested film edits.
 - **Don't** replace live text with generated glass lettering or describe the imagined scene as documentary proof.
 - **Don't** retime captions with wall-clock animation, change the stage height as a spacing optimization, or make curtain interaction mandatory.
-- **Don't** reintroduce the corner captions, chapter-pill menu or top progress line, or show the navbar inside the film.
+- **Don't** reintroduce the corner captions, chapter-pill menu, top progress line or always-visible timeline labels, or show the navbar inside the film.
+- **Don't** darken the curtain source or the opened room; the closed curtain should match the film.
 - **Don't** invent achievements, private data, new identity claims or whole-site component rules.
