@@ -1,67 +1,239 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T13:25:28+08:00",
+  "generatedAt": "2026-10-17T20:00:00+08:00",
   "title": "Design System: Ming Creatives Cinematic Hero",
   "extensions": {
     "colorMeta": {
-      "film-white": { "role": "primary", "displayName": "Film White" },
-      "night": { "role": "neutral", "displayName": "Night" },
-      "control-ink": { "role": "neutral", "displayName": "Control Ink" },
-      "supporting-text": { "role": "neutral", "displayName": "Supporting Text" },
-      "quiet-text": { "role": "neutral", "displayName": "Quiet Text" },
-      "chapter-copy": { "role": "neutral", "displayName": "Chapter Copy" },
-      "link-hover": { "displayName": "Link Hover" },
-      "focus": { "displayName": "Shared Keyboard Focus" }
+      "film-white": {
+        "role": "primary",
+        "displayName": "Film White"
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night"
+      },
+      "control-ink": {
+        "role": "neutral",
+        "displayName": "Control Ink"
+      },
+      "supporting-text": {
+        "role": "neutral",
+        "displayName": "Supporting Text"
+      },
+      "quiet-text": {
+        "role": "neutral",
+        "displayName": "Quiet Text"
+      },
+      "chapter-copy": {
+        "role": "neutral",
+        "displayName": "Chapter Copy"
+      },
+      "link-hover": {
+        "displayName": "Link Hover"
+      },
+      "focus": {
+        "displayName": "Shared Keyboard Focus"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Opening Identity", "purpose": "Live Gwee Per Ming identity; mobile and short-height overrides remain scoped to the hero." },
-      "headline": { "displayName": "Chapter Headline", "purpose": "Live cinematic chapter headings, not whole-site section typography." },
-      "body": { "displayName": "Chapter Copy", "purpose": "Readable chapter paragraphs over the film." },
-      "label": { "displayName": "Chapter Label", "purpose": "Numbered chapter names." },
-      "control": { "displayName": "Hero Action", "purpose": "Primary and secondary opening action labels." },
-      "index": { "displayName": "Chapter Number", "purpose": "Tabular numeric chapter indices in Geist Mono." }
+      "display": {
+        "displayName": "Opening Identity",
+        "purpose": "Live Gwee Per Ming identity; mobile and short-height overrides remain scoped to the hero."
+      },
+      "headline": {
+        "displayName": "Chapter Headline",
+        "purpose": "Live cinematic chapter headings, not whole-site section typography."
+      },
+      "body": {
+        "displayName": "Chapter Copy",
+        "purpose": "Readable chapter paragraphs over the film."
+      },
+      "label": {
+        "displayName": "Chapter Label",
+        "purpose": "Numbered chapter names."
+      },
+      "control": {
+        "displayName": "Hero Action",
+        "purpose": "Primary and secondary opening action labels."
+      },
+      "index": {
+        "displayName": "Chapter Number",
+        "purpose": "Tabular numeric chapter indices in Geist Mono."
+      },
+      "utility": {
+        "displayName": "Timeline Utility",
+        "purpose": "Timeline chapter label, elapsed clock and read-without-motion control."
+      }
     },
     "shadows": [
-      { "name": "chapter-text", "value": "0 2px 15px rgb(0 0 0 / 75%)", "purpose": "Local live chapter readability; text-shadow, not a card elevation." },
-      { "name": "corner-text", "value": "0 2px 12px rgb(0 0 0 / 65%)", "purpose": "Quiet studio wordmark and strapline over the film; text-shadow." }
+      {
+        "name": "chapter-text",
+        "value": "0 2px 15px rgb(0 0 0 / 75%)",
+        "purpose": "Local live chapter readability; text-shadow, not a card elevation."
+      }
     ],
     "motion": [
-      { "name": "control-transition", "value": "background 180ms ease, color 180ms ease", "purpose": "Primary and secondary hover response." },
-      { "name": "film-duration", "value": "15s", "purpose": "Source-film time mapped linearly to section travel, not autoplay duration." },
-      { "name": "chapter-fade", "value": "0.22s", "purpose": "Fade at either end of each chapter's source-film cue." },
-      { "name": "chapter-reveal", "value": "10px", "purpose": "Maximum vertical chapter offset while fading." },
-      { "name": "scroll-travel-desktop", "value": "560vh", "purpose": "Original hero section height; preserve as a playback setting." },
-      { "name": "scroll-travel-tablet", "value": "490vh", "purpose": "Original hero section height at widths at or below 1024px." },
-      { "name": "scroll-travel-mobile", "value": "420vh", "purpose": "Original hero section height at widths at or below 768px; static mode overrides to auto." },
-      { "name": "lenis-preserved", "value": "wheelMultiplier: 1; touchMultiplier: 1.1; lerp: 0.1", "purpose": "Incumbent shared scroll owner; no independent smoothing loop." }
+      {
+        "name": "control-transition",
+        "value": "background 180ms ease, color 180ms ease",
+        "purpose": "Primary and secondary hover response."
+      },
+      {
+        "name": "film-duration",
+        "value": "15s",
+        "purpose": "Source-film time mapped linearly to section travel, not autoplay duration."
+      },
+      {
+        "name": "chapter-fade",
+        "value": "0.22s",
+        "purpose": "Fade at either end of each chapter's source-film cue."
+      },
+      {
+        "name": "chapter-reveal",
+        "value": "10px",
+        "purpose": "Maximum vertical chapter offset while fading."
+      },
+      {
+        "name": "scroll-travel-desktop",
+        "value": "1320vh",
+        "purpose": "User-authorized slower film section height; overrides the global 560vh default for this hero only."
+      },
+      {
+        "name": "scroll-travel-tablet",
+        "value": "1140vh",
+        "purpose": "User-authorized film section height at widths at or below 1024px (global default 490vh unchanged)."
+      },
+      {
+        "name": "scroll-travel-mobile",
+        "value": "950vh",
+        "purpose": "User-authorized film section height at widths at or below 768px (global default 420vh unchanged); static mode overrides to auto."
+      },
+      {
+        "name": "lenis-preserved",
+        "value": "wheelMultiplier: 1; touchMultiplier: 1.1; lerp: 0.1",
+        "purpose": "Incumbent shared scroll owner; no independent smoothing loop."
+      },
+      {
+        "name": "curtain-spring",
+        "value": "stiffness 65, damping 15; pointer follow 1 - exp(-12·dt)",
+        "purpose": "Strand opening spring and pointer smoothing in CurtainLayer; sleeps at rest."
+      },
+      {
+        "name": "curtain-hover-open",
+        "value": "0.9",
+        "purpose": "Maximum opening while a fine pointer hovers; the button latches to 1."
+      },
+      {
+        "name": "curtain-scroll-open",
+        "value": "1.3s",
+        "purpose": "Film time by which scrolling fully opens the curtain."
+      },
+      {
+        "name": "curtain-end",
+        "value": "2.5s",
+        "purpose": "Film time after which the curtain and room plate stop drawing and the original film shows."
+      },
+      {
+        "name": "navbar-reveal",
+        "value": "opacity 450ms ease; transform 600ms cubic-bezier(0.16, 1, 0.3, 1); translateY(-18px → 0)",
+        "purpose": "Navbar reveal once Collections enters by 32px; reduced motion removes the transform."
+      }
     ],
     "breakpoints": [
-      { "name": "compact-chapter-rail", "value": "1100px" },
-      { "name": "tablet-scroll-distance", "value": "1024px" },
-      { "name": "mobile-film-and-reader", "value": "768px" },
-      { "name": "short-desktop", "value": "(max-height: 650px) and (min-width: 769px)" }
+      {
+        "name": "tablet-scroll-distance",
+        "value": "1024px"
+      },
+      {
+        "name": "mobile-film-and-reader",
+        "value": "768px"
+      },
+      {
+        "name": "short-desktop",
+        "value": "(max-height: 650px) and (min-width: 769px)"
+      },
+      {
+        "name": "short-landscape",
+        "value": "(max-height: 500px)"
+      }
     ],
     "contrastLayers": [
-      { "name": "film-shade", "value": "linear-gradient(180deg, rgb(5 7 14 / 45%), transparent 24%, transparent 45%, rgb(5 7 14 / 65%) 82%, rgb(5 7 14 / 94%))" },
-      { "name": "opening-field", "value": "radial-gradient(ellipse at center, rgb(5 7 14 / 68%), rgb(5 7 14 / 12%) 75%)" },
-      { "name": "chapter-field", "value": "radial-gradient(ellipse at center, rgb(5 7 14 / 83%) 15%, transparent 72%)" },
-      { "name": "mobile-chapter-field", "value": "linear-gradient(transparent, rgb(5 7 14 / 88%) 22%, rgb(5 7 14 / 92%))" }
+      {
+        "name": "film-shade",
+        "value": "linear-gradient(180deg, rgb(5 7 14 / 45%), transparent 24%, transparent 45%, rgb(5 7 14 / 65%) 82%, rgb(5 7 14 / 94%))"
+      },
+      {
+        "name": "opening-field",
+        "value": "radial-gradient(ellipse at center, rgb(5 7 14 / 68%), rgb(5 7 14 / 12%) 75%)"
+      },
+      {
+        "name": "chapter-field",
+        "value": "radial-gradient(ellipse at center, rgb(5 7 14 / 83%) 15%, transparent 72%)"
+      },
+      {
+        "name": "mobile-chapter-field",
+        "value": "linear-gradient(transparent, rgb(5 7 14 / 88%) 22%, rgb(5 7 14 / 92%))"
+      }
     ],
-    "focusTreatment": { "outline": "2px solid {colors.focus}", "outlineOffset": "4px", "purpose": "Existing globals.css keyboard focus; palette primitive stays in DESIGN.md." },
+    "focusTreatment": {
+      "outline": "2px solid {colors.focus}",
+      "outlineOffset": "4px",
+      "purpose": "Existing globals.css keyboard focus; palette primitive stays in DESIGN.md."
+    },
     "filmCues": [
-      { "id": "intro", "jump": 0, "fadeStart": 2.15, "end": 2.45 },
-      { "id": "about", "start": 2.9, "end": 4.95, "jump": 3.75, "side": "left" },
-      { "id": "studio", "start": 5.05, "end": 6.35, "jump": 5.65, "side": "right" },
-      { "id": "ai", "start": 7.35, "end": 10.55, "jump": 8.9, "side": "left" },
-      { "id": "explore", "start": 12.95, "end": 15.5, "jump": 14.2, "side": "index" }
+      {
+        "id": "intro",
+        "revealedBy": "curtain",
+        "fadeStart": 2.15,
+        "end": 2.45
+      },
+      {
+        "id": "about",
+        "start": 2.9,
+        "end": 4.95,
+        "side": "left"
+      },
+      {
+        "id": "studio",
+        "start": 5.05,
+        "end": 6.35,
+        "side": "right"
+      },
+      {
+        "id": "ai",
+        "start": 7.35,
+        "end": 10.55,
+        "side": "left"
+      },
+      {
+        "id": "explore",
+        "start": 12.95,
+        "end": 15.5,
+        "side": "index"
+      }
     ],
     "scope": {
-      "surface": "Homepage cinematic hero, its controls, ending index and static reader only",
+      "surface": "Homepage cinematic hero: curtain layer, film overlays, timeline, ending index, static reader, and the navbar's hero-only hide/reveal rule",
       "designSource": "../DESIGN.md",
       "primitivePolicy": "Frontmatter owns primitive tokens. No duplicate token arrays or synthesized tonal scales. Literal values inside standalone preview CSS are render-only transcriptions of the actual components, not a second token registry.",
       "previewPolicy": "Control snippets are static visual samples, not executable film navigation. They contain no framework utilities, external icons or media downloads.",
-      "sources": ["src/components/sections/Hero.tsx", "src/components/sections/Hero.module.css", "src/lib/hero-story.ts", "src/hooks/useScrollFilm.ts", "src/lib/smooth-scroll.ts", "src/app/globals.css", "src/app/layout.tsx", "src/components/providers/SmoothScrollProvider.tsx", "src/components/ui/AnchorLink.tsx", "PRODUCT.md", "docs/cinematic-hero-review.md"],
-      "verification": "Extracted from current implementation and its recorded review; actual-phone Safari/Instagram review remains pending. Root design/product files, source and assets are not modified."
+      "sources": [
+        "src/components/sections/Hero.tsx",
+        "src/components/sections/CurtainLayer.tsx",
+        "src/components/sections/Hero.module.css",
+        "src/components/ui/Navbar.tsx",
+        "src/components/ui/Navbar.module.css",
+        "src/lib/hero-story.ts",
+        "src/hooks/useScrollFilm.ts",
+        "src/lib/smooth-scroll.ts",
+        "src/app/globals.css",
+        "src/app/layout.tsx",
+        "src/components/providers/SmoothScrollProvider.tsx",
+        "src/components/ui/AnchorLink.tsx",
+        "PRODUCT.md",
+        "docs/cinematic-hero-review.md"
+      ],
+      "verification": "Extracted from the current curtain/timeline implementation and its recorded emulated review (headless Chromium, real pointer movement). Actual-phone Safari/Instagram review remains pending. Root design/product files are not modified."
     }
   },
   "components": [
@@ -82,12 +254,20 @@
       "css": ".ds-hero-secondary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;box-sizing:border-box;padding:11px 22px;border-radius:999px;border:1px solid rgb(255 255 255 / 50%);background:rgb(7 8 12 / 55%);color:#fff;font-family:var(--font-geist-sans,Arial),sans-serif;font-size:14px;font-weight:600;line-height:1.4;text-decoration:none;transition:background 180ms ease,color 180ms ease}.ds-hero-secondary:hover{background:rgb(7 8 12 / 85%)}.ds-hero-secondary:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}@media(max-width:768px){.ds-hero-secondary{padding:11px 18px;font-size:12px}}"
     },
     {
-      "name": "Chapter Rail",
-      "kind": "nav",
-      "refersTo": "chapter-control",
-      "description": "Five semantic chapter buttons; current-step styling is shown on Intro. Live Hero wires these to immediate scroll positions.",
-      "html": "<nav class=\"ds-chapter-rail\" aria-label=\"Introduction chapters\"><button type=\"button\" aria-current=\"step\" aria-label=\"Opening: Gwee Per Ming\"><span>00</span><span class=\"ds-chapter-name\">Intro</span></button><button type=\"button\" aria-label=\"Chapter 01: About me\"><span>01</span><span class=\"ds-chapter-name\">About me</span></button><button type=\"button\" aria-label=\"Chapter 02: The studio\"><span>02</span><span class=\"ds-chapter-name\">The studio</span></button><button type=\"button\" aria-label=\"Chapter 03: Production AI\"><span>03</span><span class=\"ds-chapter-name\">Production AI</span></button><button type=\"button\" aria-label=\"Chapter 04: Explore\"><span>04</span><span class=\"ds-chapter-name\">Explore</span></button></nav>",
-      "css": ".ds-chapter-rail{display:inline-flex;align-items:center;border:1px solid rgb(255 255 255 / 25%);border-radius:999px;background:rgb(7 8 12 / 75%);padding:4px}.ds-chapter-rail button{display:flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box;padding:8px 14px;border:0;border-radius:999px;background:transparent;font-family:var(--font-geist-sans,Arial),sans-serif;font-size:12px;color:#d4d4d8;cursor:pointer}.ds-chapter-rail button>span:first-child{font-family:var(--font-geist-mono,monospace);font-size:11px;font-variant-numeric:tabular-nums}.ds-chapter-rail button[aria-current]{background:#fff;color:#101219}.ds-chapter-rail button:hover:not([aria-current]){background:rgb(255 255 255 / 12%);color:#fff}.ds-chapter-rail button:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}@media(max-width:1100px){.ds-chapter-name{display:none}.ds-chapter-rail button{min-width:44px;justify-content:center}}"
+      "name": "Curtain Trigger",
+      "kind": "button",
+      "refersTo": "curtain-trigger",
+      "description": "Native touch/keyboard alternative to pointer reveal; toggles the curtain and reports aria-expanded. Hidden after chapter 01 begins.",
+      "html": "<button type=\"button\" class=\"ds-curtain-trigger\" aria-controls=\"hero-introduction\" aria-expanded=\"false\"><span>Draw the curtain</span><svg aria-hidden=\"true\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M12 4v16m-7-7 7 7 7-7\"/></svg></button>",
+      "css": ".ds-curtain-trigger{display:flex;align-items:center;gap:14px;min-height:44px;box-sizing:border-box;padding:8px 4px;border:0;border-bottom:1px solid rgb(255 255 255 / 35%);background:transparent;color:#f4f4f5;font-family:var(--font-geist-sans,Arial),sans-serif;font-size:12px;cursor:pointer}.ds-curtain-trigger:hover{border-color:#fff}.ds-curtain-trigger:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}"
+    },
+    {
+      "name": "Film Timeline",
+      "kind": "input",
+      "refersTo": "film-timeline",
+      "description": "Native range labelled Film position (0–15s) with chapter ticks, current chapter and elapsed clock; replaces the chapter-pill menu and top progress line. Live Hero maps changes to scroll positions.",
+      "html": "<div class=\"ds-timeline\"><div class=\"ds-timeline-label\"><span>01 · About me</span><span>00:03 / 00:15</span></div><div class=\"ds-rail\"><input type=\"range\" min=\"0\" max=\"15\" step=\"0.1\" value=\"3.5\" aria-label=\"Film position\" style=\"--played:23%\"><div class=\"ds-ticks\" aria-hidden=\"true\"><i style=\"left:19.3%\"></i><i style=\"left:33.7%\"></i><i style=\"left:49%\"></i><i style=\"left:86.3%\"></i></div></div></div>",
+      "css": ".ds-timeline{width:min(480px,100%);font-family:var(--font-geist-sans,Arial),sans-serif}.ds-timeline-label{display:flex;justify-content:space-between;gap:20px;padding-bottom:3px;font-size:11px;color:#e4e4e7}.ds-timeline-label span:last-child{font-variant-numeric:tabular-nums;color:#d4d4d8}.ds-rail{position:relative;height:44px;display:flex;align-items:center}.ds-rail input{position:relative;z-index:1;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:ew-resize}.ds-rail input::-webkit-slider-runnable-track{height:2px;background:linear-gradient(to right,#fff var(--played),rgb(255 255 255 / 28%) var(--played))}.ds-rail input::-moz-range-track{height:2px;background:rgb(255 255 255 / 28%)}.ds-rail input::-moz-range-progress{height:2px;background:#fff}.ds-rail input::-webkit-slider-thumb{appearance:none;width:6px;height:6px;border-radius:50%;margin-top:-2px;background:#fff}.ds-rail input::-moz-range-thumb{width:6px;height:6px;border:0;border-radius:50%;background:#fff}.ds-rail input:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}.ds-ticks{position:absolute;inset:0;pointer-events:none}.ds-ticks i{position:absolute;top:19px;width:1px;height:8px;background:rgb(255 255 255 / 60%)}"
     },
     {
       "name": "Chapter Action",
@@ -108,30 +288,42 @@
   ],
   "narrative": {
     "northStar": "The Scroll Film",
-    "overview": "The supplied cinematic CGI film leads this homepage hero. Premium white live DOM typography introduces Gwee Per Ming and Ming Creatives without baking essential information into the artwork. This is an Experience surface: the film carries the atmosphere; the interface provides readable chapters and clear onward routes.\n\nThis document is a scoped extraction of the implemented hero on `codex/cinematic-film-hero`, not a replacement for the root `DESIGN.md` or `PRODUCT.md`. It applies only to the film, its overlays, chapter controls, ending index, and static reader. The existing site navigation and every following section remain outside its authority. The North Star names the already chosen film-led treatment; it adds no new visual direction.",
+    "overview": "The supplied cinematic CGI film leads this homepage hero. The first viewport is artwork: the introduction to Gwee Per Ming and Ming Creatives waits behind an interactive foreground curtain, and premium white live DOM typography carries every essential word. This is an Experience surface: the film carries the atmosphere; the interface provides readable chapters and clear onward routes.\n\nThis document is a scoped extraction of the implemented hero on `codex/cinematic-film-hero`, not a replacement for the root `DESIGN.md` or `PRODUCT.md`. It applies only to the film, its curtain layer, overlays, timeline, ending index, static reader, and the navbar's hero-only hide/reveal rule. The navbar's own design and every following section remain outside its authority. The North Star names the already chosen film-led treatment; it adds no new visual direction.",
     "keyCharacteristics": [
+      "Artwork first: the introduction waits behind an interactive curtain of gold bead strands.",
       "Supplied CGI film, with essential identity and chapter copy rendered as live DOM text.",
-      "White Geist typography, restrained pill controls, and local dark contrast layers.",
-      "Decoded-frame chapter cues over the preserved scroll travel, with deliberate artwork-only intervals.",
+      "White Geist typography, a single thin streaming-style timeline, and local dark contrast layers.",
+      "Decoded-frame chapter cues over a deliberately slower, user-authorized scroll travel, with artwork-only intervals.",
+      "No site navbar inside the film; it reveals as Collections enters.",
       "Full landscape framing on mobile and an equivalent motion-free reading path."
     ],
     "rules": [
-      { "name": "The Live White Type Rule", "body": "Essential hero copy stays live and legible; the film's generated lettering never substitutes for identity, chapter text or navigation.", "section": "colors" },
-      { "name": "The Pacing Rule", "body": "Preserve the existing hero travel and Lenis settings; layout refinement does not authorize accelerating the film.", "section": "layout" }
+      {
+        "name": "The Live White Type Rule",
+        "body": "Essential hero copy stays live and legible; the film's generated lettering and the curtain never substitute for identity, chapter text or navigation.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pacing Rule",
+        "body": "The 1320/1140/950vh travel is a user-authorized motion setting. Keep it and the Lenis settings unless the user asks for a pacing change; layout refinement does not authorize retiming the film.",
+        "section": "layout"
+      }
     ],
     "dos": [
-      "Do preserve the supplied film's order, timing and imagined-character attribution.",
+      "Do preserve the supplied film's order and timing, and keep it framed as AI-generated artwork without documentary claims.",
       "Do keep Gwee Per Ming, Ming Creatives and essential chapter copy in readable live DOM text.",
-      "Do preserve the original scroll distances and shared scroll owner when refining this hero.",
-      "Do retain full landscape framing above the mobile reading area and verify chapter/control clearance.",
+      "Do preserve the authorized 1320/1140/950vh travel and the shared scroll owner when refining this hero.",
+      "Do keep the curtain's button and scroll alternatives, and reset its state whenever the layer remounts.",
+      "Do retain full landscape framing above the mobile reading area and verify chapter/control clearance, including landscape phones.",
       "Do preserve inert hidden chapters, visible keyboard focus and the complete static reader.",
-      "Do treat the implementation review as recorded evidence and actual-phone review as still pending."
+      "Do treat the implementation review as recorded emulated evidence and actual-phone review as still pending."
     ],
     "donts": [
       "Don't overwrite the root design system or extend these hero-local rules to unrelated sections.",
       "Don't crop the mobile film into portrait, change the supplied character, or add unrequested film edits.",
       "Don't replace live text with generated glass lettering or describe the imagined scene as documentary proof.",
-      "Don't retime captions with wall-clock animation or shorten the stage as a spacing optimization.",
+      "Don't retime captions with wall-clock animation, change the stage height as a spacing optimization, or make curtain interaction mandatory.",
+      "Don't reintroduce the corner captions, chapter-pill menu or top progress line, or show the navbar inside the film.",
       "Don't invent achievements, private data, new identity claims or whole-site component rules."
     ]
   }

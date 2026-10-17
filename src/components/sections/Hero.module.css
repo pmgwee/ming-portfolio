@@ -1,12 +1,14 @@
-.hero { --film-focus: 50%; color: #fff; background: #07080c; }
+.hero { --film-focus: 50%; height: 1320vh; color: #fff; background: #07080c; }
 .stage { isolation: isolate; overflow: hidden; }
 .film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--film-focus) center; }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(5 7 14 / 45%), transparent 24%, transparent 45%, rgb(5 7 14 / 65%) 82%, rgb(5 7 14 / 94%)); }
-.topProgress { position: absolute; inset: 0 0 auto; height: 2px; z-index: 5; background: rgb(255 255 255 / 10%); }
-.topProgress > div { height: 100%; background: #fff; transform: scaleX(0); transform-origin: left; }
-.corner { position: absolute; top: 116px; left: max(32px, calc((100vw - 1320px) / 2)); z-index: 3; display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: rgb(255 255 255 / 85%); text-shadow: 0 2px 12px rgb(0 0 0 / 65%); }
-.wordmark { font-size: 20px; font-weight: 650; letter-spacing: -0.04em; color: #fff; }
-.opening { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 155px 32px 150px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 68%), rgb(5 7 14 / 12%) 75%); }
+.curtain, .openingBackdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.openingBackdrop { z-index: 1; }
+.curtain { z-index: 3; }
+.opening { position: absolute; inset: 0; z-index: 2; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 110px 32px 150px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 68%), rgb(5 7 14 / 12%) 75%); }
+.curtainTrigger { position: absolute; z-index: 4; left: 50%; bottom: 142px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; min-height: 44px; padding: 8px 4px; border-bottom: 1px solid rgb(255 255 255 / 35%); font-size: 12px; color: #f4f4f5; cursor: pointer; transition: opacity 220ms, visibility 220ms; }
+.curtainTrigger:hover { border-color: #fff; }
+.hero:not([data-chapter="intro"]) .curtainTrigger { opacity: 0; visibility: hidden; }
 .role { font-size: 14px; font-weight: 550; color: #e4e4e7; }
 .opening h1 { margin-top: 22px; font-size: clamp(3rem, 6vw, 6rem); line-height: 1.02; letter-spacing: -0.04em; font-weight: 650; text-wrap: balance; }
 .openingLine { margin-top: 23px; font-size: clamp(1.15rem, 2vw, 1.75rem); letter-spacing: -0.025em; font-weight: 550; }
@@ -39,14 +41,21 @@
 .destination:hover { border-color: #fff; color: #dce3ff; }
 .contact { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 14px; min-height: 44px; margin-top: 14px; font-size: 12px; color: #e4e4e7; }
 .contact > span { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #fff; }
-.toolbar { position: absolute; inset: auto 32px 24px; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-.artworkNote { width: 220px; font-size: 11px; color: #d4d4d8; }
-.chapters { display: flex; align-items: center; border: 1px solid rgb(255 255 255 / 25%); border-radius: 999px; background: rgb(7 8 12 / 75%); padding: 4px; }
-.chapters button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 999px; font-size: 12px; color: #d4d4d8; cursor: pointer; }
-.chapters button > span:first-child { font-family: var(--font-geist-mono), monospace; font-size: 11px; font-variant-numeric: tabular-nums; }
-.chapters button[aria-current] { background: #fff; color: #101219; }
-.chapters button:hover:not([aria-current]) { background: rgb(255 255 255 / 12%); color: #fff; }
-.readButton { display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; min-height: 44px; width: 220px; font-size: 12px; color: #e4e4e7; cursor: pointer; }
+.toolbar { position: absolute; inset: auto 40px 30px; z-index: 4; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+.timeline { width: min(480px, 60vw); }
+.timelineLabel { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 3px; font-size: 11px; color: #e4e4e7; }
+.timelineLabel > span:last-child { font-variant-numeric: tabular-nums; color: #d4d4d8; }
+.rail { position: relative; height: 44px; display: flex; align-items: center; }
+.rail input { --played: 0%; position: relative; z-index: 1; appearance: none; width: 100%; height: 44px; margin: 0; border: 0; border-radius: 0; background: transparent; cursor: ew-resize; }
+.rail input::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(to right, #fff var(--played), rgb(255 255 255 / 28%) var(--played)); }
+.rail input::-moz-range-track { height: 2px; background: rgb(255 255 255 / 28%); }
+.rail input::-moz-range-progress { height: 2px; background: #fff; }
+.rail input::-webkit-slider-thumb { appearance: none; width: 6px; height: 6px; border-radius: 50%; margin-top: -2px; background: #fff; transition: transform 160ms; }
+.rail input::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: #fff; }
+.rail input:hover::-webkit-slider-thumb, .rail input:focus-visible::-webkit-slider-thumb { transform: scale(1.6); }
+.ticks { position: absolute; inset: 0; pointer-events: none; }
+.ticks i { position: absolute; top: 19px; height: 8px; width: 1px; background: rgb(255 255 255 / 60%); }
+.readButton { display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; min-height: 44px; font-size: 11px; color: #e4e4e7; cursor: pointer; }
 .readButton:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
 .loading { position: absolute; right: 32px; top: 116px; font-size: 12px; color: #fff; }
 .error { position: absolute; top: 160px; right: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: calc(100% - 48px); padding: 12px 18px; border-radius: 12px; background: #101219; font-size: 13px; z-index: 4; }
@@ -62,17 +71,14 @@
 .hero[data-static="true"] .stage { display: none; }
 .hero[data-static="true"] .reader { display: block; }
 @media (max-width: 1100px) {
-  .artworkNote { width: auto; max-width: 135px; }
   .readButton { width: auto; }
-  .chapterName { display: none; }
-  .chapters button { min-width: 44px; justify-content: center; }
 }
+@media (max-width: 1024px) { .hero { height: 1140vh; } }
 @media (max-width: 768px) {
+  .hero { height: 950vh; }
   /* Preserve every part of the landscape film rather than crop away the TV,
      passenger or glass lettering. The reading area occupies the lower half. */
   .film { object-fit: contain; object-position: center 20%; }
-  .corner { top: 105px; left: 24px; font-size: 10px; }
-  .wordmark { font-size: 17px; }
   .loading { top: 110px; right: 24px; font-size: 10px; }
   .opening { padding: 150px 24px 145px; }
   .role { max-width: 30ch; font-size: 12px; }
@@ -96,26 +102,51 @@
   .destination > span { font-size: 15px; }
   .destination small { display: none; }
   .contact { margin-top: 10px; gap: 8px; }
-  .toolbar { inset: auto 20px 22px; flex-wrap: wrap; justify-content: center; column-gap: 16px; row-gap: 10px; }
-  .chapters { order: -1; }
-  .artworkNote { max-width: none; width: auto; font-size: 9px; }
+  .toolbar { inset: auto 24px 18px; gap: 5px; align-items: stretch; flex-direction: column; }
+  .timeline { width: 100%; }
+  .readButton { align-self: flex-end; }
+  .curtainTrigger { bottom: 150px; }
   .readButton { font-size: 10px; min-height: 44px; }
   .reader { padding: 145px 24px 64px; }
   .readerChapter { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
 }
 @media (max-height: 650px) and (min-width: 769px) {
-  .corner { top: 98px; }
   .opening { padding-top: 105px; padding-bottom: 85px; }
   .opening h1 { font-size: 3.5rem; margin-top: 12px; }
   .openingLine { margin-top: 14px; }
   .openingBody { font-size: 14px; }
   .actions, .scrollPrompt { margin-top: 16px; }
-  .chapter { bottom: 90px; }
+  .chapter { bottom: 110px; }
   .chapter h2 { font-size: 3rem; }
   .chapterBody { font-size: 14px; }
-  .index { bottom: 80px; }
+  .index { bottom: 112px; }
   .index h2 { font-size: 1.75rem; }
   .destinations { margin-top: 14px; }
+}
+/* Landscape phones: keep the introduction above the timeline and move the
+   curtain control into the free top corner (the navbar is hidden in the hero). */
+@media (max-height: 500px) {
+  .opening { justify-content: flex-start; padding: 22px 32px 0; }
+  .role { font-size: 11px; }
+  .opening h1 { margin-top: 8px; font-size: clamp(2.2rem, 6vw, 2.8rem); }
+  .openingLine { margin-top: 8px; font-size: 1rem; }
+  .openingBody { max-width: 64ch; margin-top: 6px; font-size: 12px; line-height: 1.55; }
+  .actions { margin-top: 14px; }
+  .primary, .secondary { min-height: 44px; padding: 9px 18px; font-size: 12px; }
+  .scrollPrompt { display: none; }
+  .curtainTrigger { left: auto; right: 28px; top: 14px; bottom: auto; transform: none; }
+  .toolbar { bottom: 10px; }
+  .chapter { bottom: 92px; padding: 0; }
+  .chapterLabel { font-size: 12px; }
+  .chapter h2 { margin-top: 6px; font-size: clamp(1.75rem, 4.2vw, 2.25rem); }
+  .chapterBody { margin-top: 8px; font-size: 13px; line-height: 1.5; }
+  .chapterAction { margin-top: 4px; }
+  .index { bottom: 92px; }
+  .index h2 { font-size: 1.5rem; }
+  .destinations { margin-top: 10px; }
+  .destination { padding: 8px 0; }
+  .destination small { display: none; }
+  .contact { margin-top: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero { height: auto; }

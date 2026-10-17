@@ -8,19 +8,27 @@ import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterOpacity } from "@/l
 import { SITE } from "@/lib/seo";
 import { scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
+import { CurtainLayer, type CurtainController } from "./CurtainLayer";
 
 /**
  * Experience: the supplied curtain/TV/ship film leads; HTML restores its four
- * chapters. Existing Geist/nav and the 560/490/420vh scroll mapping are retained.
+ * chapters. The film-only section height (1320/1140/950vh) is a user-requested
+ * slower mapping; Lenis settings are unchanged.
  * Signature: decoded video frames, rather than timers, drive the chapter copy.
- * First viewport: identity over gold curtains; quiet controls frame the artwork.
+ * First viewport: artwork first; the introduction sits behind an interactive
+ * curtain layer, with a bottom timeline rail framing the film.
  */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const curtainRef = useRef<CurtainController | null>(null);
+  const curtainRevealRef = useRef(0);
+  const filmTimeRef = useRef(0);
   const openingRef = useRef<HTMLDivElement>(null);
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const progressRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLSpanElement>(null);
   const readButtonRef = useRef<HTMLButtonElement>(null);
   const wasReadingRef = useRef(false);
   const activeRef = useRef("intro");
@@ -28,6 +36,7 @@ export function Hero() {
   const [reduced, setReduced] = useState(false);
   const [reading, setReading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [introductionOpen, setIntroductionOpen] = useState(false);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -45,13 +54,33 @@ export function Hero() {
     return () => preference.removeEventListener("change", update);
   }, []);
 
-  const paint = useCallback((time: number) => {
-    const openingOpacity = Math.min(1, Math.max(0, (2.45 - time) / 0.3));
+  const paintOpening = useCallback(() => {
+    const openingOpacity = Math.min(1, Math.max(0, (2.45 - filmTimeRef.current) / 0.3)) * curtainRevealRef.current;
     if (openingRef.current) {
       openingRef.current.style.opacity = String(openingOpacity);
       openingRef.current.inert = openingOpacity < 0.1;
       openingRef.current.setAttribute("aria-hidden", String(openingOpacity < 0.1));
     }
+  }, []);
+
+  const revealIntroduction = useCallback((amount: number) => {
+    curtainRevealRef.current = amount;
+    paintOpening();
+  }, [paintOpening]);
+
+  // CurtainLayer unmounts in static modes and remounts closed, so the trigger
+  // state and the imperative reveal must return to closed with it.
+  useEffect(() => {
+    if (!staticMode) return;
+    setIntroductionOpen(false);
+    curtainRevealRef.current = 0;
+    paintOpening();
+  }, [staticMode, paintOpening]);
+
+  const paint = useCallback((time: number) => {
+    filmTimeRef.current = time;
+    curtainRef.current?.setTime(time);
+    paintOpening();
     let next = "intro";
     HERO_CHAPTERS.forEach((chapter, index) => {
       const node = chapterRefs.current[index];
@@ -63,7 +92,12 @@ export function Hero() {
       node.setAttribute("aria-hidden", String(opacity < 0.1));
       if (time >= chapter.start) next = chapter.id;
     });
-    if (progressRef.current) progressRef.current.style.transform = `scaleX(${time / HERO_FILM.duration})`;
+    if (progressRef.current) {
+      progressRef.current.value = String(time);
+      progressRef.current.style.setProperty("--played", `${time / HERO_FILM.duration * 100}%`);
+      progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds`);
+    }
+    if (timeRef.current) timeRef.current.textContent = `00:${String(time > 14.9 ? 15 : Math.floor(time)).padStart(2, "0")} / 00:15`;
     if (sectionRef.current) {
       sectionRef.current.dataset.chapter = next;
       sectionRef.current.style.setProperty("--film-focus", time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%");
@@ -72,7 +106,7 @@ export function Hero() {
       activeRef.current = next;
       setActive(next);
     }
-  }, []);
+  }, [paintOpening]);
 
   const { ready, failed, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint });
 
@@ -94,20 +128,13 @@ export function Hero() {
   return (
     <section ref={sectionRef} data-cinematic-hero data-chapter="intro" data-film-time="0" data-static={staticMode}
       className={`scroll-animation ${styles.hero}`} aria-label="Gwee Per Ming and Ming Creatives — an introduction in four chapters">
-      <div className={`hero-sticky ${styles.stage}`}>
+      <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={HERO_FILM.poster} alt="" fetchPriority="high" loading="eager" className={styles.film} />
         <video ref={videoRef} className={styles.film} style={{ opacity: ready && !failed ? 1 : 0 }} muted playsInline
           preload="none" poster={HERO_FILM.poster} disablePictureInPicture aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
-        <div className={styles.topProgress} aria-hidden="true"><div ref={progressRef} /></div>
-
-        <div className={styles.corner} aria-label="Ming Creatives studio">
-          <span className={styles.wordmark}>ming.creatives</span>
-          <span>Independent mind. Creative studio.</span>
-        </div>
-
-        <div ref={openingRef} className={styles.opening}>
+        <div ref={openingRef} id="hero-introduction" className={styles.opening} aria-hidden="true" inert>
           <p className={styles.role}>{SITE.headline}</p>
           <h1 id="hero-heading">{SITE.personName}</h1>
           <p className={styles.openingLine}>Production AI. Creative worlds.</p>
@@ -118,6 +145,16 @@ export function Hero() {
           </div>
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>
         </div>
+
+        {mounted && !staticMode ? <CurtainLayer stageRef={stageRef} controllerRef={curtainRef} onReveal={revealIntroduction} /> : null}
+        <button type="button" className={styles.curtainTrigger} aria-controls="hero-introduction" aria-expanded={introductionOpen}
+          onClick={() => {
+            if (introductionOpen) curtainRef.current?.close();
+            else curtainRef.current?.open();
+            setIntroductionOpen((value) => !value);
+          }}>
+          <span>{introductionOpen ? "Close the curtain" : "Draw the curtain"}</span><ArrowDown aria-hidden="true" size={15} />
+        </button>
 
         {HERO_CHAPTERS.map((chapter, index) => (
           <div key={chapter.id} ref={(node) => { chapterRefs.current[index] = node; }}
@@ -143,17 +180,13 @@ export function Hero() {
         ))}
 
         <div className={styles.toolbar}>
-          <p className={styles.artworkNote}>AI-created studio film · imagined character</p>
-          <nav className={styles.chapters} aria-label="Introduction chapters">
-            <button type="button" onClick={() => jump(0)} aria-current={active === "intro" ? "step" : undefined} aria-label="Opening: Gwee Per Ming">
-              <span>00</span><span className={styles.chapterName}>Intro</span>
-            </button>
-            {HERO_CHAPTERS.map((chapter) => (
-              <button key={chapter.id} type="button" onClick={() => jump(chapter.jump)} aria-current={active === chapter.id ? "step" : undefined} aria-label={`Chapter ${chapter.number}: ${chapter.label}`}>
-                <span>{chapter.number}</span><span className={styles.chapterName}>{chapter.label}</span>
-              </button>
-            ))}
-          </nav>
+          <div className={styles.timeline}>
+            <div className={styles.timelineLabel}><span>{active === "intro" ? "Prologue" : `${HERO_CHAPTERS.find((chapter) => chapter.id === active)?.number} · ${HERO_CHAPTERS.find((chapter) => chapter.id === active)?.label}`}</span><span ref={timeRef}>00:00 / 00:15</span></div>
+            <div className={styles.rail}>
+              <input ref={progressRef} type="range" min="0" max="15" step="0.1" defaultValue="0" aria-label="Film position" onChange={(event) => jump(Number(event.currentTarget.value))} />
+              <div className={styles.ticks} aria-hidden="true">{HERO_CHAPTERS.map((chapter) => <i key={chapter.id} style={{ left: `${chapter.start / HERO_FILM.duration * 100}%` }} />)}</div>
+            </div>
+          </div>
           <button ref={readButtonRef} type="button" className={styles.readButton} onClick={toggleReading}><BookOpen aria-hidden="true" size={17} /><span>Read without motion</span></button>
         </div>
         {!ready && !failed && mounted && !staticMode ? <span className={styles.loading} role="status">Preparing the film…</span> : null}
