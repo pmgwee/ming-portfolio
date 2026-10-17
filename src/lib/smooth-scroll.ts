@@ -16,6 +16,16 @@ export function setLenis(instance: Lenis | null) {
   lenisInstance = instance;
 }
 
+/** Chapter controls use the existing scroll owner; its speed settings stay intact. */
+export function scrollToPosition(top: number) {
+  if (typeof window === "undefined") return;
+  if (lenisInstance) {
+    lenisInstance.scrollTo(top, { immediate: true });
+  } else {
+    window.scrollTo({ top, behavior: "instant" });
+  }
+}
+
 /**
  * Smooth-scroll to an in-page hash target (`"#services"`, or `"#"` / `"#top"`
  * for the top of the page). Falls back to native scrolling when Lenis isn't

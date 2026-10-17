@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowUpRight, List, X } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { SITE } from "@/lib/seo";
+import styles from "./Navbar.module.css";
 
 const LINKS = [
   { label: "Collections", href: "#showcase" as const },
@@ -20,12 +21,31 @@ const linkClass =
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const collections = document.getElementById("showcase");
+      const reveal = !collections || collections.getBoundingClientRect().top < window.innerHeight - 32;
+      setVisible(reveal);
+      setScrolled(window.scrollY > 24);
+      if (!reveal) setMenuOpen(false);
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const observer = new ResizeObserver(onScroll);
+    const hero = document.querySelector("[data-cinematic-hero]");
+    if (hero) observer.observe(hero);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -38,7 +58,8 @@ export function Navbar() {
   }, [menuOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[60] px-2 sm:px-4">
+    <header data-site-navigation data-visible={visible} inert={!visible} aria-hidden={!visible}
+      className={`fixed inset-x-0 top-0 z-[60] px-2 sm:px-4 ${styles.header}`}>
       <nav
         aria-label="Main navigation"
         className={`mx-auto mt-3 w-full max-w-[1400px] rounded-2xl px-3 py-3 transition-colors duration-300 sm:rounded-full sm:px-5 ${
