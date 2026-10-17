@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FIELD, hash01, hashCycle } from "@/lib/showcase";
+import { ArrowUpRight } from "@phosphor-icons/react";
+import { collectionEntry } from "@/lib/collection";
+import styles from "./CollectionGallery.module.css";
 
 /** A field tile is a short looping clip (vs. a still image) when it matches. */
 const VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i;
@@ -45,12 +48,20 @@ const smoothstep = (e0: number, e1: number, x: number) => {
 export function ImageField({
   reducedMotion,
   tiles,
+  paused,
+  onSelect,
 }: {
   reducedMotion: boolean;
   /** Image URLs for the field pool, listed live from S3 via /api/media. */
   tiles: string[];
+  paused: boolean;
+  onSelect: (src: string, source: HTMLElement) => void;
 }) {
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const pausedRef = useRef(paused);
+  const hoveringRef = useRef(false);
+  const focusedRef = useRef(false);
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
   // Per-card media handles — the rAF loop swaps the source on cycle boundaries
   // so each card shows MANY items over its life (see frame()). Each card holds
   // BOTH an <img> and a <video>, overlapping; only the one matching the current
@@ -203,6 +214,11 @@ export function ImageField({
     // — just media-type aware so clips and images can share the field pool.
     const applyMedia = (i: number, url: string | undefined) => {
       if (!url) return;
+      const button = cardRefs.current[i];
+      if (button) {
+        button.dataset.src = url;
+        button.setAttribute("aria-label", `View ${collectionEntry(url, tiles.indexOf(url)).title}`);
+      }
       const img = imgRefs.current[i];
       const vid = videoRefs.current[i];
       if (isVideoUrl(url)) {
@@ -229,6 +245,12 @@ export function ImageField({
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
       last = now;
+      if (pausedRef.current || hoveringRef.current || focusedRef.current) {
+        lastScrollY = window.scrollY;
+        scrollVel = 0;
+        if (running) rafId = requestAnimationFrame(frame);
+        return;
+      }
 
       // Velocity-driven: the field flows on its own at FLOW_SPEED and never
       // rewinds. Scrolling (either direction) boosts the pace in proportion to
@@ -379,6 +401,10 @@ export function ImageField({
 
         el.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale}) rotate(${rotation}deg)`;
         el.style.opacity = String(opacity);
+        const selectable = opacity > 0.4 && Math.abs(x) < window.innerWidth / 2 && Math.abs(y) < window.innerHeight / 2;
+        el.style.pointerEvents = selectable ? "auto" : "none";
+        el.tabIndex = selectable ? 0 : -1;
+        el.setAttribute("aria-hidden", String(!selectable));
         // Larger cards sort on top → growing burst cards rise above the
         // calmer base drifters.
         el.style.zIndex = String(Math.round(scale * 20));
@@ -427,7 +453,6 @@ export function ImageField({
     <div
       ref={rootRef}
       className="pointer-events-none absolute inset-0 z-10"
-      aria-hidden
     >
       {reducedMotion ? (
         /* Static calm cluster — a few tiles arranged around center. */
@@ -441,9 +466,13 @@ export function ImageField({
               ? imageTiles[i % imageTiles.length]
               : undefined;
             return (
-              <div
+              <button
+                type="button"
                 key={i}
-                className="showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10 opacity-30"
+                onClick={event => src && onSelect(src, event.currentTarget)}
+                aria-label={src ? `View ${collectionEntry(src, tiles.indexOf(src)).title}` : "Collection image"}
+                disabled={!src}
+                className={`${styles.tile} pointer-events-auto showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl opacity-80`}
                 style={{
                   aspectRatio: "3 / 4",
                   transform: `translate(calc(-50% + ${x}vmin), calc(-50% + ${y}vmin)) scale(0.9)`,
@@ -460,7 +489,7 @@ export function ImageField({
                     draggable={false}
                   />
                 ) : null}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -471,15 +500,28 @@ export function ImageField({
           // is shown. The rAF loop toggles them via applyMedia() on each cycle.
           const video = src ? isVideoUrl(src) : false;
           return (
-            <div
+            <button
+              type="button"
               key={i}
+              data-src={src}
+              aria-label={src ? `View ${collectionEntry(src, tiles.indexOf(src)).title}` : "Collection image"}
+              tabIndex={-1}
+              onPointerEnter={event => { if (event.pointerType === "mouse") hoveringRef.current = true; }}
+              onPointerLeave={() => { hoveringRef.current = false; }}
+              onFocus={() => { focusedRef.current = true; }}
+              onBlur={() => { focusedRef.current = false; }}
+              onClick={event => {
+                const current = event.currentTarget.dataset.src;
+                if (current) onSelect(current, event.currentTarget);
+              }}
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl border border-white/10"
+              className={`${styles.tile} showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl`}
               style={{
                 aspectRatio: "3 / 4",
                 opacity: 0,
+                pointerEvents: "none",
                 willChange: "transform, opacity",
                 // Deep-z spawn placeholder (opacity 0); the rAF loop takes over
                 // on the first frame after mount.
@@ -513,7 +555,8 @@ export function ImageField({
                 autoPlay
                 preload="metadata"
               />
-            </div>
+              <span className={styles.tileLabel} aria-hidden="true"><ArrowUpRight /></span>
+            </button>
           );
         })
       )}

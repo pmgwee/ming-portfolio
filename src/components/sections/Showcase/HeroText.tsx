@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/Button";
 import { SITE } from "@/lib/seo";
+import { ArrowUpRight } from "@phosphor-icons/react";
+import styles from "./CollectionGallery.module.css";
 
 /**
  * Layer 2 — the sharp centered headline that sits in front of the image field
@@ -15,15 +17,19 @@ export function HeroText({
   wrapRef,
   h1Ref,
   buttonsRef,
+  onBrowse,
+  count,
 }: {
   wrapRef: React.RefObject<HTMLDivElement | null>;
   h1Ref: React.RefObject<HTMLHeadingElement | null>;
   buttonsRef: React.RefObject<HTMLDivElement | null>;
+  onBrowse: (source: HTMLElement) => void;
+  count: number;
 }) {
   return (
     <div
       ref={wrapRef}
-      className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
+      className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
     >
       <p className="text-sm font-medium text-zinc-200">Creative work by Gwee Per Ming</p>
 
@@ -34,15 +40,17 @@ export function HeroText({
         Ming Creatives
       </h2>
 
-      <div ref={buttonsRef} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button
+      <div ref={buttonsRef} className="pointer-events-auto mt-8 flex flex-wrap items-center justify-center gap-3">
+        {count > 0 ? <button type="button" className={styles.browse} onClick={event => onBrowse(event.currentTarget)}>
+          Explore collection <span className={styles.browseCount}>{String(count).padStart(2, "0")}</span><ArrowUpRight aria-hidden="true" />
+        </button> : <Button
           href={SITE.studioExploreUrl}
           showArrow
           target="_blank"
           rel="noopener noreferrer"
         >
           Explore the studio
-        </Button>
+        </Button>}
         <Button
           href="https://wa.me/message/DFUGF3HXISNEF1"
           variant="secondary"

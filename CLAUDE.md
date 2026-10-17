@@ -85,6 +85,11 @@ All scroll-phase constants (phase boundaries, `PHASES`, `REVEAL`, `HOVER`, `PARA
 
 **Adding image-field tiles:** drop images or short looping clips into `temp_pictures/` — picked up on the next ISR revalidation (≤1 h).
 
+**Collection gallery** — field cards are buttons; clicking one (or "Explore collection" in `HeroText`) opens `CollectionGallery`, a native `<dialog>` viewer that grows from the card, browses with arrows/keys/swipe and restores scroll + focus on close. Hover or focus pauses the field's rAF loop so a card can be picked.
+
+- Credits, captions and alt text live in `src/lib/collection.ts`, keyed by the decoded S3 path (`/temp_pictures/<file>`). Model name, Instagram, location and capture date stay hidden until filled in there; never infer them from filenames or S3 upload dates. Give new photos an `alt` description there too.
+- Palettes come from `GET /api/collection/palette?key=…` (uses `sharp`), which only samples images in our own S3 listing and returns colors, never EXIF.
+
 ### Media offload (S3 + CloudFront)
 
 All heavy media (hero frames, showcase tiles, carousel clips) lives in a private S3 bucket served through CloudFront:

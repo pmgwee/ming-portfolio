@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ImageField } from "./ImageField";
@@ -8,6 +9,10 @@ import { HeroText } from "./HeroText";
 import { VideoStage } from "./VideoStage";
 import { PHASES, REVEAL } from "@/lib/showcase";
 import type { ShowcaseMedia } from "@/lib/showcase-media";
+import type { GallerySelection } from "./CollectionGallery";
+import galleryStyles from "./CollectionGallery.module.css";
+
+const CollectionGallery = dynamic(() => import("./CollectionGallery").then(m => m.CollectionGallery), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +43,17 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
   // True once the reveal is ~complete → VideoStage enables hover/parallax/swipe.
   const [settled, setSettled] = useState(false);
   const settledRef = useRef(false);
+  const [gallery, setGallery] = useState<GallerySelection | null>(null);
+  const [fieldInteractive, setFieldInteractive] = useState(true);
+  const openGallery = useCallback((src: string, source: HTMLElement) => {
+    const index = media.tiles.indexOf(src);
+    if (index >= 0) setGallery({ index, source, rect: source.getBoundingClientRect() });
+  }, [media.tiles]);
+  const closeGallery = useCallback(() => setGallery(null), []);
+  const browse = (source: HTMLElement) => {
+    const firstPhoto = media.tiles.find(src => /\.(webp|avif|png|jpe?g)$/i.test(src)) ?? media.tiles[0];
+    if (firstPhoto) openGallery(firstPhoto, source);
+  };
 
   // Heavy media (image-field tiles + carousel clips) is resolved from S3 on the
   // server (page.tsx, build + ISR) and passed in as a prop — so the URLs are in
@@ -110,6 +126,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
             // is controlled by `.showcase-reveal-range` in globals.css.
             // `.showcase-stage` also includes the mobile video-viewing hold.
             onUpdate: (self) => {
+              setFieldInteractive(self.progress < PHASES.hingeStart);
               // Gate interactivity once the video is essentially full-bleed.
               const s = self.progress >= PHASES.settledAt;
               if (s !== settledRef.current) {
@@ -223,8 +240,8 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
         </div>
 
         {/* Layer 1 — image field (own opacity wrapper for the hinge fade) */}
-        <div ref={fieldWrapRef} className="absolute inset-0 z-10">
-          <ImageField reducedMotion={reducedMotion} tiles={media.tiles} />
+        <div ref={fieldWrapRef} className="absolute inset-0 z-10" inert={!fieldInteractive || reducedMotion}>
+          <ImageField reducedMotion={reducedMotion} tiles={media.tiles} paused={!!gallery || !fieldInteractive} onSelect={openGallery} />
         </div>
 
         {/* Layer 2 — hero text */}
@@ -232,7 +249,10 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           wrapRef={heroWrapRef}
           h1Ref={h1Ref}
           buttonsRef={buttonsRef}
+          onBrowse={browse}
+          count={media.tiles.length}
         />
+        {reducedMotion && media.tiles.length > 0 ? <button type="button" className={`${galleryStyles.browse} ${galleryStyles.reducedBrowse}`} onClick={event => browse(event.currentTarget)}>Explore collection</button> : null}
 
         {/* Layer 3 — interactive full-bleed video carousel */}
         <VideoStage
@@ -244,6 +264,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           videos={media.videos}
         />
       </div>
+      {gallery ? <CollectionGallery tiles={media.tiles} selection={gallery} onClose={closeGallery} reducedMotion={reducedMotion} /> : null}
     </section>
   );
 }
