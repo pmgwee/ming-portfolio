@@ -59,9 +59,28 @@ export function ImageField({
 }) {
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const pausedRef = useRef(paused);
-  const hoveringRef = useRef(false);
+  // Keyboard focus still holds the field still so a tabbed-to card can't drift
+  // away mid-selection. Mouse hover never freezes it (see `pointerRef`).
   const focusedRef = useRef(false);
+  // Last mouse position. The loop hit-tests it every frame, so a card that
+  // drifts under a resting cursor comes into focus and one that drifts away
+  // lets go, which `:hover` alone doesn't track on moving elements.
+  const pointerRef = useRef({ x: 0, y: 0, active: false });
   useEffect(() => { pausedRef.current = paused; }, [paused]);
+  useEffect(() => {
+    const move = (e: PointerEvent) => {
+      pointerRef.current = { x: e.clientX, y: e.clientY, active: e.pointerType === "mouse" };
+    };
+    const leave = () => { pointerRef.current.active = false; };
+    window.addEventListener("pointermove", move, { passive: true });
+    document.documentElement.addEventListener("pointerleave", leave);
+    window.addEventListener("blur", leave);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      document.documentElement.removeEventListener("pointerleave", leave);
+      window.removeEventListener("blur", leave);
+    };
+  }, []);
   // Per-card media handles — the rAF loop swaps the source on cycle boundaries
   // so each card shows MANY items over its life (see frame()). Each card holds
   // BOTH an <img> and a <video>, overlapping; only the one matching the current
@@ -150,6 +169,28 @@ export function ImageField({
     // the smoothed wheel/trackpad input). It decays to 0 when scrolling stops.
     let lastScrollY = window.scrollY;
     let scrollVel = 0;
+
+    // Hover focus: index of the card under the mouse (-1 = none) and the
+    // eased flow multiplier it drives. CSS reads `data-hovered` on the card and
+    // `data-focus` on the root for the focus-pull styling.
+    let hovered = -1;
+    let flowMult = 1;
+    const setHovered = (next: number) => {
+      if (next === hovered) return;
+      if (hovered >= 0) delete cardRefs.current[hovered]?.dataset.hovered;
+      hovered = next;
+      if (next >= 0) {
+        const card = cardRefs.current[next];
+        if (card) card.dataset.hovered = "";
+      }
+      rootRef.current?.toggleAttribute("data-focus", next >= 0);
+    };
+    const hitTest = () => {
+      const p = pointerRef.current;
+      if (!p.active) return -1;
+      const card = document.elementFromPoint(p.x, p.y)?.closest<HTMLElement>("[data-card]");
+      return card && rootRef.current?.contains(card) ? Number(card.dataset.card) : -1;
+    };
 
     // Desktop keeps its original circular field. On compact screens, fit the
     // flight paths to the actual stage: a portrait viewport shouldn't send
@@ -245,12 +286,19 @@ export function ImageField({
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000); // clamp big tab-switch gaps
       last = now;
-      if (pausedRef.current || hoveringRef.current || focusedRef.current) {
+      if (pausedRef.current || focusedRef.current) {
+        if (pausedRef.current) setHovered(-1);
         lastScrollY = window.scrollY;
         scrollVel = 0;
         if (running) rafId = requestAnimationFrame(frame);
         return;
       }
+
+      // Hit-test at the top of the frame, while layout is still clean from
+      // the last paint, before this frame's transform writes.
+      setHovered(hitTest());
+      const flowTarget = hovered >= 0 ? FIELD.HOVER_FLOW_MULT : 1;
+      flowMult += (flowTarget - flowMult) * (1 - Math.exp(-dt / FIELD.HOVER_EASE_S));
 
       // Velocity-driven: the field flows on its own at FLOW_SPEED and never
       // rewinds. Scrolling (either direction) boosts the pace in proportion to
@@ -265,7 +313,7 @@ export function ImageField({
         FIELD.SCROLL_BOOST_MAX,
         FIELD.SCROLL_VEL_GAIN * Math.abs(scrollVel),
       );
-      advance += (FIELD.FLOW_SPEED + boost) * dt;
+      advance += (FIELD.FLOW_SPEED + boost) * flowMult * dt;
 
       const fadeIn = (phase: number) => clamp01(phase / FIELD.FADE_IN_PHASE);
 
@@ -406,8 +454,8 @@ export function ImageField({
         el.tabIndex = selectable ? 0 : -1;
         el.setAttribute("aria-hidden", String(!selectable));
         // Larger cards sort on top → growing burst cards rise above the
-        // calmer base drifters.
-        el.style.zIndex = String(Math.round(scale * 20));
+        // calmer base drifters. The focused card rises above them all.
+        el.style.zIndex = i === hovered ? "60" : String(Math.round(scale * 20));
       }
 
       if (running) rafId = requestAnimationFrame(frame);
@@ -433,6 +481,8 @@ export function ImageField({
         } else if (!entry.isIntersecting && running) {
           running = false;
           cancelAnimationFrame(rafId);
+          setHovered(-1);
+          flowMult = 1;
           // Don't decode looping clips while the field is off-screen.
           for (const v of videoRefs.current) v?.pause();
         }
@@ -444,6 +494,7 @@ export function ImageField({
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
+      setHovered(-1);
       io.disconnect();
       geometryObserver.disconnect();
     };
@@ -452,11 +503,11 @@ export function ImageField({
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none absolute inset-0 z-10"
+      className={`${styles.field} pointer-events-none absolute inset-0 z-10`}
     >
       {reducedMotion ? (
         /* Static calm cluster — a few tiles arranged around center. */
-        <div className="absolute inset-0">
+        <div className={`${styles.staticField} absolute inset-0`}>
           {Array.from({ length: 7 }).map((_, i) => {
             const angle = (i / 7) * TWO_PI;
             const r = 26; // vmin
@@ -505,10 +556,11 @@ export function ImageField({
               key={i}
               data-src={src}
               aria-label={src ? `View ${collectionEntry(src, tiles.indexOf(src)).title}` : "Collection image"}
+              data-card={i}
               tabIndex={-1}
-              onPointerEnter={event => { if (event.pointerType === "mouse") hoveringRef.current = true; }}
-              onPointerLeave={() => { hoveringRef.current = false; }}
-              onFocus={() => { focusedRef.current = true; }}
+              // Only keyboard focus holds the field. A mouse press or the
+              // viewer handing focus back after a click must not freeze it.
+              onFocus={event => { focusedRef.current = event.currentTarget.matches(":focus-visible"); }}
               onBlur={() => { focusedRef.current = false; }}
               onClick={event => {
                 const current = event.currentTarget.dataset.src;
