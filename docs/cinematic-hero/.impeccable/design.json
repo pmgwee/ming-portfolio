@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-17T23:00:00+08:00",
+  "generatedAt": "2026-10-17T23:40:00+08:00",
   "title": "Design System: Ming Creatives Cinematic Hero",
   "extensions": {
     "colorMeta": {
@@ -131,7 +131,7 @@
       {
         "name": "curtain-hover-open",
         "value": "0.9",
-        "purpose": "Maximum opening while a fine pointer hovers; the button latches to 1."
+        "purpose": "Maximum opening while a fine pointer hovers; scrolling opens fully by 1.3s. No curtain button."
       },
       {
         "name": "curtain-scroll-open",
@@ -170,7 +170,7 @@
       },
       {
         "name": "short-desktop",
-        "value": "(max-height: 700px) and (min-width: 769px)"
+        "value": "(max-height: 650px) and (min-width: 769px)"
       },
       {
         "name": "short-landscape",
@@ -286,14 +286,6 @@
       "css": ".ds-hero-secondary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;box-sizing:border-box;padding:11px 22px;border-radius:999px;border:1px solid rgb(255 255 255 / 50%);background:rgb(7 8 12 / 55%);color:#fff;font-family:var(--font-geist-sans,Arial),sans-serif;font-size:14px;font-weight:600;line-height:1.4;text-decoration:none;transition:background 180ms ease,color 180ms ease}.ds-hero-secondary:hover{background:rgb(7 8 12 / 85%)}.ds-hero-secondary:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}@media(max-width:768px){.ds-hero-secondary{padding:11px 18px;font-size:12px}}"
     },
     {
-      "name": "Curtain Trigger",
-      "kind": "button",
-      "refersTo": "curtain-trigger",
-      "description": "Native touch/keyboard alternative to pointer reveal; toggles the curtain and reports aria-expanded. Hidden after chapter 01 begins.",
-      "html": "<button type=\"button\" class=\"ds-curtain-trigger\" aria-controls=\"hero-introduction\" aria-expanded=\"false\"><span>Draw the curtain</span><svg aria-hidden=\"true\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M12 4v16m-7-7 7 7 7-7\"/></svg></button>",
-      "css": ".ds-curtain-trigger{display:flex;align-items:center;gap:14px;min-height:44px;box-sizing:border-box;padding:8px 4px;border:0;border-bottom:1px solid rgb(255 255 255 / 35%);background:transparent;color:#f4f4f5;font-family:var(--font-geist-sans,Arial),sans-serif;font-size:12px;cursor:pointer}.ds-curtain-trigger:hover{border-color:#fff}.ds-curtain-trigger:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}"
-    },
-    {
       "name": "Film Timeline",
       "kind": "input",
       "refersTo": "film-timeline",
@@ -345,7 +337,7 @@
       "Do preserve the supplied film's order and timing, and keep it framed as AI-generated artwork without documentary claims.",
       "Do keep Gwee Per Ming, Ming Creatives and essential chapter copy in readable live DOM text.",
       "Do preserve the authorized 1320/1140/950vh travel, the HERO_PACING curve and the shared scroll owner when refining this hero.",
-      "Do keep the curtain's button and scroll alternatives, and reset its state whenever the layer remounts.",
+      "Do keep scrolling as the non-pointer way to open the curtain, and reset the reveal whenever the layer remounts.",
       "Do retain full landscape framing above the mobile reading area and verify chapter/control clearance, including landscape phones.",
       "Do preserve inert hidden chapters, visible keyboard focus and the complete static reader.",
       "Do treat the implementation review as recorded emulated evidence and actual-phone review as still pending."
@@ -355,7 +347,7 @@
       "Don't crop the mobile film into portrait, change the supplied character, or add unrequested film edits.",
       "Don't replace live text with generated glass lettering or describe the imagined scene as documentary proof.",
       "Don't retime captions with wall-clock animation, change the stage height as a spacing optimization, or make curtain interaction mandatory.",
-      "Don't reintroduce the corner captions, chapter-pill menu, top progress line or always-visible timeline labels, or show the navbar inside the film.",
+      "Don't reintroduce the corner captions, curtain button, chapter-pill menu, top progress line or always-visible timeline labels, or show the navbar inside the film.",
       "Don't darken the curtain source or the opened room; the closed curtain should match the film.",
       "Don't invent achievements, private data, new identity claims or whole-site component rules."
     ]

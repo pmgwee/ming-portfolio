@@ -38,7 +38,6 @@ export function Hero() {
   const [reduced, setReduced] = useState(false);
   const [reading, setReading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [introductionOpen, setIntroductionOpen] = useState(false);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -70,11 +69,10 @@ export function Hero() {
     paintOpening();
   }, [paintOpening]);
 
-  // CurtainLayer unmounts in static modes and remounts closed, so the trigger
-  // state and the imperative reveal must return to closed with it.
+  // CurtainLayer unmounts in static modes and remounts closed, so the
+  // imperative reveal must return to closed with it.
   useEffect(() => {
     if (!staticMode) return;
-    setIntroductionOpen(false);
     curtainRevealRef.current = 0;
     paintOpening();
   }, [staticMode, paintOpening]);
@@ -164,14 +162,6 @@ export function Hero() {
         </div>
 
         {mounted && !staticMode ? <CurtainLayer stageRef={stageRef} controllerRef={curtainRef} onReveal={revealIntroduction} /> : null}
-        <button type="button" className={styles.curtainTrigger} aria-controls="hero-introduction" aria-expanded={introductionOpen}
-          onClick={() => {
-            if (introductionOpen) curtainRef.current?.close();
-            else curtainRef.current?.open();
-            setIntroductionOpen((value) => !value);
-          }}>
-          <span>{introductionOpen ? "Close the curtain" : "Draw the curtain"}</span><ArrowDown aria-hidden="true" size={15} />
-        </button>
 
         {HERO_CHAPTERS.map((chapter, index) => (
           <div key={chapter.id} ref={(node) => { chapterRefs.current[index] = node; }}

@@ -6,10 +6,7 @@
 .openingBackdrop { z-index: 1; }
 .curtain { z-index: 3; }
 /* Light scrim only: the room behind the drawn curtain stays visible; text-shadow carries legibility. */
-.opening { position: absolute; inset: 0; z-index: 2; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 110px 32px 210px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 38%), transparent 70%); text-shadow: 0 2px 18px rgb(0 0 0 / 70%), 0 1px 3px rgb(0 0 0 / 50%); }
-.curtainTrigger { position: absolute; z-index: 4; left: 50%; bottom: 142px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; min-height: 44px; padding: 8px 4px; border-bottom: 1px solid rgb(255 255 255 / 35%); font-size: 12px; color: #f4f4f5; cursor: pointer; transition: opacity 220ms, visibility 220ms; }
-.curtainTrigger:hover { border-color: #fff; }
-.hero:not([data-chapter="intro"]) .curtainTrigger { opacity: 0; visibility: hidden; }
+.opening { position: absolute; inset: 0; z-index: 2; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 110px 32px 150px; text-align: center; background: radial-gradient(ellipse at center, rgb(5 7 14 / 38%), transparent 70%); text-shadow: 0 2px 18px rgb(0 0 0 / 70%), 0 1px 3px rgb(0 0 0 / 50%); }
 .role { font-size: 14px; font-weight: 550; color: #e4e4e7; }
 .opening h1 { margin-top: 22px; font-size: clamp(3rem, 6vw, 6rem); line-height: 1.02; letter-spacing: -0.04em; font-weight: 650; text-wrap: balance; }
 .openingLine { margin-top: 23px; font-size: clamp(1.15rem, 2vw, 1.75rem); letter-spacing: -0.025em; font-weight: 550; }
@@ -109,15 +106,12 @@
   .toolbar { inset: auto 24px 18px; gap: 5px; align-items: stretch; flex-direction: column; }
   .timeline { width: 100%; }
   .readButton { align-self: flex-end; }
-  .curtainTrigger { bottom: 150px; }
   .readButton { font-size: 10px; min-height: 44px; }
   .reader { padding: 145px 24px 64px; }
   .readerChapter { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
 }
-@media (max-height: 700px) and (min-width: 769px) {
-  /* Keep the introduction clear of the curtain control above the timeline. */
-  .opening { padding-top: 96px; padding-bottom: 196px; }
-  .scrollPrompt { display: none; }
+@media (max-height: 650px) and (min-width: 769px) {
+  .opening { padding-top: 105px; padding-bottom: 110px; }
   .opening h1 { font-size: 3.5rem; margin-top: 12px; }
   .openingLine { margin-top: 14px; }
   .openingBody { font-size: 14px; }
@@ -129,8 +123,7 @@
   .index h2 { font-size: 1.75rem; }
   .destinations { margin-top: 14px; }
 }
-/* Landscape phones: keep the introduction above the timeline and move the
-   curtain control into the free top corner (the navbar is hidden in the hero). */
+/* Landscape phones: keep the introduction and chapters above the timeline. */
 @media (max-height: 500px) {
   .opening { justify-content: flex-start; padding: 22px 32px 0; }
   .role { font-size: 11px; }
@@ -140,7 +133,6 @@
   .actions { margin-top: 14px; }
   .primary, .secondary { min-height: 44px; padding: 9px 18px; font-size: 12px; }
   .scrollPrompt { display: none; }
-  .curtainTrigger { left: auto; right: 28px; top: 14px; bottom: auto; transform: none; }
   .toolbar { bottom: 10px; }
   .chapter { bottom: 92px; padding: 0; }
   .chapterLabel { font-size: 12px; }

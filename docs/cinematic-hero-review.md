@@ -101,3 +101,17 @@ Independent finish review disposition: ready for branch handoff. Its one require
 Review the supplied film's ending, the four chapter cue points, mobile full-scene framing, chapter links, and the static reading mode. Confirm behavior on an actual phone. Keep this as a branch/preview until Ming approves it.
 
 The read-only Vercel CLI project inspection returned `main` as the configured production branch even though the maintained S3 enhancement code lives on `deployment-s3-vercel-enhanced`. This implementation follows the requested latest S3 code base and does not change deployment configuration. Verify the intended production release path separately before merging/promoting anything.
+
+### Curtain button removed
+
+At the user's request the “Draw the curtain” / “Close the curtain” button was removed as redundant, along with its state, controller methods and styles. The curtain now opens two ways. A fine pointer reveals it to 0.9 on hover. Scrolling opens it fully by 1.3s of film time (about 54vh on desktop), which covers touch and keyboard (Space, Page Down, arrows). One Page Down lands on the opening; two pass it, because the opening fades by 2.45s. Read without motion remains the static alternative. Spacing added only to clear the button was reverted: desktop opening bottom padding is back to 150px, and the short-desktop rule to (max-height: 650px) with the scroll prompt shown.
+
+Verified with headless Chromium on a local production build:
+- Hover opens to 0.9 and pointer leave closes.
+- Two Page Downs open the curtain fully.
+- Mobile and landscape scroll to 1.3s opens it with the introduction visible.
+- The reader round trip returns closed, with focus on Read without motion.
+- The opened introduction clears the toolbar at 1920x982, 1440x900, 1366x768, 1280x720, 1366x640, 1024x768 and 844x390.
+- No console errors other than local analytics 404s.
+
+Screenshots: `v3-` prefix.

@@ -4,7 +4,7 @@ import { useEffect, useRef, type RefObject } from "react";
 import { HERO_FILM } from "@/lib/hero-story";
 import styles from "./Hero.module.css";
 
-export type CurtainController = { setTime: (time: number) => void; open: () => void; close: () => void };
+export type CurtainController = { setTime: (time: number) => void };
 
 /** Actual gold pixels from the opening, separated into flexible bead strands.
  * No video seeking is driven by the pointer: this is a foreground layer only. */
@@ -36,7 +36,6 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
     let targetPointer = 0.5;
     let targetY = 0.5;
     let hovering = false;
-    let latched = false;
     let texture: HTMLCanvasElement | null = null;
     let cleanPlate: HTMLCanvasElement | null = null;
     const image = new Image();
@@ -90,7 +89,7 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
       pointer += (targetPointer - pointer) * follow;
       pointerY += (targetY - pointerY) * follow;
       const scrollOpen = Math.min(1, time / 1.3);
-      const target = Math.max(scrollOpen, latched ? 1 : hovering ? 0.9 : 0);
+      const target = Math.max(scrollOpen, hovering ? 0.9 : 0);
       velocity += ((target - open) * 65 - velocity * 15) * dt;
       open = Math.max(0, Math.min(1, open + velocity * dt));
       stage.dataset.curtainOpen = open.toFixed(3);
@@ -123,8 +122,6 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
     const visibility = () => { last = 0; if (!document.hidden) wake(); };
     controllerRef.current = {
       setTime: (next) => { if (next !== time) { time = next; wake(); } },
-      open: () => { latched = true; wake(); },
-      close: () => { latched = false; hovering = false; wake(); },
     };
     image.onload = () => {
       if (disposed) return;
