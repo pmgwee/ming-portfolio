@@ -54,9 +54,14 @@
    appears and the arrow chip arrives. Keyboard focus and the static
    reduced-motion cluster get the same treatment. */
 .field { --pull: cubic-bezier(.16, 1, .3, 1); }
+/* The rim is the card's own inset outline. Never give every card an extra
+   overlay layer (::after or a span): the loop restyles all cards each frame
+   and that layer made each restyle ~10x dearer, saturating the main thread
+   even with nothing hovered. */
 .tile {
   cursor: pointer; padding: 0; background: #101219;
-  transition: box-shadow 500ms var(--pull);
+  outline: 1px solid transparent; outline-offset: -1px;
+  transition: box-shadow 500ms var(--pull), outline-color 400ms var(--pull);
 }
 /* The field recedes under ONE veil that fades, never a filter on every
    moving card. A filter transition across ~23 cards kept their styles dirty,
@@ -68,11 +73,6 @@
 }
 .tile:focus-visible, .staticField .tile:hover { z-index: 61 !important; }
 .tile img, .tile video { pointer-events: none; transform: scale(1.001); transition: transform 1100ms var(--pull); }
-.tile::after {
-  content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgb(244 244 245 / .6), inset 0 1px 0 0 rgb(244 244 245 / .35);
-  opacity: 0; transition: opacity 400ms var(--pull);
-}
 .tile:focus-visible { outline: 3px solid #f4f4f5; outline-offset: 5px; }
 .tileLabel {
   position: absolute; bottom: 8px; right: 8px; z-index: 3; display: grid; place-items: center;
@@ -92,7 +92,7 @@
 .tile[data-hovered] img, .tile[data-hovered] video,
 .tile:focus-visible img, .tile:focus-visible video,
 .staticField .tile:hover img { transform: scale(1.07); }
-.tile[data-hovered]::after, .tile:focus-visible::after, .staticField .tile:hover::after { opacity: 1; }
+.tile[data-hovered]:not(:focus-visible), .staticField .tile:hover:not(:focus-visible) { outline-color: rgb(244 244 245 / .6); }
 .tile[data-hovered] .tileLabel, .tile:focus-visible .tileLabel, .staticField .tile:hover .tileLabel { opacity: 1; transform: none; }
 .tile[data-hovered] .tileLabel svg, .tile:focus-visible .tileLabel svg, .staticField .tile:hover .tileLabel svg { transform: none; }
 .reducedBrowse { position: absolute; z-index: 80; bottom: 90px; left: 24px; }
