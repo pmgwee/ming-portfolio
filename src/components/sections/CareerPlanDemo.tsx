@@ -101,7 +101,7 @@ export function CareerPlanDemo() {
 
       <div className="relative mx-auto w-full max-w-[1400px]">
         <motion.div className="max-w-3xl" {...reveal}>
-          <p className="text-sm font-medium text-indigo-200">Free tool · 10年倒推表</p>
+          <p className="text-sm font-medium text-indigo-200">Free tool</p>
           <h2
             id="career-plan-heading"
             className="mt-4 text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
@@ -118,7 +118,7 @@ export function CareerPlanDemo() {
           <div className="mb-3 flex items-center justify-between gap-4 text-sm text-zinc-400">
             <span className="inline-flex items-center gap-2">
               <span className="size-2 rounded-full bg-[#ffd400]" aria-hidden="true" />
-              Interactive demo · 资料只存在你的浏览器
+              Interactive demo
             </span>
             <button
               type="button"

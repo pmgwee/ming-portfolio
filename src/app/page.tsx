@@ -25,8 +25,8 @@ export default async function Home() {
       <Navbar />
       <Hero />
       <Showcase media={media} />
-      <ServicesSection />
       <CareerPlanDemo />
+      <ServicesSection />
       <EngineeringSection />
       <ExperienceSection />
       <WorksMorph />
