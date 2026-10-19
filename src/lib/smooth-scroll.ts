@@ -14,6 +14,36 @@ let lenisInstance: Lenis | null = null;
 /** Called by the provider on mount/unmount. */
 export function setLenis(instance: Lenis | null) {
   lenisInstance = instance;
+  applyScrollLock();
+}
+
+/**
+ * Page-level scroll lock (e.g. while the hero film downloads). Survives the
+ * Lenis instance mounting after the lock was taken: `setLenis` re-applies it.
+ */
+let scrollLocks = 0;
+function applyScrollLock() {
+  if (typeof document === "undefined") return;
+  const locked = scrollLocks > 0;
+  const root = document.documentElement;
+  root.style.overflow = locked ? "hidden" : "";
+  document.body.style.overflow = locked ? "hidden" : "";
+  root.dataset.scrollLocked = String(locked);
+  if (locked) lenisInstance?.stop();
+  else lenisInstance?.start();
+}
+
+/** Lock page scrolling; call the returned function to release (idempotent). */
+export function lockPageScroll() {
+  scrollLocks += 1;
+  applyScrollLock();
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    scrollLocks = Math.max(0, scrollLocks - 1);
+    applyScrollLock();
+  };
 }
 
 /** Suspend the existing scroll owner while a native gallery dialog is open. */
