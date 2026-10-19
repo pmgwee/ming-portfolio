@@ -54,10 +54,24 @@ export function suspendPageScroll() {
   return () => { if (instance && !wasStopped) instance.start(); };
 }
 
+/** Jump (no animation) to a section hash, e.g. behind the page-transition cover. */
+export function jumpToHash(hash: string) {
+  if (typeof document === "undefined" || !hash) return;
+  const target = document.querySelector<HTMLElement>(hash);
+  if (!target) return;
+  if (lenisInstance) {
+    // After a route change Lenis still holds the previous page's scroll limit;
+    // re-measure first or the jump is clamped short of the section.
+    lenisInstance.resize();
+    lenisInstance.scrollTo(target, { immediate: true, force: true });
+  } else target.scrollIntoView({ block: "start" });
+}
+
 /** Chapter controls use the existing scroll owner; its speed settings stay intact. */
 export function scrollToPosition(top: number) {
   if (typeof window === "undefined") return;
   if (lenisInstance) {
+    lenisInstance.resize();
     lenisInstance.scrollTo(top, { immediate: true });
   } else {
     window.scrollTo({ top, behavior: "instant" });

@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { PageTransition } from "@/components/providers/PageTransition";
+import { TRANSITION_BOOT_SCRIPT } from "@/lib/page-transition";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
@@ -58,8 +59,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body id="top">
+        {/* Pre-paint: keep the screen covered when arriving via a page transition. */}
+        <script dangerouslySetInnerHTML={{ __html: TRANSITION_BOOT_SCRIPT }} />
         {/* Warm up the CloudFront connection (DNS + TLS) before the media
             requests fire. No crossOrigin — media is fetched non-CORS (see
             DEPLOYMENT.md). React hoists this <link> into <head>. */}

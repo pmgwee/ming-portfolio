@@ -37,6 +37,15 @@
   box-sizing: border-box;
 }
 
+/* Pre-paint cover while a cross-page transition hands over (see page-transition.ts). */
+html[data-transition] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: #07080c;
+}
+
 html {
   /* Keep layout width stable when the hero preloader locks scrolling. */
   scrollbar-gutter: stable;

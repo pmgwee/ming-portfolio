@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { navigateWithTransition } from "@/lib/page-transition";
 import { scrollToHash } from "@/lib/smooth-scroll";
 
 /**
  * In-page section link (`#id`) with smooth scrolling, or a route link (`/path`).
  * A `#id` whose section is not on the current page (e.g. on /ai-projects)
- * falls back to that section on the home page.
+ * goes to that section on the home page, behind the page-transition cover.
  */
 export function AnchorLink({
   href,
@@ -36,7 +37,7 @@ export function AnchorLink({
         onNavigate?.();
         const onPage = href === "#" || href === "#top" ? window.location.pathname === "/" : document.querySelector(href);
         if (!onPage) {
-          window.location.assign(`/${href}`);
+          navigateWithTransition(href === "#" || href === "#top" ? "/" : `/${href}`);
           return;
         }
         scrollToHash(href);
