@@ -340,7 +340,7 @@ export function CareerPlanDemo() {
                     onClick={openFullTool}
                     className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-5 text-sm font-semibold text-zinc-100 hover:border-white/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
                   >
-                    做完整版（约 10 分钟） <ArrowRight aria-hidden="true" weight="bold" className="size-4" />
+                    立即规划我的职业（5 分钟） <ArrowRight aria-hidden="true" weight="bold" className="size-4" />
                   </a>
                 </div>
                 {!ready && <p className="mt-3 text-xs text-zinc-500">先写下你的终点，就能生成 PDF。</p>}
