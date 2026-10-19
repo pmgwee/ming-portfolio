@@ -105,8 +105,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               className="group inline-flex min-h-10 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200 sm:gap-1.5 sm:px-4 sm:text-sm"
             >
-              <span className="sm:hidden">Inquiry</span>
-              <span className="hidden sm:inline">Studio inquiry</span>
+              <span>Contact</span>
               <ArrowUpRight aria-hidden="true" weight="bold" className="size-3.5" />
             </a>
             <button
