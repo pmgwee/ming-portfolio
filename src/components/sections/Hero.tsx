@@ -132,7 +132,8 @@ export function Hero() {
   // first scroll scrubs smoothly instead of stalling on unbuffered frames.
   // Only when the visit starts at the hero (not a reload further down).
   useEffect(() => {
-    if (!preloading || skipped || window.scrollY > window.innerHeight * 0.5) return;
+    // Skip when arriving at a section (e.g. /#career): the page jumps past the hero.
+    if (!preloading || skipped || window.location.hash || window.scrollY > window.innerHeight * 0.5) return;
     return lockPageScroll();
   }, [preloading, skipped]);
 
