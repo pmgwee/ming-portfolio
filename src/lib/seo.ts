@@ -66,14 +66,9 @@ export const SITE = {
   ],
   services: [
     {
-      name: "Cinematic 3D & immersive web design",
+      name: "AIGC & AI TVC production",
       description:
-        "3D and motion-led web experiences for portfolios, brands, and digital products, with usability kept in view.",
-    },
-    {
-      name: "Business websites & web apps",
-      description:
-        "Custom websites and web applications shaped around business goals, customer needs, and real workflows.",
+        "AI-generated content (AIGC) and AI-driven TV commercials (TVCs): concept, script, storyboard, video generation, voiceover, and edit, delivered in formats for TV, YouTube, and social media.",
     },
     {
       name: "AI agents & data engineering",
@@ -81,9 +76,9 @@ export const SITE = {
         "Production AI agent integrations and data pipelines that connect source data to useful tools, retrieval systems, and business applications.",
     },
     {
-      name: "AI-driven creative content & production",
+      name: "SaaS & web products",
       description:
-        "AI-assisted imagery, video, and visual concepts for brand storytelling and digital campaigns.",
+        "Cinematic 3D and immersive websites, business websites, and web apps, built as products around business goals, real workflows, and usability.",
     },
   ],
   faq: [
@@ -97,11 +92,11 @@ export const SITE = {
     },
     {
       q: "What services does Ming Creatives offer?",
-      a: "Ming Creatives offers cinematic 3D and immersive web design, business websites and web apps, AI agents and data engineering, and AI-driven creative content and production.",
+      a: "Ming Creatives offers AIGC content and AI-driven TV commercial (TVC) production, AI agents and data engineering, and SaaS and web products, from cinematic 3D and immersive websites to business web apps.",
     },
     {
       q: "What AI and software work can recruiters explore?",
-      a: "My Works features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
+      a: "AI Projects features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
       q: "What does his Data & AI consulting focus on?",

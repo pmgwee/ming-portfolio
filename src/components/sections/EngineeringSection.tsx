@@ -69,7 +69,7 @@ export function EngineeringSection() {
             id="engineering-heading"
             className="text-[clamp(2rem,4.2vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
           >
-            My Works
+            AI-Project
           </h2>
         </div>
 

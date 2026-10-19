@@ -30,10 +30,10 @@ export function AudiencePaths() {
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
               <AnchorLink
-                href="#ai-systems"
+                href="/ai-projects"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
               >
-                Explore AI products
+                Explore AI projects
                 <ArrowUpRight aria-hidden="true" weight="bold" className="size-4" />
               </AnchorLink>
               <a

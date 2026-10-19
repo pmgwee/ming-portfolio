@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>10年倒推表｜免费职业规划工具 · Ming Creatives</title>
+<link rel="canonical" href="https://www.mingcreatives.com/product/career-plan">
+<meta property="og:url" content="https://www.mingcreatives.com/product/career-plan">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.mingcreatives.com/opengraph-image">
+<meta name="description" content="先写下终点，再倒推回今天，然后问：这份工，给得了吗？8 分钟生成属于你的职业倒推报告。">
+<meta property="og:title" content="10年倒推表｜这份工，给得了吗？">
+<meta property="og:description" content="8 分钟，生成属于你自己的职业倒推报告。">
+<meta name="theme-color" content="#141414">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #141414;
+    --ink-2: #2a2a2a;
+    --muted: #6b6b6b;
+    --hint: #a3a3a3;
+    --line: #e2e0d8;
+    --line-strong: #cfcfcf;
+    --yellow: #ffd400;
+    --yellow-soft: #fff8cc;
+    --paper: #ffffff;
+    --soft: #f6f5f0;
+    --bg: #fbfaf6;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(20,20,20,.04), 0 8px 24px rgba(20,20,20,.06);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+    font-size: 16px; line-height: 1.6; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; border-radius: 6px; }
+  mark { background: linear-gradient(transparent 58%, var(--yellow) 58%); color: inherit; padding: 0 2px; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20; background: rgba(251,250,246,.92);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner { max-width: 720px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+  .brand { font-weight: 900; letter-spacing: .5px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 0 3px var(--ink); }
+  .topbar .spacer { flex: 1; }
+  .brand { color: inherit; text-decoration: none; }
+  .home-link { font-size: 13px; font-weight: 700; color: var(--ink); text-decoration: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 4px 12px; white-space: nowrap; }
+  .home-link:hover { background: var(--yellow); }
+  .saved { font-size: 12px; color: var(--muted); transition: opacity .3s; }
+  .progress { height: 4px; background: var(--line); }
+  .progress > i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .4s cubic-bezier(.2,.7,.2,1); }
+
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px 140px; }
+
+  /* ---------- landing ---------- */
+  .hero { padding: 28px 0 8px; }
+  .kicker { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+  .hero h1 { font-size: clamp(44px, 12vw, 72px); line-height: 1.05; font-weight: 900; margin: 8px 0 14px; }
+  .hero h1 mark { padding: 0 4px; }
+  .hero p.lead { font-size: 18px; }
+  .hero p.lead b { background: var(--yellow); padding: 0 4px; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 10px; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .steps-preview { display: grid; gap: 12px; margin-top: 34px; }
+  .sp { display: flex; gap: 14px; align-items: flex-start; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .sp h3 { font-size: 16px; font-weight: 900; }
+  .sp p { font-size: 14px; color: var(--muted); }
+  .num {
+    flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: var(--yellow);
+    display: grid; place-items: center; font-weight: 900; font-size: 15px;
+  }
+  .quote-band { margin-top: 34px; background: var(--ink); color: #fff; border-radius: var(--radius); padding: 22px; }
+  .quote-band b { color: var(--yellow); }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 22px; border-radius: 999px; font-weight: 700; font-size: 16px;
+    transition: transform .12s, box-shadow .2s, background .2s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--ink); color: #fff; box-shadow: 0 4px 0 var(--yellow); }
+  .btn-primary:hover { box-shadow: 0 6px 0 var(--yellow); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: .35; box-shadow: none; transform: none; cursor: not-allowed; }
+  .btn-yellow { background: var(--yellow); color: var(--ink); }
+  .btn-ghost { background: var(--paper); border: 1.5px solid var(--ink); }
+  .btn-text { min-height: 40px; padding: 0 10px; color: var(--muted); font-weight: 500; font-size: 14px; }
+  .btn-text:hover { color: var(--ink); }
+
+  /* ---------- step header ---------- */
+  .step-head { display: flex; gap: 14px; align-items: center; margin-bottom: 6px; }
+  .step-head h2 { font-size: 26px; font-weight: 900; line-height: 1.2; }
+  .step-sub { color: var(--muted); margin-bottom: 22px; font-size: 15px; }
+  .step-count { font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 10px; }
+
+  /* ---------- fields ---------- */
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .card-title { font-weight: 900; font-size: 18px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .pill { font-size: 12px; font-weight: 700; background: var(--ink); color: var(--yellow); padding: 2px 10px; border-radius: 999px; }
+  .pill.now { background: var(--yellow); color: var(--ink); }
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field > label, .label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .help { font-size: 13px; color: var(--muted); margin: -2px 0 8px; }
+  .input, .textarea {
+    width: 100%; border: 1.5px solid var(--line-strong); background: var(--yellow-soft); border-radius: 10px;
+    padding: 12px 14px; font-size: 16px; transition: border-color .2s, background .2s;
+  }
+  .input:focus, .textarea:focus { outline: none; border-color: var(--ink); background: #fff; }
+  .input::placeholder, .textarea::placeholder { color: var(--hint); }
+  .textarea { min-height: 92px; resize: vertical; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1.5px solid var(--line-strong); background: var(--paper); border-radius: 999px;
+    padding: 6px 14px; font-size: 14px; min-height: 36px; transition: all .15s;
+  }
+  .chip:hover { border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .chip.add::before { content: "+ "; color: var(--muted); }
+  .suggest { margin-top: 8px; }
+  .suggest .chip { font-size: 13px; min-height: 32px; padding: 4px 12px; border-style: dashed; color: var(--muted); }
+
+  .tagbox {
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border: 1.5px solid var(--line-strong);
+    background: var(--yellow-soft); border-radius: 10px; padding: 8px; min-height: 52px; cursor: text;
+  }
+  .tagbox:focus-within { border-color: var(--ink); background: #fff; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; background: var(--ink); color: #fff; border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 14px; }
+  .tag button { width: 22px; height: 22px; border-radius: 50%; color: #bbb; font-size: 15px; line-height: 1; }
+  .tag button:hover { background: #333; color: #fff; }
+  .tag.gap { background: var(--yellow); color: var(--ink); }
+  .tag.gap button { color: #6b5a00; }
+  .tagbox input { flex: 1; min-width: 120px; border: 0; background: transparent; padding: 6px; font-size: 16px; }
+  .tagbox input:focus { outline: none; }
+
+  .example-box { background: var(--soft); border-left: 4px solid var(--yellow); border-radius: 0 10px 10px 0; padding: 12px 14px; font-size: 14px; color: var(--ink-2); margin-bottom: 16px; }
+
+  /* timeline (plan step) */
+  .tl { position: relative; padding-left: 26px; }
+  .tl::before { content: ""; position: absolute; left: 8px; top: 10px; bottom: 10px; width: 2px; background: var(--ink); }
+  .tl .card { position: relative; }
+  .tl .card::before {
+    content: ""; position: absolute; left: -24px; top: 24px; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--paper); border: 3px solid var(--ink);
+  }
+  .tl .card.is-now::before { background: var(--yellow); }
+  .collapse-head { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; }
+  .collapse-head .sum { flex: 1; font-size: 14px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .collapse-head .chev { transition: transform .2s; color: var(--muted); }
+  .card[data-open="true"] .chev { transform: rotate(180deg); }
+  .card[data-open="false"] .collapse-body { display: none; }
+  .collapse-body { margin-top: 14px; }
+
+  /* gap step */
+  .gap-hero { background: var(--ink); color: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 14px; }
+  .gap-hero h3 { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+  .gap-hero p { color: #bdbdbd; font-size: 14px; margin-bottom: 14px; }
+  .gap-hero .empty { color: #8a8a8a; font-size: 14px; }
+
+  /* jobs step */
+  .job-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: none; }
+  .job-tab {
+    flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+    border: 1.5px solid var(--line-strong); background: var(--paper); font-weight: 700; font-size: 14px;
+  }
+  .job-tab[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .job-tab .sc { font-size: 12px; background: var(--yellow); color: var(--ink); border-radius: 999px; padding: 0 7px; }
+  .q { padding: 14px 0; border-top: 1px solid var(--line); }
+  .q:first-of-type { border-top: 0; }
+  .q-text { font-weight: 700; font-size: 15px; }
+  .q-hint { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .seg button {
+    min-height: 44px; border-radius: 10px; border: 1.5px solid var(--line-strong); background: var(--paper);
+    font-weight: 700; transition: all .15s;
+  }
+  .seg button:hover { border-color: var(--ink); }
+  .seg button.yes[aria-pressed="true"] { background: var(--yellow); border-color: var(--ink); }
+  .seg button.no[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .scorebar { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--soft); border-radius: 12px; margin-top: 8px; }
+  .score-num { font-size: 34px; font-weight: 900; line-height: 1; }
+  .score-num small { font-size: 16px; color: var(--muted); }
+  .verdict-tag { display: inline-block; font-weight: 900; padding: 4px 12px; border-radius: 8px; font-size: 15px; }
+  .v-go { background: var(--yellow); color: var(--ink); }
+  .v-mid { background: #fff; border: 1.5px solid var(--ink); }
+  .v-no { background: var(--ink); color: #fff; }
+  .v-none { background: var(--line); color: var(--muted); }
+
+  /* ---------- bottom nav ---------- */
+  .bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(251,250,246,.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--line);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+  .bottom-nav-inner { max-width: 720px; margin: 0 auto; display: flex; gap: 10px; align-items: center; }
+  .bottom-nav .btn-primary { flex: 1; }
+  .nav-msg { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 8px; }
+
+  /* ---------- report ---------- */
+  .report-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .report { background: var(--paper); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .r-head { background: var(--ink); color: #fff; padding: 26px 22px 22px; }
+  .r-head .kicker { color: #9a9a9a; }
+  .r-head h2 { font-size: 30px; font-weight: 900; line-height: 1.2; margin: 6px 0 8px; }
+  .r-head h2 span { color: var(--yellow); }
+  .r-head .r-meta { font-size: 13px; color: #bdbdbd; }
+  .r-sec { padding: 22px; border-top: 1px solid var(--line); }
+  .r-sec h3 { font-size: 13px; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .r-sec h3 .num { width: 24px; height: 24px; font-size: 12px; }
+  .r-goal { font-size: 28px; font-weight: 900; line-height: 1.25; }
+  .r-goal mark { padding: 0 4px; }
+  .r-sub { color: var(--muted); font-size: 15px; margin-top: 4px; }
+  .r-day { margin-top: 14px; background: var(--soft); border-radius: 12px; padding: 14px; font-size: 15px; }
+  .r-label { font-size: 12px; font-weight: 700; color: var(--muted); margin: 14px 0 6px; letter-spacing: 1px; }
+  .r-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .r-chip { font-size: 13px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line-strong); }
+  .r-chip.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .r-chip.y { background: var(--yellow); border-color: var(--yellow); font-weight: 700; }
+
+  .r-tl { position: relative; padding-left: 28px; }
+  .r-tl::before { content: ""; position: absolute; left: 9px; top: 8px; bottom: 8px; width: 2px; background: var(--ink); }
+  .r-stop { position: relative; padding-bottom: 18px; }
+  .r-stop:last-child { padding-bottom: 0; }
+  .r-stop::before { content: ""; position: absolute; left: -25px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
+  .r-stop.now::before { background: var(--yellow); }
+  .r-when { font-size: 12px; font-weight: 900; letter-spacing: 1px; color: var(--muted); }
+  .r-role { font-weight: 900; font-size: 17px; margin: 2px 0 6px; }
+  .r-role.empty { color: var(--hint); font-weight: 500; }
+  .r-stop .r-chips { margin-top: 4px; }
+
+  .r-gap { background: var(--yellow); margin: 0; padding: 22px; }
+  .r-gap h3 { color: var(--ink); }
+  .r-gap .big { font-size: 20px; font-weight: 900; margin-bottom: 10px; }
+  .r-gap .r-chip { background: #fff; border-color: #fff; font-weight: 700; }
+
+  .r-jobs { display: grid; gap: 12px; }
+  .r-job { border: 1.5px solid var(--line-strong); border-radius: 14px; padding: 16px; }
+  .r-job.best { border-color: var(--ink); box-shadow: 0 4px 0 var(--yellow); }
+  .r-job-top { display: flex; align-items: center; gap: 12px; }
+  .r-job-name { flex: 1; font-weight: 900; font-size: 17px; }
+  .r-job-name small { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .r-score { font-size: 28px; font-weight: 900; }
+  .r-score small { font-size: 14px; color: var(--muted); }
+  .bars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 12px 0 10px; }
+  .bars i { height: 8px; border-radius: 4px; background: var(--line); }
+  .bars i.on { background: var(--ink); }
+  .r-ans { font-size: 13px; color: var(--ink-2); display: grid; gap: 3px; margin-top: 10px; }
+  .r-ans .x { color: var(--hint); }
+  .best-flag { display: table; font-size: 11px; font-weight: 900; background: var(--yellow); padding: 2px 8px; border-radius: 6px; margin-bottom: 4px; }
+  .r-marker { font-size: 13px; color: var(--ink-2); margin: -2px 0 6px; }
+  .r-why { margin-top: 14px; border-left: 4px solid var(--yellow); padding: 4px 0 4px 12px; font-size: 16px; font-weight: 700; }
+  .r-why span { display: block; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; margin-bottom: 2px; }
+  .r-support-grid { display: grid; gap: 8px; }
+  .r-support { display: grid; grid-template-columns: 44px 1fr; align-items: start; gap: 8px; font-size: 14px; }
+  .r-support b { padding-top: 2px; }
+  .r-acts { display: grid; gap: 10px; }
+  .r-act { display: flex; gap: 12px; align-items: flex-start; font-weight: 700; font-size: 16px; }
+  .r-act .box { flex: none; width: 20px; height: 20px; border: 2px solid var(--ink); border-radius: 5px; margin-top: 3px; }
+  .r-act small { display: block; font-weight: 500; font-size: 13px; color: var(--muted); }
+  .r-first { margin-top: 16px; background: var(--ink); color: #fff; border-radius: 12px; padding: 14px 16px; font-weight: 700; }
+  .r-first span { display: block; color: var(--yellow); font-size: 12px; letter-spacing: 1px; margin-bottom: 2px; }
+  .r-foot { background: var(--ink); color: #fff; padding: 22px; display: flex; flex-direction: column; gap: 6px; }
+  .r-foot .q { border: 0; padding: 0; font-size: 18px; font-weight: 900; }
+  .r-foot .q b { color: var(--yellow); }
+  .r-foot small { color: #9a9a9a; font-size: 12px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 50;
+    transition: all .25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .fade-in { animation: fadeIn .35s ease both; }
+  .no-anim .fade-in { animation: none; }
+  .hero p.lead b { white-space: nowrap; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  footer.site { text-align: center; font-size: 13px; color: var(--muted); padding: 30px 0 0; }
+  footer.site a { color: var(--ink); font-weight: 700; }
+
+  @media (min-width: 640px) {
+    .steps-preview { grid-template-columns: repeat(3, 1fr); }
+    .sp { flex-direction: column; }
+  }
+
+  /* ---------- print: report only ---------- */
+  @media print {
+    @page { size: A4; margin: 10mm; }
+    body { background: #fff; }
+    .topbar, .bottom-nav, .report-actions, .no-print, footer.site, .toast { display: none !important; }
+    main { padding: 0; max-width: none; }
+    .report { box-shadow: none; border: 0; }
+    .r-sec, .r-job, .r-stop { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="topbar-inner">
+    <a class="brand" href="/product/career-plan"><span class="brand-dot"></span>10年倒推表</a>
+    <div class="spacer"></div>
+    <span class="saved" id="saved" aria-live="polite"></span>
+    <a class="home-link" href="/">mingcreatives.com</a>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+</header>
+
+<main id="app"></main>
+<nav class="bottom-nav" id="nav" hidden></nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(() => {
+  const SITE = "https://www.mingcreatives.com/";
+  const STORE = "tenyear-plan-v1";
+  const QUESTIONS = [
+    ["能学到「1年 / 3年后」需要的技能吗？", "对照你在第 3 步写的「还差的技能」"],
+    ["能接触到我需要的人脉 / 资源吗？", "同事、客户、行业圈子、公司平台"],
+    ["能发挥我的优势吗？", "在擅长的地方，不用拼命也可能做到前 5%"],
+    ["这个行业 / 岗位 5–10 年后还在吗？", "看看业内 senior 的人，在 AI 时代会被取代吗？"],
+    ["这个 position title，能当我下一站的跳板吗？", "在打工的世界，大家最后看的是你的 title"],
+  ];
+  const ROLE_SUGG = ["Director", "Regional Tech Lead", "Senior Manager", "Consultant", "自己创业", "领域专家"];
+  const INDUSTRY_SUGG = ["AI / 科技", "金融", "电商", "医疗", "教育", "制造 / 供应链", "咨询", "媒体 / 内容"];
+  const STRENGTHS = ["技术研究", "逻辑分析", "沟通表达", "销售谈判", "创意设计", "审美", "带团队", "执行力", "学习能力快", "数据敏感", "写作", "细心耐心"];
+  const SKILL_SUGG = ["Python", "数据分析", "项目管理", "英文沟通", "带团队", "AI 工具应用", "演讲 / Pitch", "财务基础", "作品集"];
+  const NET_SUGG = ["业内前辈 / mentor", "LinkedIn 人脉", "行业社群", "客户资源", "投资人", "专业证书"];
+  const STOPS = [["y10", "10年后"], ["y5", "5年后"], ["y3", "3年后"], ["y1", "1年后"]];
+  const STEPS = ["写下终点", "倒推路线", "看清差距", "评估工作", "行动计划"];
+  const TOTAL = STEPS.length;            // wizard steps 1..TOTAL
+  const REPORT = TOTAL + 1;              // report view index
+  const CRITERIA_SUGG = ["职位 title", "管多少人", "收入水平", "有自己的作品 / 公司", "工作地点 / 时间自由"];
+  const OBSTACLE_SUGG = ["没有工作经验", "没有业内人脉", "钱不够", "时间不够", "不够自信", "不知道从哪开始", "家人不支持", "行业变化太快"];
+  const SUPPORT = [
+    ["knowledge", "知识", "课程、证书、书", ["线上课程", "专业证书", "一本领域经典书"]],
+    ["people", "人", "mentor、同行、贵人", ["1 位 mentor", "同行互助群", "业内前辈"]],
+    ["money", "钱", "学费、生活缓冲", ["3 个月生活费", "课程预算", "设备预算"]],
+    ["habits", "习惯", "每天 / 每周固定做的事", ["每天学 1 小时", "每周投 10 份简历", "每月复盘一次"]],
+    ["systems", "系统", "工具、追踪表、环境", ["求职追踪表", "Notion 计划表", "作品集网站"]],
+  ];
+
+  const blank = () => ({
+    v: 2, step: 0, name: "", date: new Date().toISOString().slice(0, 10),
+    goal: { role: "", industry: "", day: "", life: "", why: "", criteria: [], strengths: [], edge: "" },
+    plan: { y10: stop(), y5: stop(), y3: stop(), y1: stop() },
+    now: { role: "", skills: [], network: [] },
+    obstacles: [],
+    support: { knowledge: [], people: [], money: [], habits: [], systems: [] },
+    jobs: [job("工作 A"), job("工作 B"), job("现在的工")],
+    actions: [action(), action(), action()], firstStep: "",
+    activeJob: 0, open: "y10",
+  });
+  function stop() { return { role: "", marker: "", skills: [], network: [] }; }
+  function job(label) { return { label, name: "", answers: [null, null, null, null, null], leave: "" }; }
+  function action() { return { what: "", by: "" }; }
+
+  const EXAMPLE = () => ({
+    ...blank(), step: 1, name: "小明",
+    goal: {
+      role: "Regional AI Tech Lead", industry: "AI / 科技",
+      day: "带一个 10 人的 AI 团队，跟东南亚各国的客户开会，决定公司下一个 AI 产品要做什么。",
+      life: "住在 KL，有自己的房子，每年带家人出国一次，周末不用加班。",
+      why: "我想证明 CS 毕业生不只是写 code，也能带团队、做影响区域的产品。",
+      criteria: ["管 10 人以上团队", "负责区域级 AI 产品", "存款够 1 年生活费"],
+      strengths: ["技术研究", "逻辑分析", "学习能力快"],
+      edge: "我对新技术上手很快，又能把技术讲给非技术的人听。",
+    },
+    plan: {
+      y10: { role: "Regional AI Tech Lead", marker: "title 有 Lead，负责多个国家的项目", skills: ["团队管理", "AI 产品策略", "跨国沟通"], network: ["区域客户", "业内高层"] },
+      y5: { role: "Senior AI Engineer", marker: "能独立带一个 AI 项目上线", skills: ["系统设计", "MLOps", "带新人"], network: ["业内前辈 / mentor", "技术社群"] },
+      y3: { role: "ML Engineer", marker: "title 正式变成 ML Engineer", skills: ["机器学习", "MLOps", "云平台"], network: ["LinkedIn 人脉", "开源社群"] },
+      y1: { role: "Software Engineer（能碰到 AI 项目）", marker: "参与过 1 个上线的 AI 功能", skills: ["Python", "作品集", "数据处理"], network: ["业内前辈 / mentor"] },
+    },
+    now: { role: "CS 毕业生，求职中", skills: ["Python", "数据处理"], network: [] },
+    obstacles: ["没有工作经验", "没有业内人脉", "不知道从哪开始"],
+    support: { knowledge: ["MLOps 课程"], people: ["1 位 AI 领域 mentor"], money: ["3 个月生活费"], habits: ["每天学 1 小时"], systems: ["每周投递追踪表"] },
+    jobs: [
+      { label: "工作 A", name: "大公司 IT Support", answers: [false, false, false, false, true], leave: "" },
+      { label: "工作 B", name: "AI 初创 Junior SWE", answers: [true, true, true, true, false], leave: "" },
+      { label: "现在的工", name: "", answers: [null, null, null, null, null], leave: "" },
+    ],
+    actions: [
+      { what: "做 1 个 MLOps 项目放进作品集", by: nextMonth(2) },
+      { what: "每周约 1 位 AI 业内人士喝咖啡 / 视频聊", by: nextMonth(3) },
+      { what: "拿到 AI 相关的 Software Engineer offer", by: nextMonth(6) },
+    ],
+    firstStep: "今晚在 LinkedIn 找 5 位 ML Engineer，发 connection request",
+  });
+  function nextMonth(n) { const d = new Date(); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0, 7); }
+
+  let S = load();
+  const app = document.getElementById("app");
+  const nav = document.getElementById("nav");
+
+  // ---------- storage ----------
+  function merge(base, saved) {
+    if (Array.isArray(base) || typeof base !== "object" || base === null) return saved ?? base;
+    const out = { ...base };
+    for (const k in saved) out[k] = k in base ? merge(base[k], saved[k]) : saved[k];
+    return out;
+  }
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(STORE));
+      if (d && (d.v === 1 || d.v === 2)) { const m = merge(blank(), d); m.v = 2; return m; }
+    } catch (e) {}
+    return blank();
+  }
+  let saveT;
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { return; }
+    const el = document.getElementById("saved");
+    el.textContent = "✓ 已自动保存"; el.style.opacity = 1;
+    clearTimeout(saveT); saveT = setTimeout(() => (el.style.opacity = 0), 1400);
+  }
+
+  // ---------- helpers ----------
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const get = (path) => path.split(".").reduce((o, k) => o?.[k], S);
+  function set(path, val) {
+    const ks = path.split("."); const last = ks.pop();
+    ks.reduce((o, k) => o[k], S)[last] = val; save();
+  }
+  const norm = (s) => s.trim().toLowerCase();
+  const uniq = (arr) => { const seen = new Set(); return arr.filter((x) => { const k = norm(x); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
+  const score = (j) => j.answers.filter((a) => a === true).length;
+  const answered = (j) => j.answers.filter((a) => a !== null).length;
+  function verdict(j) {
+    if (answered(j) === 0) return { cls: "v-none", t: "未评估", d: "先回答 5 个问题" };
+    const n = score(j);
+    if (n >= 4) return { cls: "v-go", t: "✅ 去", d: "它在帮你走向终点" };
+    if (n >= 2) return { cls: "v-mid", t: "⚠️ 当跳板", d: "可以去，但写下离开日期" };
+    return { cls: "v-no", t: "❌ 给不了", d: "薪水再高，也是在白做" };
+  }
+  function gaps() {
+    const need = uniq([...S.plan.y1.skills, ...S.plan.y3.skills]);
+    const have = new Set(S.now.skills.map(norm));
+    const needN = uniq([...S.plan.y1.network, ...S.plan.y3.network]);
+    const haveN = new Set(S.now.network.map(norm));
+    return { skills: need.filter((x) => !have.has(norm(x))), network: needN.filter((x) => !haveN.has(norm(x))) };
+  }
+  const usedJobs = () => S.jobs.filter((j) => j.name.trim() || answered(j) > 0);
+  function toast(msg) {
+    const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2000);
+  }
+
+  // ---------- components ----------
+  const input = (path, ph = "", type = "text") =>
+    `<input class="input" type="${type}" data-bind="${path}" value="${esc(get(path))}" placeholder="${esc(ph)}">`;
+  const textarea = (path, ph = "") =>
+    `<textarea class="textarea" data-bind="${path}" placeholder="${esc(ph)}">${esc(get(path))}</textarea>`;
+  function suggest(path, list, multi = false) {
+    const cur = get(path);
+    return `<div class="chips suggest">${list.map((x) => {
+      const on = multi ? cur.includes(x) : cur === x;
+      return `<button type="button" class="chip" data-pick="${path}" data-val="${esc(x)}" data-multi="${multi}" aria-pressed="${on}">${esc(x)}</button>`;
+    }).join("")}</div>`;
+  }
+  function tags(path, ph, sugg = [], gapSet = null) {
+    const list = get(path);
+    const rest = sugg.filter((x) => !list.map(norm).includes(norm(x)));
+    return `<div class="tagbox" data-tagbox="${path}">
+      ${list.map((t, i) => `<span class="tag${gapSet && gapSet.has(norm(t)) ? " gap" : ""}">${esc(t)}<button type="button" aria-label="删除 ${esc(t)}" data-untag="${path}" data-i="${i}">×</button></span>`).join("")}
+      <input data-tag="${path}" placeholder="${list.length ? "再加一个…" : esc(ph)}" enterkeyhint="done" aria-label="${esc(ph)}">
+    </div>
+    ${rest.length ? `<div class="chips suggest">${rest.slice(0, 6).map((x) => `<button type="button" class="chip add" data-addtag="${path}" data-val="${esc(x)}">${esc(x)}</button>`).join("")}</div>` : ""}
+    <p class="help" style="margin:6px 0 0">输入后按 Enter 或逗号加入</p>`;
+  }
+  const head = (i, title, sub) => `
+    <div class="step-count">STEP ${i} / ${TOTAL}</div>
+    <div class="step-head"><div class="num">${i}</div><h2>${title}</h2></div>
+    <p class="step-sub">${sub}</p>`;
+
+  // ---------- views ----------
+  function viewLanding() {
+    const has = S.goal.role || S.plan.y10.role || usedJobs().length;
+    return `<section class="hero fade-in">
+      <div class="kicker">Ming Creatives · 免费工具</div>
+      <h1><mark>10年</mark>倒推表</h1>
+      <p class="lead">先写下终点，再倒推回今天，然后问：<b>这份工，给得了吗？</b></p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" data-go="1">${has ? "继续填写 →" : "开始（约 10 分钟）→"}</button>
+        <button class="btn btn-ghost" data-act="example">先看示例</button>
+      </div>
+      <div class="meta-row"><span>🔒 资料只存在你的手机 / 电脑里</span><span>📄 最后生成你专属的报告</span></div>
+      ${has ? `<button class="btn-text" data-act="reset" style="margin-top:8px">清空重新开始</button>` : ""}
+      <div class="steps-preview">
+        <div class="sp"><div class="num">1</div><div><h3>写下终点，倒推回今天</h3><p>十年后你想成为谁？每一站需要什么技能和人脉</p></div></div>
+        <div class="sp"><div class="num">2</div><div><h3>这份工给得了吗？</h3><p>5 题打分，自动算出该去、当跳板，还是白做</p></div></div>
+        <div class="sp"><div class="num">3</div><div><h3>变成行动计划</h3><p>自动列出你的差距，定下今年 3 个行动和这周第一步</p></div></div>
+      </div>
+      <div class="quote-band">找工不能只看薪水。<br>第一份工选错了，比晚几个月找到工<b>更可怕</b>。</div>
+    </section>`;
+  }
+
+  function viewGoal() {
+    return `<section class="fade-in">${head(1, "写下终点", "十年后，你想成为谁？越具体越好。写错也没关系，之后可以改。")}
+      <div class="card">
+        <div class="field"><label>你的名字（会显示在报告上）</label>${input("name", "例：小明")}</div>
+        <div class="field"><label>10年后，我想成为…</label>${input("goal.role", "职位 / 角色")}${suggest("goal.role", ROLE_SUGG)}</div>
+        <div class="field"><label>在哪个行业 / 领域？</label>${input("goal.industry", "例：AI、金融科技")}${suggest("goal.industry", INDUSTRY_SUGG)}</div>
+        <div class="field"><label>那时候，我工作的一天长什么样？</label><p class="help">在做什么？跟谁一起工作？管多少人？</p>${textarea("goal.day", "例：带一个 10 人团队，跟区域客户开会…")}</div>
+        <div class="field"><label>那时候，我想过怎样的生活？</label><p class="help">住在哪、财务状况、家庭、时间自由度。工作是为了这个生活服务的。</p>${textarea("goal.life", "例：住在 KL，有自己的房子，周末不用加班…")}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">为什么这对我重要？</div>
+        <div class="field"><p class="help">当你想放弃的时候，回来看这一句。</p>${textarea("goal.why", "例：我想证明自己不只是…")}</div>
+        <div class="field"><span class="label">怎样才算「做到了」？（成功标准）</span><p class="help">写 2–3 个能被验证的条件，不要只写「成功」。</p>${tags("goal.criteria", "例：管 10 人以上团队", CRITERIA_SUGG)}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">为什么适合我？</div>
+        <div class="field"><span class="label">我的优势（选最多 3 个）</span>${suggest("goal.strengths", STRENGTHS, true)}</div>
+        <div class="field"><label>跟 10 个人比，我凭什么是特别的那 2 个？</label>${textarea("goal.edge", "一两句就好")}</div>
+      </div>
+    </section>`;
+  }
+
+  function stopSummary(p) {
+    const parts = [p.role, ...p.skills.slice(0, 2)].filter(Boolean);
+    return parts.length ? esc(parts.join(" · ")) : "还没填";
+  }
+  function viewPlan() {
+    const cards = STOPS.map(([k, label]) => {
+      const p = S.plan[k]; const open = S.open === k;
+      return `<div class="card" data-open="${open}">
+        <button type="button" class="collapse-head" data-open-stop="${k}" aria-expanded="${open}">
+          <span class="pill">${label}</span><span class="sum">${stopSummary(p)}</span><span class="chev">▾</span>
+        </button>
+        <div class="collapse-body">
+          <div class="field"><label>我要成为（职位 / 状态）</label>${input(`plan.${k}.role`, k === "y10" ? (S.goal.role || "职位 / 状态") : "职位 / 状态")}</div>
+          <div class="field"><label>怎么知道我到了这一站？</label>${input(`plan.${k}.marker`, "例：title 变成 ML Engineer、带过 1 个项目上线")}</div>
+          <div class="field"><span class="label">需要的技能</span>${tags(`plan.${k}.skills`, "例：Python、带团队", SKILL_SUGG)}</div>
+          <div class="field"><span class="label">需要的人脉 / 资源 / 证明</span>${tags(`plan.${k}.network`, "例：业内前辈、证书", NET_SUGG)}</div>
+        </div>
+      </div>`;
+    }).join("");
+    return `<section class="fade-in">${head(2, "从终点倒推", "从 10 年后往回走。每一站：要成为什么、需要什么技能、需要什么人脉。")}
+      <div class="example-box">例（CS 工程师）：10年 Regional AI Tech Lead → 5年 Senior AI Engineer → 3年 ML Engineer → 1年 Software Engineer（能碰到 AI 项目）</div>
+      <div class="tl">${cards}</div>
+    </section>`;
+  }
+
+  function viewGap() {
+    const g = gaps();
+    const gapSet = new Set(g.skills.map(norm));
+    return `<section class="fade-in">${head(3, "看清差距", "写下你现在有什么。系统会自动对比「1年 / 3年后」需要的东西，算出你还差什么。")}
+      <div class="card">
+        <div class="card-title"><span class="pill now">现在</span></div>
+        <div class="field"><label>我现在是</label>${input("now.role", "例：CS 毕业生，求职中")}</div>
+        <div class="field"><span class="label">我已有的技能</span>${tags("now.skills", "例：Python", uniq([...S.plan.y1.skills, ...S.plan.y3.skills]))}</div>
+        <div class="field"><span class="label">我已有的人脉 / 资源</span>${tags("now.network", "例：学长学姐", uniq([...S.plan.y1.network, ...S.plan.y3.network]))}</div>
+      </div>
+      <div class="gap-hero">
+        <h3>⭐ 下一份工要帮你补上的</h3>
+        <p>= 1年 / 3年后需要的 − 你现在已有的</p>
+        <div class="label" style="color:#fff;font-size:13px">技能</div>
+        ${g.skills.length ? `<div class="r-chips">${g.skills.map((x) => `<span class="r-chip y">${esc(x)}</span>`).join("")}</div>` : `<p class="empty">${S.plan.y1.skills.length + S.plan.y3.skills.length ? "🎉 你已经具备了，往更高一站看吧" : "先在第 2 步填「1年 / 3年后」需要的技能"}</p>`}
+        <div class="label" style="color:#fff;font-size:13px;margin-top:12px">人脉 / 资源</div>
+        ${g.network.length ? `<div class="r-chips">${g.network.map((x) => `<span class="r-chip y">${esc(x)}</span>`).join("")}</div>` : `<p class="empty">暂无</p>`}
+      </div>
+      <div class="card">
+        <div class="card-title">什么可能会阻止我？</div>
+        <p class="help">先把阻碍写出来，它就没那么可怕了。</p>
+        ${tags("obstacles", "例：没有工作经验", OBSTACLE_SUGG)}
+      </div>
+      <div class="card">
+        <div class="card-title">我需要什么支持？</div>
+        <p class="help">把阻碍变成具体需要的东西，每一类写 1–2 个就好。</p>
+        ${SUPPORT.map(([k, label, hint, sugg]) => `<div class="field"><span class="label">${label} <span class="help" style="display:inline;font-weight:400">· ${hint}</span></span>${tags(`support.${k}`, sugg[0], sugg)}</div>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function viewActions() {
+    const g = gaps();
+    const ideas = [...g.skills.map((x) => `补上「${x}」`), ...g.network.map((x) => `认识 / 拿到「${x}」`)];
+    const rows = S.actions.map((a, i) => `<div class="card">
+        <div class="card-title"><span class="pill">${i + 1}</span>行动 ${i + 1}</div>
+        <div class="field"><label>我要做的事</label>${input(`actions.${i}.what`, "具体、做得到、可以检查")}</div>
+        <div class="field"><label>截止月份</label>${input(`actions.${i}.by`, "", "month")}</div>
+      </div>`).join("");
+    return `<section class="fade-in">${head(5, "行动计划", "把差距变成接下来 12 个月的 3 个行动。计划不用完美，但一定要具体。")}
+      ${ideas.length ? `<div class="example-box"><b>从你的差距来的灵感：</b><div class="chips suggest" style="margin-top:8px">${ideas.slice(0, 6).map((x) => `<button type="button" class="chip add" data-idea="${esc(x)}">${esc(x)}</button>`).join("")}</div><p class="help" style="margin:8px 0 0">点一下，填进下一个空的行动</p></div>` : ""}
+      ${rows}
+      <div class="card" style="border:2px solid var(--ink);box-shadow:0 4px 0 var(--yellow)">
+        <div class="card-title">⚡ 这周的第一步</div>
+        <div class="field"><p class="help">小到今天就能开始。例：今晚在 LinkedIn 找 5 位业内前辈。</p>${input("firstStep", "我这周会…")}</div>
+      </div>
+    </section>`;
+  }
+
+  function viewJobs() {
+    const a = S.activeJob; const j = S.jobs[a]; const v = verdict(j);
+    const tabs = S.jobs.map((x, i) => `<button type="button" class="job-tab" role="tab" aria-selected="${i === a}" data-tab="${i}">
+      ${esc(x.name.trim() || x.label)}${answered(x) ? `<span class="sc">${score(x)}/5</span>` : ""}</button>`).join("");
+    const qs = QUESTIONS.map(([t, h], qi) => `<div class="q">
+      <div class="q-text">${qi + 1}. ${t}</div><div class="q-hint">${h}</div>
+      <div class="seg" role="group" aria-label="${t}">
+        <button type="button" class="yes" data-ans="${qi}" data-val="1" aria-pressed="${j.answers[qi] === true}">是</button>
+        <button type="button" class="no" data-ans="${qi}" data-val="0" aria-pressed="${j.answers[qi] === false}">否</button>
+      </div></div>`).join("");
+    return `<section class="fade-in">${head(4, "这份工，给得了吗？", "每个 offer、甚至现在的工，都评一次。不用 3 个都填，填你在考虑的就好；还没有 offer 可以先跳过。")}
+      <div class="job-tabs" role="tablist">${tabs}</div>
+      <div class="card">
+        <div class="field"><label>${esc(j.label)}：公司 / 职位名称</label>${input(`jobs.${a}.name`, "例：AI 初创 Junior SWE")}</div>
+        ${qs}
+        <div class="scorebar" id="scorebar">
+          <div class="score-num">${score(j)}<small>/5</small></div>
+          <div><span class="verdict-tag ${v.cls}">${v.t}</span><div class="q-hint">${v.d}</div></div>
+        </div>
+        <div class="field" id="leave" style="margin-top:14px" ${score(j) >= 2 && score(j) <= 3 ? "" : "hidden"}>
+          <label>我会在这天前离开（当跳板）</label>${input(`jobs.${a}.leave`, "", "month")}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  function viewReport() {
+    const g = gaps();
+    const jobs = usedJobs();
+    const best = jobs.length ? Math.max(...jobs.map(score)) : -1;
+    const bestJobs = jobs.filter((j) => answered(j) && score(j) === best);
+    const chipList = (arr, cls = "") => arr.length ? `<div class="r-chips">${arr.map((x) => `<span class="r-chip ${cls}">${esc(x)}</span>`).join("")}</div>` : "";
+    const stops = STOPS.map(([k, label]) => {
+      const p = S.plan[k];
+      return `<div class="r-stop"><div class="r-when">${label}</div>
+        <div class="r-role ${p.role ? "" : "empty"}">${esc(p.role || "（还没填）")}</div>
+        ${p.marker ? `<div class="r-marker">✓ 到站标准：${esc(p.marker)}</div>` : ""}
+        ${chipList(p.skills, "dark")}${p.network.length ? `<div style="margin-top:6px">${chipList(p.network)}</div>` : ""}</div>`;
+    }).join("");
+    const supportRows = SUPPORT.filter(([k]) => S.support[k].length)
+      .map(([k, label]) => `<div class="r-support"><b>${label}</b>${chipList(S.support[k])}</div>`).join("");
+    const acts = S.actions.filter((a) => a.what.trim());
+    const jobCards = jobs.map((j) => {
+      const v = verdict(j); const n = score(j);
+      const isBest = bestJobs.includes(j) && jobs.length > 1 && best > 0;
+      return `<div class="r-job ${isBest ? "best" : ""}">
+        <div class="r-job-top">
+          <div class="r-job-name">${isBest ? `<span class="best-flag">★ 最接近终点</span>` : ""}${esc(j.name || j.label)}<small>${esc(j.label)}</small></div>
+          <div class="r-score">${n}<small>/5</small></div>
+        </div>
+        <div class="bars">${[0, 1, 2, 3, 4].map((i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</div>
+        <span class="verdict-tag ${v.cls}">${v.t}</span> <span class="q-hint" style="display:inline">${v.d}</span>
+        ${n >= 2 && n <= 3 && j.leave ? `<div class="q-hint" style="margin-top:6px">⏳ 计划在 <b style="color:var(--ink)">${fmtMonth(j.leave)}</b> 前离开</div>` : ""}
+        <div class="r-ans">${QUESTIONS.map(([t], i) => `<div class="${j.answers[i] === true ? "" : "x"}">${j.answers[i] === true ? "✓" : j.answers[i] === false ? "✗" : "–"} ${t}</div>`).join("")}</div>
+      </div>`;
+    }).join("");
+    const who = S.name.trim() ? esc(S.name.trim()) + " 的" : "我的";
+    return `<section class="fade-in">
+      <div class="report-actions no-print">
+        <button class="btn btn-primary" data-act="png">⬇ 下载图片</button>
+        <button class="btn btn-ghost" data-act="print">🖨 存成 PDF</button>
+        <button class="btn btn-text" data-go="1">✎ 回去修改</button>
+      </div>
+      <article class="report" id="report">
+        <div class="r-head">
+          <div class="kicker">10年倒推表 · 个人报告</div>
+          <h2>${who}<span>10年</span>倒推报告</h2>
+          <div class="r-meta">${esc(S.date)} · 建议每 6 个月重新做一次</div>
+        </div>
+        <div class="r-sec">
+          <h3><span class="num">1</span>我的终点</h3>
+          <div class="r-goal">10年后，我想成为 <mark>${esc(S.goal.role || "（还没写）")}</mark></div>
+          ${S.goal.industry ? `<div class="r-sub">领域：${esc(S.goal.industry)}</div>` : ""}
+          ${S.goal.day ? `<div class="r-label">我工作的一天</div><div class="r-day">「${esc(S.goal.day)}」</div>` : ""}
+          ${S.goal.life ? `<div class="r-label">我想过的生活</div><div class="r-day">「${esc(S.goal.life)}」</div>` : ""}
+          ${S.goal.criteria.length ? `<div class="r-label">做到的标准</div>${chipList(S.goal.criteria.map((x) => "✓ " + x), "y")}` : ""}
+          ${S.goal.why ? `<div class="r-why"><span>为什么这对我重要</span>${esc(S.goal.why)}</div>` : ""}
+          ${S.goal.strengths.length ? `<div class="r-label">我的优势</div>${chipList(S.goal.strengths, "dark")}` : ""}
+          ${S.goal.edge ? `<div class="r-label">我凭什么特别</div><div>${esc(S.goal.edge)}</div>` : ""}
+        </div>
+        <div class="r-sec">
+          <h3><span class="num">2</span>倒推路线</h3>
+          <div class="r-tl">${stops}
+            <div class="r-stop now"><div class="r-when">现在</div>
+              <div class="r-role ${S.now.role ? "" : "empty"}">${esc(S.now.role || "（还没填）")}</div>
+              ${chipList(S.now.skills)}</div>
+          </div>
+        </div>
+        <div class="r-gap">
+          <h3><span class="num">⭐</span>下一份工要帮我补上的</h3>
+          ${g.skills.length || g.network.length
+            ? `<div class="big">${g.skills.length + g.network.length} 项差距</div>${chipList([...g.skills, ...g.network])}`
+            : `<div class="big">暂时没有差距</div><div>往更高一站看，或回去把第 2 步填完整。</div>`}
+        </div>
+        ${S.obstacles.length || supportRows ? `<div class="r-sec">
+          <h3><span class="num">3</span>阻碍 & 需要的支持</h3>
+          ${S.obstacles.length ? `<div class="r-label" style="margin-top:0">可能阻止我的</div>${chipList(S.obstacles)}` : ""}
+          ${supportRows ? `<div class="r-label">我需要的支持</div><div class="r-support-grid">${supportRows}</div>` : ""}
+        </div>` : ""}
+        <div class="r-sec">
+          <h3><span class="num">4</span>这份工，给得了吗？</h3>
+          ${jobs.length ? `<div class="r-jobs">${jobCards}</div>` : `<div class="q-hint">还没有评估任何工作。拿到 offer 时，回到第 4 步评一次。</div>`}
+        </div>
+        <div class="r-sec">
+          <h3><span class="num">5</span>接下来 12 个月的行动</h3>
+          ${acts.length ? `<div class="r-acts">${acts.map((a) => `<div class="r-act"><span class="box"></span><div>${esc(a.what)}${a.by ? `<small>${fmtMonth(a.by)} 前</small>` : ""}</div></div>`).join("")}</div>` : `<div class="q-hint">还没写行动。回到第 5 步，把差距变成 3 个行动。</div>`}
+          ${S.firstStep.trim() ? `<div class="r-first"><span>⚡ 这周的第一步</span>${esc(S.firstStep)}</div>` : ""}
+        </div>
+        <div class="r-foot">
+          <div class="q">只要<b>方向</b>对，你就不会差到哪里去。</div>
+          <small>Ming Creatives · mingcreatives.com/product/career-plan</small>
+        </div>
+      </article>
+      <footer class="site no-print">这个工具由 Ming Creatives 制作<br><a href="/">mingcreatives.com</a></footer>
+    </section>`;
+  }
+
+  // ---------- render ----------
+  const VIEWS = [viewLanding, viewGoal, viewPlan, viewGap, viewJobs, viewActions, viewReport];
+  function render(scrollTop = true) {
+    app.innerHTML = VIEWS[S.step]();
+    document.getElementById("bar").style.width = `${Math.min(S.step, REPORT) / REPORT * 100}%`;
+    renderNav();
+    if (scrollTop) window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  }
+  function renderNav() {
+    if (S.step === 0 || S.step === REPORT) { nav.hidden = true; return; }
+    nav.hidden = false;
+    const last = S.step === TOTAL;
+    const ready = !!S.goal.role.trim();
+    nav.innerHTML = `${last && !ready ? `<div class="nav-msg">至少要在第 1 步写下终点，才能生成报告</div>` : ""}
+      <div class="bottom-nav-inner">
+        <button class="btn btn-ghost" data-go="${S.step - 1}" aria-label="上一步">←</button>
+        ${last
+          ? `<button class="btn btn-primary" data-go="${REPORT}" ${ready ? "" : "disabled"}>生成我的报告 ✨</button>`
+          : `<button class="btn btn-primary" data-go="${S.step + 1}">下一步：${STEPS[S.step]} →</button>`}
+      </div>`;
+  }
+  function go(n) { S.step = Math.max(0, Math.min(REPORT, n)); save(); app.classList.remove("no-anim"); render(); }
+  function fmtMonth(v) { const [y, m] = String(v).split("-"); return m ? `${y}年${+m}月` : esc(v); }
+
+  // ---------- events ----------
+  document.addEventListener("input", (e) => {
+    const b = e.target.dataset.bind;
+    if (b) {
+      set(b, e.target.value);
+      if (b.startsWith("jobs.")) { refreshJobChrome(); }
+      if (b === "goal.role") renderNav();
+      return;
+    }
+    const t = e.target.dataset.tag;
+    if (t && /[,，、]/.test(e.target.value)) addTags(t, e.target.value);
+  });
+  document.addEventListener("keydown", (e) => {
+    const t = e.target.dataset?.tag;
+    if (!t) return;
+    if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); addTags(t, e.target.value); }
+    if (e.key === "Backspace" && !e.target.value) {
+      const list = get(t); if (list.length) { list.pop(); save(); rerenderKeepFocus(t); }
+    }
+  });
+  document.addEventListener("focusout", (e) => {
+    const t = e.target.dataset?.tag;
+    if (t && !rendering && e.target.value.trim()) addTags(t, e.target.value, false);
+  });
+  function addTags(path, raw, keepFocus = true) {
+    const parts = raw.split(/[,，、\n]/).map((s) => s.trim()).filter(Boolean);
+    if (!parts.length) return;
+    set(path, uniq([...get(path), ...parts]));
+    keepFocus ? rerenderKeepFocus(path) : setTimeout(() => rerenderKeepFocus(null), 0);
+  }
+  let rendering = false;
+  function rerenderKeepFocus(path) {
+    const y = window.scrollY;
+    rendering = true;
+    app.classList.add("no-anim");
+    render(false);
+    rendering = false;
+    window.scrollTo(0, y);
+    if (path) document.querySelector(`[data-tag="${path}"]`)?.focus();
+  }
+  function refreshJobChrome() {
+    // update tabs + score without losing input focus
+    const a = S.activeJob, j = S.jobs[a], v = verdict(j);
+    document.querySelectorAll("[data-tab]").forEach((el, i) => {
+      const x = S.jobs[i];
+      el.innerHTML = `${esc(x.name.trim() || x.label)}${answered(x) ? `<span class="sc">${score(x)}/5</span>` : ""}`;
+    });
+    const sb = document.getElementById("scorebar");
+    if (sb) sb.innerHTML = `<div class="score-num">${score(j)}<small>/5</small></div><div><span class="verdict-tag ${v.cls}">${v.t}</span><div class="q-hint">${v.d}</div></div>`;
+    const lv = document.getElementById("leave");
+    if (lv) lv.hidden = !(score(j) >= 2 && score(j) <= 3);
+    renderNav();
+  }
+
+  document.addEventListener("click", async (e) => {
+    const el = e.target.closest("button, .tagbox");
+    if (!el) return;
+    const d = el.dataset;
+    if (el.classList.contains("tagbox") && !e.target.closest("button")) { el.querySelector("input")?.focus(); return; }
+    if (d.go !== undefined) return go(+d.go);
+    if (d.pick) {
+      const cur = get(d.pick);
+      if (d.multi === "true") {
+        const has = cur.includes(d.val);
+        if (!has && cur.length >= 3) return toast("最多选 3 个，先取消一个");
+        set(d.pick, has ? cur.filter((x) => x !== d.val) : [...cur, d.val]);
+      } else set(d.pick, cur === d.val ? "" : d.val);
+      return rerenderKeepFocus(null);
+    }
+    if (d.addtag) { set(d.addtag, uniq([...get(d.addtag), d.val])); return rerenderKeepFocus(null); }
+    if (d.idea) {
+      const slot = S.actions.find((a) => !a.what.trim());
+      if (!slot) return toast("3 个行动都填好了，先清空一个");
+      slot.what = d.val || d.idea; save(); return rerenderKeepFocus(null);
+    }
+    if (d.untag) { const l = get(d.untag); l.splice(+d.i, 1); save(); return rerenderKeepFocus(d.untag); }
+    if (d.openStop) { S.open = S.open === d.openStop ? "" : d.openStop; save(); return rerenderKeepFocus(null); }
+    if (d.tab !== undefined) { S.activeJob = +d.tab; save(); return render(false); }
+    if (d.ans !== undefined) {
+      const j = S.jobs[S.activeJob]; const val = d.val === "1";
+      j.answers[+d.ans] = j.answers[+d.ans] === val ? null : val; save();
+      el.parentElement.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", j.answers[+d.ans] === (b.dataset.val === "1")));
+      return refreshJobChrome();
+    }
+    if (d.act === "example") { S = EXAMPLE(); save(); toast("已载入示例，可以随意修改"); return render(); }
+    if (d.act === "reset") { if (confirm("确定清空所有填写的内容？")) { S = blank(); save(); render(); } return; }
+    if (d.act === "print") return window.print();
+    if (d.act === "png") return downloadPng(el);
+  });
+
+  async function downloadPng(btn) {
+    if (!window.html2canvas) return toast("图片工具载入失败，请用「存成 PDF」");
+    btn.disabled = true; const old = btn.textContent; btn.textContent = "生成中…";
+    try {
+      await document.fonts?.ready;
+      const node = document.getElementById("report");
+      const canvas = await html2canvas(node, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url; a.download = `10年倒推报告-${S.name.trim() || "我"}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      toast("已下载，可以存到相册或分享");
+    } catch (err) {
+      toast("下载失败，请用「存成 PDF」");
+    } finally { btn.disabled = false; btn.textContent = old; }
+  }
+
+  render();
+})();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

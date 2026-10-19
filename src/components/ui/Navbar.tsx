@@ -8,11 +8,10 @@ import { SITE } from "@/lib/seo";
 import styles from "./Navbar.module.css";
 
 const LINKS = [
-  { label: "Collections", href: "#showcase" as const },
+  { label: "Studio", href: "#showcase" as const },
+  { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
-  { label: "AI Products", href: "#ai-systems" as const },
-  { label: "Experience", href: "#experience" as const },
-  { label: "Side Project", href: "#side-project" as const },
+  { label: "Career", href: "#career" as const },
 ];
 
 const linkClass =
@@ -105,8 +104,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               className="group inline-flex min-h-10 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200 sm:gap-1.5 sm:px-4 sm:text-sm"
             >
-              <span className="sm:hidden">Inquiry</span>
-              <span className="hidden sm:inline">Studio inquiry</span>
+              <span>Contact</span>
               <ArrowUpRight aria-hidden="true" weight="bold" className="size-3.5" />
             </a>
             <button

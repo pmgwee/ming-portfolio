@@ -55,11 +55,11 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[#07080c] px-6 pb-24 pt-32 md:px-10">
       <div className="mx-auto max-w-[1000px]">
         <Link
-          href="/#ai-systems"
+          href="/ai-projects"
           className="inline-flex items-center gap-2 text-sm text-zinc-300 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
         >
           <ArrowLeft aria-hidden="true" weight="bold" className="size-4" />
-          All AI systems
+          All AI projects
         </Link>
 
         <header className="mt-12 pb-10">
@@ -119,7 +119,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         <div className="mt-10 flex flex-wrap gap-5">
           <Link
-            href="/#experience"
+            href="/experiences"
             className="text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
           >
             View experience

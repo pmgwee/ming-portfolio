@@ -53,7 +53,7 @@ export function ServicesSection() {
 
         <motion.ul
           aria-label="Ming Creatives services"
-          className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+          className="mt-12 grid gap-4 md:grid-cols-3"
           {...reveal}
         >
           {SITE.services.map((service) => (
