@@ -6,7 +6,7 @@ import { AnchorLink } from "@/components/ui/AnchorLink";
 import { useScrollFilm } from "@/hooks/useScrollFilm";
 import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, progressAt } from "@/lib/hero-story";
 import { SITE } from "@/lib/seo";
-import { scrollToPosition } from "@/lib/smooth-scroll";
+import { lockPageScroll, scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
 import { CurtainLayer, type CurtainController } from "./CurtainLayer";
 
@@ -38,6 +38,8 @@ export function Hero() {
   const [reduced, setReduced] = useState(false);
   const [reading, setReading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [skipped, setSkipped] = useState(false);
+  const [announceReady, setAnnounceReady] = useState(false);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -123,7 +125,31 @@ export function Hero() {
     placeTip(Number(progressRef.current?.value ?? 0));
   };
 
-  const { ready, failed, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint });
+  const { ready, failed, progress, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint });
+  const preloading = mounted && !staticMode && !ready && !failed;
+
+  // Hold the page on the curtain until the whole film is in memory, so the
+  // first scroll scrubs smoothly instead of stalling on unbuffered frames.
+  // Only when the visit starts at the hero (not a reload further down).
+  useEffect(() => {
+    if (!preloading || skipped || window.scrollY > window.innerHeight * 0.5) return;
+    return lockPageScroll();
+  }, [preloading, skipped]);
+
+  // Briefly confirm the film is ready, then get out of the way.
+  useEffect(() => {
+    if (!ready || staticMode) return;
+    setAnnounceReady(true);
+    const timer = window.setTimeout(() => setAnnounceReady(false), 2600);
+    const dismiss = () => setAnnounceReady(false);
+    window.addEventListener("wheel", dismiss, { once: true, passive: true });
+    window.addEventListener("touchmove", dismiss, { once: true, passive: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("wheel", dismiss);
+      window.removeEventListener("touchmove", dismiss);
+    };
+  }, [ready, staticMode]);
 
   const jump = (time: number) => {
     const section = sectionRef.current;
@@ -141,7 +167,7 @@ export function Hero() {
   };
 
   return (
-    <section ref={sectionRef} data-cinematic-hero data-chapter="intro" data-film-time="0" data-static={staticMode}
+    <section ref={sectionRef} data-cinematic-hero data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading}
       className={`scroll-animation ${styles.hero}`} aria-label="Gwee Per Ming and Ming Creatives — an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -196,7 +222,20 @@ export function Hero() {
           </div>
           <button ref={readButtonRef} type="button" className={styles.readButton} onClick={toggleReading}><BookOpen aria-hidden="true" size={17} /><span>Read without motion</span></button>
         </div>
-        {!ready && !failed && mounted && !staticMode ? <span className={styles.loading} role="status">Preparing the film…</span> : null}
+        {preloading || announceReady ? (
+          <div className={styles.preloader} data-ready={!preloading} role="status" aria-live="polite">
+            {preloading ? (
+              <>
+                <span>Loading the film</span>
+                <span className={styles.preloaderTrack} aria-hidden="true"><i style={{ transform: `scaleX(${progress})` }} /></span>
+                <span className={styles.preloaderPct}>{Math.round(progress * 100)}%</span>
+                {!skipped ? <button type="button" className={styles.preloaderSkip} onClick={() => setSkipped(true)}>Skip</button> : null}
+              </>
+            ) : (
+              <span className={styles.preloaderReady}>Ready. Scroll to begin <ArrowDown aria-hidden="true" size={15} /></span>
+            )}
+          </div>
+        ) : null}
         {failed ? <div className={styles.error} role="status"><span>The film couldn&apos;t load.</span><button type="button" onClick={retry}>Try again</button><button type="button" onClick={toggleReading}>Read the introduction</button></div> : null}
       </div>
 

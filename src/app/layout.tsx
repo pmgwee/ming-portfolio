@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { PageTransition } from "@/components/providers/PageTransition";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
@@ -68,6 +69,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <PageTransition />
         <Analytics />
         <SpeedInsights />
       </body>

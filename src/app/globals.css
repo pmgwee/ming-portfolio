@@ -38,6 +38,8 @@
 }
 
 html {
+  /* Keep layout width stable when the hero preloader locks scrolling. */
+  scrollbar-gutter: stable;
   /* Lenis drives smoothness; keep native scroll-behavior off to avoid conflicts. */
   scroll-behavior: auto;
 }

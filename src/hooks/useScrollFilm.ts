@@ -3,6 +3,36 @@
 import { useEffect, useState, type RefObject } from "react";
 import { HERO_FILM, filmTimeAt } from "@/lib/hero-story";
 
+/**
+ * Download the whole film before it can be scrubbed. Scroll-scrubbing seeks
+ * all over the file, so a progressively streamed video stalls on every seek
+ * past the buffered range. Holding the complete file in memory (a blob URL)
+ * makes every seek local. Reports download progress (0–1); falls back to
+ * plain streaming when the response can't be read as a stream.
+ */
+async function loadFilm(url: string, signal: AbortSignal, onProgress: (fraction: number) => void) {
+  const response = await fetch(url, { signal });
+  if (!response.ok) throw new Error(`Film request failed: ${response.status}`);
+  const total = Number(response.headers.get("content-length")) || 0;
+  if (!response.body || !total) {
+    const blob = await response.blob();
+    onProgress(1);
+    return URL.createObjectURL(blob);
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    onProgress(Math.min(1, received / total));
+  }
+  onProgress(1);
+  return URL.createObjectURL(new Blob(chunks as BlobPart[], { type: response.headers.get("content-type") ?? "video/mp4" }));
+}
+
 /** One seek in flight; captions advance only when its frame is decoded. */
 export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
   sectionRef: RefObject<HTMLElement | null>;
@@ -12,6 +42,7 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
 }) {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -23,8 +54,11 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
     let seekFrame = 0;
     let desired = 0;
     let lastPresented = -1;
+    let objectUrl = "";
+    const abort = new AbortController();
     setReady(false);
     setFailed(false);
+    setProgress(0);
 
     const present = () => {
       if (disposed) return;
@@ -73,12 +107,36 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
     window.addEventListener("resize", onScroll);
     video.muted = true;
     // Choose once, avoiding a second download on orientation changes.
-    video.src = window.matchMedia("(max-width: 768px)").matches ? HERO_FILM.mobile : HERO_FILM.desktop;
-    video.preload = "auto";
-    video.load();
+    const source = window.matchMedia("(max-width: 768px)").matches ? HERO_FILM.mobile : HERO_FILM.desktop;
+    let lastReported = 0;
+    loadFilm(source, abort.signal, (fraction) => {
+      // Re-render at most every 1% to keep the download loop cheap.
+      if (fraction === 1 || fraction - lastReported >= 0.01) {
+        lastReported = fraction;
+        setProgress(fraction);
+      }
+    })
+      .then((url) => {
+        if (disposed) { URL.revokeObjectURL(url); return; }
+        objectUrl = url;
+        video.src = url;
+      })
+      .catch(() => {
+        if (disposed) return;
+        // Streaming fallback: still plays, just without the full preload.
+        video.src = source;
+        setProgress(1);
+      })
+      .finally(() => {
+        if (disposed) return;
+        video.preload = "auto";
+        video.load();
+        update();
+      });
     update();
     return () => {
       disposed = true;
+      abort.abort();
       cancelAnimationFrame(scrollFrame);
       cancelAnimationFrame(seekFrame);
       window.removeEventListener("scroll", onScroll);
@@ -91,7 +149,8 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
       video.pause();
       video.removeAttribute("src");
       video.load();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [attempt, enabled, onFrame, sectionRef, videoRef]);
-  return { ready, failed, retry: () => setAttempt((value) => value + 1) };
+  return { ready, failed, progress, retry: () => setAttempt((value) => value + 1) };
 }

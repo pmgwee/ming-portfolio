@@ -79,8 +79,9 @@ export function SmoothScrollProvider({
       return;
     }
     if (window.location.hash) return;
+    // No ScrollTrigger.refresh() here: it restores its remembered scroll
+    // position and would undo this reset. New pages build their own triggers.
     scrollToPosition(0);
-    ScrollTrigger.refresh();
   }, [pathname]);
 
   return <>{children}</>;
