@@ -29,6 +29,7 @@ export function Hero() {
   const openingRef = useRef<HTMLDivElement>(null);
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLInputElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLSpanElement>(null);
   const tipLabelRef = useRef<HTMLSpanElement>(null);
   const tipTimeRef = useRef<HTMLSpanElement>(null);
@@ -108,7 +109,12 @@ export function Hero() {
       progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds, ${chapterLabelAt(time)}`);
     }
     if (!previewingRef.current) placeTip(time);
+    // The timeline rail and "Read without motion" belong to the curtain screen:
+    // they fade out once the film is past 0:02 and return when it closes again.
+    const hideToolbar = time > 2;
+    if (toolbarRef.current) toolbarRef.current.inert = hideToolbar;
     if (sectionRef.current) {
+      sectionRef.current.dataset.toolbar = hideToolbar ? "hidden" : "shown";
       sectionRef.current.dataset.chapter = next;
       sectionRef.current.style.setProperty("--film-focus", time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%");
     }
@@ -213,7 +219,7 @@ export function Hero() {
           </div>
         ))}
 
-        <div className={styles.toolbar}>
+        <div ref={toolbarRef} className={styles.toolbar}>
           <div className={styles.timeline}>
             <div className={styles.rail} onPointerMove={preview} onPointerLeave={endPreview}>
               <span ref={tipRef} className={styles.tip} aria-hidden="true"><span ref={tipLabelRef}>Prologue</span><span ref={tipTimeRef}>00:00 / 00:15</span></span>

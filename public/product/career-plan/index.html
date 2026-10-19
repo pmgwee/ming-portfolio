@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>10年倒推表｜免费职业规划工具 · Ming Creatives</title>
+<title>职业规划表｜免费职业规划工具 · Ming Creatives</title>
 <link rel="canonical" href="https://www.mingcreatives.com/product/career-plan">
 <meta property="og:url" content="https://www.mingcreatives.com/product/career-plan">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://www.mingcreatives.com/opengraph-image">
-<meta name="description" content="先写下终点，再倒推回今天，然后问：这份工，给得了吗？8 分钟生成属于你的职业倒推报告。">
-<meta property="og:title" content="10年倒推表｜这份工，给得了吗？">
-<meta property="og:description" content="8 分钟，生成属于你自己的职业倒推报告。">
+<meta name="description" content="先写下终点，再倒推回今天，然后问：这份工，给得了吗？5 分钟生成属于你的职业规划报告。">
+<meta property="og:title" content="职业规划表｜这份工，给得了吗？">
+<meta property="og:description" content="5 分钟，生成属于你自己的职业规划报告。">
 <meta name="theme-color" content="#141414">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -331,7 +331,7 @@
 
 <header class="topbar no-print">
   <div class="topbar-inner">
-    <a class="brand" href="/product/career-plan"><span class="brand-dot"></span>10年倒推表</a>
+    <a class="brand" href="/product/career-plan"><span class="brand-dot"></span>职业规划表</a>
     <div class="spacer"></div>
     <span class="saved" id="saved" aria-live="polite"></span>
     <a class="home-link" href="/">mingcreatives.com</a>
@@ -512,16 +512,16 @@
     const has = S.goal.role || S.plan.y10.role || usedJobs().length;
     return `<section class="hero fade-in">
       <div class="kicker">Ming Creatives · 免费工具</div>
-      <h1><mark>10年</mark>倒推表</h1>
+      <h1><mark>职业</mark>规划表</h1>
       <p class="lead">先写下终点，再倒推回今天，然后问：<b>这份工，给得了吗？</b></p>
       <div class="hero-cta">
-        <button class="btn btn-primary" data-go="1">${has ? "继续填写 →" : "开始（约 10 分钟）→"}</button>
+        <button class="btn btn-primary" data-go="1">${has ? "继续填写 →" : "立即规划我的职业（5 分钟）→"}</button>
         <button class="btn btn-ghost" data-act="example">先看示例</button>
       </div>
       <div class="meta-row"><span>🔒 资料只存在你的手机 / 电脑里</span><span>📄 最后生成你专属的报告</span></div>
       ${has ? `<button class="btn-text" data-act="reset" style="margin-top:8px">清空重新开始</button>` : ""}
       <div class="steps-preview">
-        <div class="sp"><div class="num">1</div><div><h3>写下终点，倒推回今天</h3><p>十年后你想成为谁？每一站需要什么技能和人脉</p></div></div>
+        <div class="sp"><div class="num">1</div><div><h3>写下终点，倒推回今天</h3><p>5–10 年后你想成为谁？每一站需要什么技能和人脉</p></div></div>
         <div class="sp"><div class="num">2</div><div><h3>这份工给得了吗？</h3><p>5 题打分，自动算出该去、当跳板，还是白做</p></div></div>
         <div class="sp"><div class="num">3</div><div><h3>变成行动计划</h3><p>自动列出你的差距，定下今年 3 个行动和这周第一步</p></div></div>
       </div>
@@ -530,10 +530,10 @@
   }
 
   function viewGoal() {
-    return `<section class="fade-in">${head(1, "写下终点", "十年后，你想成为谁？越具体越好。写错也没关系，之后可以改。")}
+    return `<section class="fade-in">${head(1, "写下终点", "5–10 年后，你想成为谁？越具体越好。写错也没关系，之后可以改。")}
       <div class="card">
         <div class="field"><label>你的名字（会显示在报告上）</label>${input("name", "例：小明")}</div>
-        <div class="field"><label>10年后，我想成为…</label>${input("goal.role", "职位 / 角色")}${suggest("goal.role", ROLE_SUGG)}</div>
+        <div class="field"><label>5–10 年后，我想成为…</label>${input("goal.role", "职位 / 角色")}${suggest("goal.role", ROLE_SUGG)}</div>
         <div class="field"><label>在哪个行业 / 领域？</label>${input("goal.industry", "例：AI、金融科技")}${suggest("goal.industry", INDUSTRY_SUGG)}</div>
         <div class="field"><label>那时候，我工作的一天长什么样？</label><p class="help">在做什么？跟谁一起工作？管多少人？</p>${textarea("goal.day", "例：带一个 10 人团队，跟区域客户开会…")}</div>
         <div class="field"><label>那时候，我想过怎样的生活？</label><p class="help">住在哪、财务状况、家庭、时间自由度。工作是为了这个生活服务的。</p>${textarea("goal.life", "例：住在 KL，有自己的房子，周末不用加班…")}</div>
@@ -690,13 +690,13 @@
       </div>
       <article class="report" id="report">
         <div class="r-head">
-          <div class="kicker">10年倒推表 · 个人报告</div>
-          <h2>${who}<span>10年</span>倒推报告</h2>
+          <div class="kicker">职业规划表 · 个人报告</div>
+          <h2>${who}<span>职业</span>规划报告</h2>
           <div class="r-meta">${esc(S.date)} · 建议每 6 个月重新做一次</div>
         </div>
         <div class="r-sec">
           <h3><span class="num">1</span>我的终点</h3>
-          <div class="r-goal">10年后，我想成为 <mark>${esc(S.goal.role || "（还没写）")}</mark></div>
+          <div class="r-goal">5–10 年后，我想成为 <mark>${esc(S.goal.role || "（还没写）")}</mark></div>
           ${S.goal.industry ? `<div class="r-sub">领域：${esc(S.goal.industry)}</div>` : ""}
           ${S.goal.day ? `<div class="r-label">我工作的一天</div><div class="r-day">「${esc(S.goal.day)}」</div>` : ""}
           ${S.goal.life ? `<div class="r-label">我想过的生活</div><div class="r-day">「${esc(S.goal.life)}」</div>` : ""}
@@ -865,7 +865,7 @@
       const canvas = await html2canvas(node, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
-      a.href = url; a.download = `10年倒推报告-${S.name.trim() || "我"}.png`;
+      a.href = url; a.download = `职业规划报告-${S.name.trim() || "我"}.png`;
       document.body.appendChild(a); a.click(); a.remove();
       toast("已下载，可以存到相册或分享");
     } catch (err) {
@@ -879,7 +879,7 @@
 <div id="mc-cover" role="status" aria-live="polite">
   <img src="/logo-resized.png" alt="">
   <span class="mc-brand">ming.creatives</span>
-  <span class="mc-label" id="mc-cover-label">10年倒推表</span>
+  <span class="mc-label" id="mc-cover-label">职业规划表</span>
   <span class="mc-bar" aria-hidden="true"><i></i></span>
 </div>
 <script>

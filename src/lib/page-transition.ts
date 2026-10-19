@@ -15,7 +15,7 @@ const LABELS: [RegExp, string][] = [
   [/^\/ai-projects\/?$/, "AI Projects"],
   [/^\/experiences\/?$/, "Experiences"],
   [/^\/side-projects\/?$/, "Side Projects"],
-  [/^\/product\/career-plan/, "10年倒推表"],
+  [/^\/product\/career-plan/, "职业规划表"],
   [/^\/work\//, "Case study"],
 ];
 
