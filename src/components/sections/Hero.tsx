@@ -65,6 +65,11 @@ export function Hero() {
       openingRef.current.inert = openingOpacity < 0.1;
       openingRef.current.setAttribute("aria-hidden", String(openingOpacity < 0.1));
     }
+    // The timeline rail and "Read without motion" only show while the curtain
+    // is open and the film is still on its opening (0:00–0:02). Hidden on the
+    // closed curtain and once the film moves on. Kept focusable for keyboards.
+    const showToolbar = curtainRevealRef.current > 0.35 && filmTimeRef.current <= 2;
+    if (sectionRef.current) sectionRef.current.dataset.toolbar = showToolbar ? "shown" : "hidden";
   }, []);
 
   const revealIntroduction = useCallback((amount: number) => {
@@ -109,12 +114,7 @@ export function Hero() {
       progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds, ${chapterLabelAt(time)}`);
     }
     if (!previewingRef.current) placeTip(time);
-    // The timeline rail and "Read without motion" belong to the curtain screen:
-    // they fade out once the film is past 0:02 and return when it closes again.
-    const hideToolbar = time > 2;
-    if (toolbarRef.current) toolbarRef.current.inert = hideToolbar;
     if (sectionRef.current) {
-      sectionRef.current.dataset.toolbar = hideToolbar ? "hidden" : "shown";
       sectionRef.current.dataset.chapter = next;
       sectionRef.current.style.setProperty("--film-focus", time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%");
     }
@@ -174,7 +174,7 @@ export function Hero() {
   };
 
   return (
-    <section ref={sectionRef} data-cinematic-hero data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading}
+    <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading}
       className={`scroll-animation ${styles.hero}`} aria-label="Gwee Per Ming and Ming Creatives — an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

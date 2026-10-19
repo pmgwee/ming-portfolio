@@ -24,8 +24,8 @@ const FONT = "var(--font-geist-sans), 'Noto Sans SC', 'PingFang SC', 'Microsoft 
 const UI = {
   en: {
     title: "Career Plan",
-    tabGoal: "1 Your goal",
-    tabJob: "2 Rate a job",
+    tabGoal: "Career Goal",
+    tabJob: "Rate Job",
     goalLabel: "In 5–10 years, I want to be…",
     goalPlaceholder: "Type a role, or pick one below",
     pickOne: "Or pick a goal by industry",
@@ -64,8 +64,8 @@ const UI = {
   },
   cn: {
     title: "职业规划表",
-    tabGoal: "1 写下终点",
-    tabJob: "2 评估工作",
+    tabGoal: "职业目标",
+    tabJob: "评估工作",
     goalLabel: "5–10 年后，我想成为…",
     goalPlaceholder: "输入职位，或从下面选一个",
     pickOne: "或按行业选一个目标",
