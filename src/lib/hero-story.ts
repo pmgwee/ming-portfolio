@@ -13,7 +13,7 @@ export const HERO_CHAPTERS = [
   {
     id: "about", number: "01", label: "About me", title: "About me.",
     body: `I'm ${SITE.personName}, a Malaysian Computer Science graduate. I build production AI systems and software, with a creative technologist's eye for how they look and feel.`,
-    action: "Explore my experience", href: "#experience",
+    action: "Explore my experience", href: "/experiences",
     start: 2.9, end: 4.95, jump: 3.75, side: "left",
   },
   {
@@ -25,7 +25,7 @@ export const HERO_CHAPTERS = [
   {
     id: "ai", number: "03", label: "Production AI", title: "Built for real work.",
     body: SITE.introduction,
-    action: "Explore AI Products", href: "#ai-systems",
+    action: "Explore AI Projects", href: "/ai-projects",
     start: 7.35, end: 10.55, jump: 8.9, side: "left",
   },
   {
@@ -37,10 +37,10 @@ export const HERO_CHAPTERS = [
 ] as const;
 
 export const HERO_DESTINATIONS = [
-  { label: "Collections", href: "#showcase", detail: "Visual work" },
+  { label: "Gallery", href: "#showcase", detail: "Visual work" },
   { label: "Services", href: "#services", detail: "Work with the studio" },
-  { label: "AI Products", href: "#ai-systems", detail: "Systems & software" },
-  { label: "Experience", href: "#experience", detail: "Background & practice" },
+  { label: "AI Projects", href: "/ai-projects", detail: "Systems & software" },
+  { label: "Experiences", href: "/experiences", detail: "Background & practice" },
   { label: "Side Project", href: "#side-project", detail: "Earlier experiments" },
 ] as const;
 

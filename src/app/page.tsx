@@ -1,7 +1,5 @@
 import { Navbar } from "@/components/ui/Navbar";
 import { Hero } from "@/components/sections/Hero";
-import { EngineeringSection } from "@/components/sections/EngineeringSection";
-import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { Showcase } from "@/components/sections/Showcase/Showcase";
 import { WorksMorph } from "@/components/sections/works/WorksMorph";
 import { WorksShowcase } from "@/components/sections/works/WorksShowcase";
@@ -27,8 +25,6 @@ export default async function Home() {
       <Showcase media={media} />
       <CareerPlanDemo />
       <ServicesSection />
-      <EngineeringSection />
-      <ExperienceSection />
       <WorksMorph />
       <WorksShowcase />
       <FaqSection />

@@ -155,7 +155,7 @@ export function Hero() {
           <p className={styles.openingLine}>Production AI. Creative worlds.</p>
           <p className={styles.openingBody}>I build AI systems that work beyond the prototype, and digital experiences through my studio, Ming Creatives.</p>
           <div className={styles.actions}>
-            <AnchorLink href="#ai-systems" className={styles.primary}>Explore AI Products <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
+            <AnchorLink href="/ai-projects" className={styles.primary}>Explore AI Projects <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
             <AnchorLink href="#showcase" className={styles.secondary}>Enter the studio</AnchorLink>
           </div>
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>

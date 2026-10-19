@@ -101,7 +101,7 @@ export const SITE = {
     },
     {
       q: "What AI and software work can recruiters explore?",
-      a: "My Works features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
+      a: "AI Projects features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Gwee’s contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
       q: "What does his Data & AI consulting focus on?",
