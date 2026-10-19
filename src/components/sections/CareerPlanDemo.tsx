@@ -6,6 +6,7 @@ import { ArrowCounterClockwise, ArrowRight, Check, FilePdf, Sparkle, X } from "@
 import { track } from "@vercel/analytics";
 import {
   CAREER_PLAN_URL,
+  CAREER_SOURCES,
   GENERIC_ROLE,
   INDUSTRIES,
   JOB_QUESTIONS,
@@ -47,6 +48,9 @@ const UI = {
     pathEmpty: "Pick a goal and your path appears here.",
     stages: ["Start", "Grow", "Level up", "Goal"],
     skillsHeading: "Skills this goal needs",
+    yearsLabel: "Typically reached after",
+    sourcesSummary: "How these paths were built",
+    sourcesIntro: "Paths, skills and timings are checked against official Malaysian pathways, salary guides, career guides and real LinkedIn career timelines of people in these roles. Timings show only where a source gives one.",
     jobHeading: "Job check",
     jobFallback: "The job you're considering",
     insightsHeading: "What to watch",
@@ -87,6 +91,9 @@ const UI = {
     pathEmpty: "选好目标，你的路线就会出现在这里。",
     stages: ["起步", "成长", "进阶", "终点"],
     skillsHeading: "这个目标需要的技能",
+    yearsLabel: "通常需要",
+    sourcesSummary: "这些路线的依据",
+    sourcesIntro: "路线、技能和年数参考了马来西亚官方路径、薪资指南、职业指南，以及这些职位从业者在 LinkedIn 上的真实经历。只有在有来源时才会显示年数。",
     jobHeading: "这份工，给得了吗？",
     jobFallback: "你在考虑的工作",
     insightsHeading: "要注意的地方",
@@ -213,7 +220,7 @@ export function CareerPlanDemo() {
   }
 
   function openFullTool() {
-    handOffToFullTool({ name, role: goalText, jobName, answers });
+    handOffToFullTool({ name, role: goalText, jobName, answers, lang });
     track("career_plan_full_tool", { lang });
   }
 
@@ -350,6 +357,21 @@ export function CareerPlanDemo() {
                           </div>
                         ))}
                       </div>
+                      <details className="group mt-4 text-xs text-zinc-400">
+                        <summary className={`inline-flex cursor-pointer list-none items-center gap-1.5 rounded text-zinc-400 hover:text-zinc-200 ${focusRing}`}>
+                          <span aria-hidden="true" className="transition-transform group-open:rotate-90">›</span> {ui.sourcesSummary}
+                        </summary>
+                        <p className="mt-2 max-w-[60ch] leading-relaxed text-zinc-500">{ui.sourcesIntro}</p>
+                        <ul className="mt-2 space-y-1">
+                          {CAREER_SOURCES.map((source) => (
+                            <li key={source.url}>
+                              <a href={source.url} target="_blank" rel="noopener noreferrer" className="underline decoration-white/20 underline-offset-2 hover:text-zinc-200">
+                                {source.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
                     </div>
                     <div>
                       <label htmlFor="cp-name" className="text-base font-semibold text-zinc-100">
@@ -490,6 +512,11 @@ export function CareerPlanDemo() {
                                 </motion.li>
                               ))}
                             </ol>
+                            {matched?.years ? (
+                              <p className="mt-2 text-[12px] text-zinc-600">
+                                {ui.yearsLabel} <span className="font-bold text-[#141414]">{tx(matched.years)}</span>
+                              </p>
+                            ) : null}
                             <p className="mt-3 text-[11px] font-bold tracking-[0.16em] text-zinc-500">{ui.skillsHeading.toUpperCase()}</p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               {plan.skills.map((skill) => (

@@ -17,63 +17,88 @@ export type Role = {
   path: [Text, Text, Text];
   /** What this goal usually demands. */
   skills: [Text, Text, Text];
+  /** Typical experience before reaching the goal, only where a source gives it. */
+  years?: Text;
 };
 
 export type Industry = { id: string; name: Text; roles: Role[] };
 
 const t = (en: string, cn: string): Text => ({ en, cn });
 
+/*
+ * Paths, skills and timings were checked in Oct 2026 against official
+ * Malaysian pathways, salary guides, career guides and real LinkedIn
+ * experience timelines (see CAREER_SOURCES). Years appear only when sourced.
+ */
 export const INDUSTRIES: Industry[] = [
   {
     id: "tech",
     name: t("Tech & AI", "科技与 AI"),
     roles: [
-      { id: "ai-lead", name: t("AI Engineering Lead", "AI 工程负责人"), path: [t("Software Engineer", "软件工程师"), t("ML Engineer", "机器学习工程师"), t("Senior AI Engineer", "资深 AI 工程师")], skills: [t("Python & machine learning", "Python 与机器学习"), t("MLOps & deployment", "MLOps 与部署"), t("System design", "系统设计")] },
-      { id: "head-data", name: t("Head of Data", "数据负责人"), path: [t("Data Analyst", "数据分析师"), t("Data Scientist", "数据科学家"), t("Senior Data Scientist", "资深数据科学家")], skills: [t("SQL & statistics", "SQL 与统计"), t("Machine learning", "机器学习"), t("Data storytelling", "用数据讲故事")] },
-      { id: "product-director", name: t("Product Director", "产品总监"), path: [t("Associate PM", "助理产品经理"), t("Product Manager", "产品经理"), t("Senior PM", "资深产品经理")], skills: [t("User research", "用户研究"), t("Data-driven decisions", "数据驱动决策"), t("Roadmapping", "产品路线规划")] },
-      { id: "regional-tech", name: t("Regional Tech Lead", "区域技术负责人"), path: [t("Software Engineer", "软件工程师"), t("Senior Engineer", "资深工程师"), t("Engineering Manager", "技术经理")], skills: [t("Architecture", "架构设计"), t("Team leadership", "团队管理"), t("Cross-border communication", "跨国沟通")] },
+      { id: "ai-lead", name: t("AI Engineering Lead", "AI 工程负责人"), path: [t("Software Engineer", "软件工程师"), t("ML / AI Engineer", "机器学习 / AI 工程师"), t("Senior AI Engineer", "资深 AI 工程师")], skills: [t("LLM apps & retrieval (RAG)", "LLM 应用与检索 (RAG)"), t("MLOps & deployment", "MLOps 与部署"), t("System design", "系统设计")] },
+      { id: "head-data", name: t("Head of Data", "数据负责人"), path: [t("Data Analyst / Engineer", "数据分析师 / 工程师"), t("Data Scientist / Senior Data Engineer", "数据科学家 / 资深数据工程师"), t("Analytics / Data Lead", "数据分析负责人")], skills: [t("Data strategy & governance", "数据策略与治理"), t("Machine learning & analytics", "机器学习与分析"), t("Leading data teams", "带领数据团队")], years: t("8–12 years, faster at startups", "8–12 年，初创公司更快") },
+      { id: "product-director", name: t("Product Director", "产品总监"), path: [t("Business Analyst / Associate PM", "商业分析师 / 助理产品经理"), t("Product Owner / Product Manager", "产品负责人 / 产品经理"), t("Senior Product Manager", "资深产品经理")], skills: [t("Product strategy", "产品策略"), t("Cross-functional leadership", "跨部门领导"), t("Data-driven decisions", "数据驱动决策")], years: t("8–11 years", "8–11 年") },
+      { id: "regional-tech", name: t("Regional Tech Lead", "区域技术负责人"), path: [t("Senior Engineer", "资深工程师"), t("Tech Lead", "技术主管"), t("Engineering Manager", "技术经理")], skills: [t("Architecture", "架构设计"), t("Leading teams across countries", "带领跨国团队"), t("Stakeholder alignment", "跨部门协调")] },
     ],
   },
   {
     id: "business",
     name: t("Business & Finance", "商业与金融"),
     roles: [
-      { id: "finance-director", name: t("Finance Director", "财务总监"), path: [t("Audit / Accounts Associate", "审计 / 会计专员"), t("Financial Analyst", "财务分析师"), t("Finance Manager", "财务经理")], skills: [t("Financial modelling", "财务建模"), t("Reporting & compliance", "报表与合规"), t("Business partnering", "业务伙伴思维")] },
-      { id: "investment-manager", name: t("Investment Manager", "投资经理"), path: [t("Investment Analyst", "投资分析师"), t("Associate", "投资经理助理"), t("Vice President", "副总裁")], skills: [t("Valuation", "估值"), t("Market research", "市场研究"), t("Deal negotiation", "交易谈判")] },
-      { id: "consulting-manager", name: t("Consulting Manager", "咨询经理"), path: [t("Business Analyst", "商业分析师"), t("Consultant", "顾问"), t("Senior Consultant", "资深顾问")], skills: [t("Structured problem-solving", "结构化解决问题"), t("Client presentation", "客户提案"), t("Industry expertise", "行业专长")] },
-      { id: "ops-director", name: t("Operations Director", "运营总监"), path: [t("Operations Executive", "运营专员"), t("Operations Manager", "运营经理"), t("Senior Ops Manager", "资深运营经理")], skills: [t("Process improvement", "流程优化"), t("Supply chain", "供应链"), t("People management", "团队管理")] },
+      { id: "finance-director", name: t("Finance Director", "财务总监"), path: [t("Audit Associate (0–2 yrs)", "审计专员（0–2 年）"), t("Senior Accountant / FP&A (5–9 yrs)", "资深会计 / 财务分析（5–9 年）"), t("Finance Manager (10+ yrs)", "财务经理（10 年以上）")], skills: [t("ACCA / MIA qualification", "ACCA / MIA 专业资格"), t("Financial planning & analysis", "财务规划与分析"), t("Business partnering", "业务伙伴思维")], years: t("15+ years", "15 年以上") },
+      { id: "investment-director", name: t("Investment Director", "投资总监"), path: [t("Investment Analyst", "投资分析师"), t("Associate", "投资经理"), t("Vice President", "副总裁")], skills: [t("Financial modelling & valuation", "财务建模与估值"), t("Due diligence", "尽职调查"), t("Deal sourcing & negotiation", "项目开发与谈判")], years: t("8–11 years", "8–11 年") },
+      { id: "consulting-manager", name: t("Consulting Manager", "咨询经理"), path: [t("Business Analyst", "商业分析师"), t("Consultant / Associate", "顾问"), t("Senior Consultant", "资深顾问")], skills: [t("Structured problem-solving", "结构化解决问题"), t("Client presentation", "客户提案"), t("Industry expertise", "行业专长")] },
+      { id: "supply-chain-manager", name: t("Supply Chain Manager", "供应链经理"), path: [t("Supply Chain Coordinator / Logistics Analyst", "供应链专员 / 物流分析师"), t("Planner / Buyer", "计划员 / 采购员"), t("Assistant Manager", "助理经理")], skills: [t("Demand & supply planning", "需求与供应计划"), t("Procurement & supplier management", "采购与供应商管理"), t("ERP & data analysis", "ERP 与数据分析")] },
     ],
   },
   {
     id: "creative",
     name: t("Marketing & Creative", "营销与创意"),
     roles: [
-      { id: "marketing-director", name: t("Marketing Director", "市场总监"), path: [t("Marketing Executive", "市场专员"), t("Marketing Manager", "市场经理"), t("Senior Marketing Manager", "资深市场经理")], skills: [t("Performance marketing", "效果营销"), t("Brand strategy", "品牌策略"), t("Budget ownership", "预算管理")] },
-      { id: "creative-director", name: t("Creative Director", "创意总监"), path: [t("Designer", "设计师"), t("Senior Designer", "资深设计师"), t("Art Director", "艺术指导")], skills: [t("Visual storytelling", "视觉叙事"), t("AI creative tools", "AI 创意工具"), t("Leading creative teams", "带领创意团队")] },
-      { id: "creator", name: t("Full-time Content Creator", "全职内容创作者"), path: [t("Part-time creator", "兼职创作者"), t("Niche creator", "垂直领域创作者"), t("Creator with brand deals", "有品牌合作的创作者")], skills: [t("Short-video production", "短视频制作"), t("Audience growth", "粉丝增长"), t("Brand partnerships", "品牌合作")] },
-      { id: "ux-lead", name: t("UX Lead", "用户体验负责人"), path: [t("UI/UX Designer", "UI/UX 设计师"), t("Product Designer", "产品设计师"), t("Senior Product Designer", "资深产品设计师")], skills: [t("User research", "用户研究"), t("Interaction design", "交互设计"), t("Design systems", "设计系统")] },
+      { id: "marketing-director", name: t("Marketing Director", "市场总监"), path: [t("Marketing Executive", "市场专员"), t("Marketing Manager", "市场经理"), t("Associate Director", "副总监")], skills: [t("Digital & performance marketing", "数字与效果营销"), t("Brand strategy", "品牌策略"), t("Budget & P&L ownership", "预算与损益管理")], years: t("12–15 years", "12–15 年") },
+      { id: "creative-director", name: t("Creative Director", "创意总监"), path: [t("Designer / Junior Art Director", "设计师 / 初级艺术指导"), t("Art Director", "艺术指导"), t("Senior Art Director", "资深艺术指导")], skills: [t("Visual storytelling", "视觉叙事"), t("AI creative tools", "AI 创意工具"), t("Leading creative teams", "带领创意团队")], years: t("5–10+ years", "5–10 年以上") },
+      { id: "creator", name: t("Full-time Content Creator", "全职内容创作者"), path: [t("Part-time creator", "兼职创作者"), t("Niche creator with a steady audience", "有稳定粉丝的垂直创作者"), t("Creator with brand deals", "有品牌合作的创作者")], skills: [t("Short-video production", "短视频制作"), t("Audience growth", "粉丝增长"), t("Brand deals & tax basics", "品牌合作与报税常识")] },
+      { id: "ux-lead", name: t("UX Lead", "用户体验负责人"), path: [t("UX / UI Designer", "UX / UI 设计师"), t("Product Designer", "产品设计师"), t("Senior UX Designer", "资深 UX 设计师")], skills: [t("User research & storytelling", "用户研究与叙事"), t("Design systems", "设计系统"), t("Hiring & mentoring", "招聘与带人")] },
     ],
   },
   {
     id: "health",
     name: t("Healthcare & Science", "医疗与科研"),
     roles: [
-      { id: "specialist", name: t("Medical Specialist", "专科医生"), path: [t("House Officer", "实习医生"), t("Medical Officer", "医疗官"), t("Specialist Trainee", "专科培训医生")], skills: [t("Clinical expertise", "临床专业"), t("Postgraduate exams", "专科考试"), t("Patient communication", "医患沟通")] },
-      { id: "pharmacy-manager", name: t("Pharmacy Manager", "药剂经理"), path: [t("Provisional Pharmacist", "实习药剂师"), t("Pharmacist", "药剂师"), t("Senior Pharmacist", "资深药剂师")], skills: [t("Clinical pharmacy", "临床药学"), t("Regulatory affairs", "法规事务"), t("Team management", "团队管理")] },
-      { id: "research-scientist", name: t("Research Scientist", "研究科学家"), path: [t("Research Assistant", "研究助理"), t("PhD Researcher", "博士研究员"), t("Postdoctoral Scientist", "博士后科学家")], skills: [t("Research methods", "研究方法"), t("Publications & grants", "论文与经费申请"), t("Lab / data skills", "实验 / 数据能力")] },
-      { id: "healthcare-admin", name: t("Healthcare Operations Manager", "医疗运营经理"), path: [t("Admin Executive", "行政专员"), t("Unit Manager", "部门主管"), t("Operations Manager", "运营经理")], skills: [t("Healthcare operations", "医疗运营"), t("Compliance", "合规"), t("Leadership", "领导力")] },
+      { id: "specialist", name: t("Medical Specialist", "专科医生"), path: [t("House Officer (2 yrs)", "实习医生（2 年）"), t("Medical Officer", "医疗官"), t("Specialist training (Master's / Parallel Pathway)", "专科培训（硕士 / 平行路径）")], skills: [t("Clinical competence", "临床能力"), t("Specialist exams", "专科考试"), t("Patient communication", "医患沟通")] },
+      { id: "pharmacy-manager", name: t("Pharmacy Manager", "药剂经理"), path: [t("Provisionally Registered Pharmacist (~1 yr)", "实习药剂师 PRP（约 1 年）"), t("Fully Registered Pharmacist", "注册药剂师"), t("Senior / Licensed Pharmacist", "资深 / 持牌药剂师")], skills: [t("Clinical pharmacy", "临床药学"), t("Poisons Act & licensing", "毒药法令与执照"), t("Team & inventory management", "团队与库存管理")] },
+      { id: "research-scientist", name: t("Research Scientist", "研究科学家"), path: [t("Research Assistant (Master's)", "研究助理（硕士）"), t("PhD Researcher", "博士研究员"), t("Postdoc / Scientist", "博士后 / 科学家")], skills: [t("Research methods", "研究方法"), t("Publications & grants", "论文与经费申请"), t("Project management & collaboration", "项目管理与协作")] },
+      { id: "hospital-gm", name: t("Hospital General Manager", "医院总经理"), path: [t("Admin / Operations Executive", "行政 / 运营专员"), t("Clinic / Unit Manager", "诊所 / 部门经理"), t("Operations Manager", "运营经理")], skills: [t("Healthcare operations", "医疗运营"), t("Compliance & accreditation", "合规与认证"), t("Leadership & decision-making", "领导与决策")] },
     ],
   },
   {
     id: "founder",
     name: t("Founder & Independent", "创业与自由职业"),
     roles: [
-      { id: "startup-founder", name: t("Startup Founder", "自己创业"), path: [t("Early startup employee", "初创公司早期员工"), t("Side project with paying users", "有付费用户的副业"), t("Co-founder", "联合创始人")], skills: [t("Sales & fundraising", "销售与融资"), t("Product-market fit", "产品市场匹配"), t("Hiring", "招聘与组队")] },
-      { id: "studio-owner", name: t("Studio / Agency Owner", "工作室老板"), path: [t("Freelancer", "自由职业者"), t("Freelancer with retainer clients", "有长期客户的自由职业者"), t("Small team lead", "小团队负责人")], skills: [t("Portfolio & personal brand", "作品集与个人品牌"), t("Pricing & contracts", "定价与合同"), t("Client management", "客户管理")] },
-      { id: "ecommerce-founder", name: t("E-commerce Brand Founder", "电商品牌创始人"), path: [t("Marketplace seller", "平台卖家"), t("Own-brand seller", "自有品牌卖家"), t("Multi-channel brand", "多渠道品牌")], skills: [t("Product sourcing", "选品与采购"), t("Performance ads", "投放广告"), t("Operations & logistics", "运营与物流")] },
-      { id: "independent-consultant", name: t("Independent Consultant", "独立顾问"), path: [t("Industry specialist", "行业专员"), t("Senior expert", "资深专家"), t("Trusted advisor", "受信赖的顾问")], skills: [t("Deep expertise", "深度专业"), t("Personal brand", "个人品牌"), t("Network & referrals", "人脉与转介绍")] },
+      { id: "startup-founder", name: t("Startup Founder", "自己创业"), path: [t("Early employee at a startup", "初创公司早期员工"), t("Side project with paying users", "有付费用户的副业"), t("Co-founder", "联合创始人")], skills: [t("Sales & fundraising", "销售与融资"), t("Product-market fit", "产品市场匹配"), t("Hiring", "招聘与组队")] },
+      { id: "studio-owner", name: t("Studio / Agency Owner", "工作室老板"), path: [t("Freelancer", "自由职业者"), t("Freelancer with retainer clients", "有长期客户的自由职业者"), t("First hire / small team", "第一个员工 / 小团队")], skills: [t("Portfolio & personal brand", "作品集与个人品牌"), t("Contracts & documented processes", "合同与标准流程"), t("Client management", "客户管理")] },
+      { id: "ecommerce-founder", name: t("E-commerce Brand Founder", "电商品牌创始人"), path: [t("Marketplace seller (Shopee / TikTok Shop)", "平台卖家（Shopee / TikTok Shop）"), t("Own-brand seller", "自有品牌卖家"), t("Multi-channel brand", "多渠道品牌")], skills: [t("Product sourcing", "选品与采购"), t("Performance ads", "投放广告"), t("Inventory & fulfilment across channels", "多渠道库存与履约")] },
+      { id: "independent-consultant", name: t("Independent Consultant", "独立顾问"), path: [t("Industry specialist", "行业专员"), t("Senior expert", "资深专家"), t("First clients from your network", "从人脉中拿到第一批客户")], skills: [t("A clear niche", "清晰的专长定位"), t("Proof of results", "可证明的成果"), t("Warm network & referrals", "人脉与转介绍")] },
     ],
   },
+];
+
+/** Where the paths, skills and timings come from (shown in the demo). */
+export const CAREER_SOURCES: { label: string; url: string }[] = [
+  { label: "Malaysian Medical Council — Guidebook for House Officers", url: "https://mmc.gov.my/wp-content/uploads/2025/09/A-Guidebook-for-House-Officers.pdf" },
+  { label: "Malaysian Medical Council — Specialist Register FAQ", url: "https://mmc.gov.my/wp-content/uploads/2025/11/FREQUENTLY-ASKED-QUESTIONS-FAQ-ENTRY-INTO-THE-SPECIALIST-REGISTER-SR-OF-THE-MMC.pdf" },
+  { label: "Pharmacy Board Malaysia — PRP training guide", url: "https://pharmacy.moh.gov.my/sites/default/files/document-upload/general-guide-versi-2023.pdf" },
+  { label: "MVC Resources — Accountant career progression in Malaysia", url: "https://mvc-resources.com/accountant-salary-guide-and-career-progression-in-malaysia/" },
+  { label: "Coastal Haven Partners — Private equity career path", url: "https://www.coastalhavenpartners.com/insights/private-equity-career-path" },
+  { label: "Management consulting in Malaysia (Malaysia4U)", url: "https://malaysia4u.com/management-consulting-guide" },
+  { label: "Evalon — Head of Data career guide", url: "https://www.evalon.tech/career-guides/head-of-data/" },
+  { label: "The Pragmatic Engineer — Engineering career paths", url: "https://newsletter.pragmaticengineer.com/p/engineering-career-paths" },
+  { label: "Skillshare — Becoming a creative director", url: "https://www.skillshare.com/blog/en/three-creative-directors-on-what-it-takes-to-land-a-dream-job/" },
+  { label: "Rework — UX designer to senior and lead", url: "https://resources.rework.com/guides/ux-designer-playbooks/ux-designer-to-senior-and-lead-path" },
+  { label: "Logistics Bureau — Supply chain career paths", url: "https://www.logisticsbureau.com/jobs-and-career-paths-in-supply-chain-and-logistics/" },
+  { label: "Agency Builders — From freelancer to agency owner", url: "https://agencybuilders.com/resources/articles/freelancer-to-agency-owner/" },
+  { label: "VoxEureka — MyCreator Pulse Report 2026", url: "https://voxeureka.com/mycreatorpulse/" },
+  { label: "University of Cambridge Careers — Research in industry", url: "https://www.careers.cam.ac.uk/research-industry" },
 ];
 
 const ALL_ROLES = INDUSTRIES.flatMap((industry) => industry.roles);
@@ -134,7 +159,7 @@ export function verdictFor(answers: Answer[]): Verdict {
 }
 
 /** Merge the demo answers into the full tool's saved state and open it at step 1. */
-export function handOffToFullTool(demo: { name: string; role: string; jobName: string; answers: Answer[] }) {
+export function handOffToFullTool(demo: { name: string; role: string; jobName: string; answers: Answer[]; lang: Lang }) {
   let saved: Record<string, unknown> = {};
   try {
     saved = JSON.parse(localStorage.getItem(CAREER_PLAN_STORE) ?? "{}") ?? {};
@@ -145,7 +170,7 @@ export function handOffToFullTool(demo: { name: string; role: string; jobName: s
     ? [...saved.jobs]
     : [blankJob("工作 A"), blankJob("工作 B"), blankJob("现在的工")];
   jobs[0] = { label: "工作 A", leave: "", ...(jobs[0] ?? {}), name: demo.jobName, answers: demo.answers };
-  const next = { ...saved, v: 2, step: 1, name: demo.name || (saved.name as string) || "", goal, jobs };
+  const next = { ...saved, v: 2, step: 1, lang: demo.lang, name: demo.name || (saved.name as string) || "", goal, jobs };
   try {
     localStorage.setItem(CAREER_PLAN_STORE, JSON.stringify(next));
   } catch {}
