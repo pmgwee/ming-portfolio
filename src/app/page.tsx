@@ -6,6 +6,7 @@ import { Showcase } from "@/components/sections/Showcase/Showcase";
 import { WorksMorph } from "@/components/sections/works/WorksMorph";
 import { WorksShowcase } from "@/components/sections/works/WorksShowcase";
 import { ServicesSection } from "@/components/sections/ServicesSection";
+import { CareerPlanDemo } from "@/components/sections/CareerPlanDemo";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { AudiencePaths } from "@/components/sections/AudiencePaths";
 import { Footer } from "@/components/sections/Footer";
@@ -25,6 +26,7 @@ export default async function Home() {
       <Hero />
       <Showcase media={media} />
       <ServicesSection />
+      <CareerPlanDemo />
       <EngineeringSection />
       <ExperienceSection />
       <WorksMorph />

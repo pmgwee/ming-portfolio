@@ -12,6 +12,7 @@ const SOCIAL_ICONS: Record<string, Icon> = {
 const EXPLORE = [
   { label: "Collections", href: "#showcase" as const },
   { label: "Services", href: "#services" as const },
+  { label: "Free Tool", href: "#career-plan" as const },
   { label: "AI Products", href: "#ai-systems" as const },
   { label: "Experience", href: "#experience" as const },
   { label: "Side Project", href: "#side-project" as const },
