@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/product/career-plan`, priority: 0.8 },
     { url: `${SITE.url}/ai-projects`, priority: 0.9 },
     { url: `${SITE.url}/experiences`, priority: 0.8 },
+    { url: `${SITE.url}/side-projects`, priority: 0.7 },
     ...ENGINEERING_PROJECTS.map((project) => ({
       url: `${SITE.url}/work/${project.slug}`,
       priority: 0.8,

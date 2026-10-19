@@ -10,12 +10,13 @@ const SOCIAL_ICONS: Record<string, Icon> = {
 };
 
 const EXPLORE = [
-  { label: "Gallery", href: "#showcase" as const },
+  { label: "Studio", href: "#showcase" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
+  { label: "Career", href: "#career" as const },
   { label: "AI Projects", href: "/ai-projects" as const },
   { label: "Experiences", href: "/experiences" as const },
-  { label: "Side Project", href: "#side-project" as const },
+  { label: "Side Projects", href: "/side-projects" as const },
   { label: "FAQs", href: "#faq" as const },
 ];
 

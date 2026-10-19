@@ -37,11 +37,11 @@ export const HERO_CHAPTERS = [
 ] as const;
 
 export const HERO_DESTINATIONS = [
-  { label: "Gallery", href: "#showcase", detail: "Visual work" },
+  { label: "Studio", href: "#showcase", detail: "Visual work" },
   { label: "Services", href: "#services", detail: "Work with the studio" },
   { label: "AI Projects", href: "/ai-projects", detail: "Systems & software" },
   { label: "Experiences", href: "/experiences", detail: "Background & practice" },
-  { label: "Side Project", href: "#side-project", detail: "Earlier experiments" },
+  { label: "Side Projects", href: "/side-projects", detail: "Earlier experiments" },
 ] as const;
 
 /**

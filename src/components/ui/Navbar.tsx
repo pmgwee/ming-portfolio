@@ -8,9 +8,10 @@ import { SITE } from "@/lib/seo";
 import styles from "./Navbar.module.css";
 
 const LINKS = [
-  { label: "Gallery", href: "#showcase" as const },
+  { label: "Studio", href: "#showcase" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
+  { label: "Career", href: "#career" as const },
 ];
 
 const linkClass =

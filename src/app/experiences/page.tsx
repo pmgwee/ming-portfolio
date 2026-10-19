@@ -22,9 +22,9 @@ export default function ExperiencesPage() {
     <SubpageShell
       title={`Experiences of ${SITE.personName}`}
       next={{
-        href: "/ai-projects",
-        label: "AI Projects",
-        hook: "See the production AI agents and systems this experience led to, with how each one works.",
+        href: "/side-projects",
+        label: "Side Projects",
+        hook: "The earlier products and prototypes built along the way, each with its status labelled.",
       }}
     >
       <ExperienceSection />

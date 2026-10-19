@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { setLenis } from "@/lib/smooth-scroll";
+import { usePathname } from "next/navigation";
+import { scrollToPosition, setLenis } from "@/lib/smooth-scroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -65,6 +66,22 @@ export function SmoothScrollProvider({
       setLenis(null);
     };
   }, []);
+
+  // A route change keeps Lenis's old scroll target, which would land the new
+  // page at the previous offset (e.g. its bottom). Start each page at the top,
+  // unless the URL targets a section hash.
+  const pathname = usePathname();
+  const firstPath = useRef(true);
+  useEffect(() => {
+    // Leave the browser's own restore alone on the initial load / reload.
+    if (firstPath.current) {
+      firstPath.current = false;
+      return;
+    }
+    if (window.location.hash) return;
+    scrollToPosition(0);
+    ScrollTrigger.refresh();
+  }, [pathname]);
 
   return <>{children}</>;
 }
