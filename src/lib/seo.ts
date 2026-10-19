@@ -66,9 +66,9 @@ export const SITE = {
   ],
   services: [
     {
-      name: "AIGC & TGC content production",
+      name: "AIGC & AI TVC production",
       description:
-        "AI-generated content (AIGC) and TGC production: imagery, video, and visual concepts for brand storytelling, social media, and digital campaigns.",
+        "AI-generated content (AIGC) and AI-driven TV commercials (TVCs): concept, script, storyboard, video generation, voiceover, and edit, delivered in formats for TV, YouTube, and social media.",
     },
     {
       name: "AI agents & data engineering",
@@ -92,7 +92,7 @@ export const SITE = {
     },
     {
       q: "What services does Ming Creatives offer?",
-      a: "Ming Creatives offers AIGC and TGC content production, AI agents and data engineering, and SaaS and web products, from cinematic 3D and immersive websites to business web apps.",
+      a: "Ming Creatives offers AIGC content and AI-driven TV commercial (TVC) production, AI agents and data engineering, and SaaS and web products, from cinematic 3D and immersive websites to business web apps.",
     },
     {
       q: "What AI and software work can recruiters explore?",
