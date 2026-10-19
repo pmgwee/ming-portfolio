@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>职业规划表｜免费职业规划工具 · Ming Creatives</title>
+<title>Career Plan 职业规划表｜Free career planning tool · Ming Creatives</title>
 <link rel="canonical" href="https://www.mingcreatives.com/product/career-plan">
 <meta property="og:url" content="https://www.mingcreatives.com/product/career-plan">
 <meta property="og:type" content="website">
@@ -58,6 +58,9 @@
   .brand { color: inherit; text-decoration: none; }
   .home-link { font-size: 13px; font-weight: 700; color: var(--ink); text-decoration: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 4px 12px; white-space: nowrap; }
   .home-link:hover { background: var(--yellow); }
+  .lang-toggle { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; padding: 2px; font-size: 12px; font-weight: 700; }
+  .lang-toggle button { border-radius: 999px; padding: 3px 10px; color: var(--muted); }
+  .lang-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--yellow); }
   .saved { font-size: 12px; color: var(--muted); transition: opacity .3s; }
   .progress { height: 4px; background: var(--line); }
   .progress > i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .4s cubic-bezier(.2,.7,.2,1); }
@@ -331,9 +334,12 @@
 
 <header class="topbar no-print">
   <div class="topbar-inner">
-    <a class="brand" href="/product/career-plan"><span class="brand-dot"></span>职业规划表</a>
+    <a class="brand" href="/product/career-plan"><span class="brand-dot"></span><span id="brand-name">Career Plan</span></a>
     <div class="spacer"></div>
     <span class="saved" id="saved" aria-live="polite"></span>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="cn" aria-pressed="false">中文</button>
+    </div>
     <a class="home-link" href="/">mingcreatives.com</a>
   </div>
   <div class="progress" aria-hidden="true"><i id="bar"></i></div>
@@ -346,84 +352,284 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 (() => {
-  const SITE = "https://www.mingcreatives.com/";
   const STORE = "tenyear-plan-v1";
-  const QUESTIONS = [
-    ["能学到「1年 / 3年后」需要的技能吗？", "对照你在第 3 步写的「还差的技能」"],
-    ["能接触到我需要的人脉 / 资源吗？", "同事、客户、行业圈子、公司平台"],
-    ["能发挥我的优势吗？", "在擅长的地方，不用拼命也可能做到前 5%"],
-    ["这个行业 / 岗位 5–10 年后还在吗？", "看看业内 senior 的人，在 AI 时代会被取代吗？"],
-    ["这个 position title，能当我下一站的跳板吗？", "在打工的世界，大家最后看的是你的 title"],
-  ];
-  const ROLE_SUGG = ["Director", "Regional Tech Lead", "Senior Manager", "Consultant", "自己创业", "领域专家"];
-  const INDUSTRY_SUGG = ["AI / 科技", "金融", "电商", "医疗", "教育", "制造 / 供应链", "咨询", "媒体 / 内容"];
-  const STRENGTHS = ["技术研究", "逻辑分析", "沟通表达", "销售谈判", "创意设计", "审美", "带团队", "执行力", "学习能力快", "数据敏感", "写作", "细心耐心"];
-  const SKILL_SUGG = ["Python", "数据分析", "项目管理", "英文沟通", "带团队", "AI 工具应用", "演讲 / Pitch", "财务基础", "作品集"];
-  const NET_SUGG = ["业内前辈 / mentor", "LinkedIn 人脉", "行业社群", "客户资源", "投资人", "专业证书"];
-  const STOPS = [["y10", "10年后"], ["y5", "5年后"], ["y3", "3年后"], ["y1", "1年后"]];
-  const STEPS = ["写下终点", "倒推路线", "看清差距", "评估工作", "行动计划"];
-  const TOTAL = STEPS.length;            // wizard steps 1..TOTAL
-  const REPORT = TOTAL + 1;              // report view index
-  const CRITERIA_SUGG = ["职位 title", "管多少人", "收入水平", "有自己的作品 / 公司", "工作地点 / 时间自由"];
-  const OBSTACLE_SUGG = ["没有工作经验", "没有业内人脉", "钱不够", "时间不够", "不够自信", "不知道从哪开始", "家人不支持", "行业变化太快"];
-  const SUPPORT = [
-    ["knowledge", "知识", "课程、证书、书", ["线上课程", "专业证书", "一本领域经典书"]],
-    ["people", "人", "mentor、同行、贵人", ["1 位 mentor", "同行互助群", "业内前辈"]],
-    ["money", "钱", "学费、生活缓冲", ["3 个月生活费", "课程预算", "设备预算"]],
-    ["habits", "习惯", "每天 / 每周固定做的事", ["每天学 1 小时", "每周投 10 份简历", "每月复盘一次"]],
-    ["systems", "系统", "工具、追踪表、环境", ["求职追踪表", "Notion 计划表", "作品集网站"]],
-  ];
+
+  // ---------- language ----------
+  // Chosen on the home-page demo (handed over in storage) or here; else
+  // ?lang=en|cn; else the browser language.
+  const T = {
+    en: {
+      htmlLang: "en", brand: "Career Plan", saved: "✓ Saved",
+      questions: [
+        ["Will it teach the skills I need in 1–3 years?", "Compare it with the \"still missing\" skills from step 3"],
+        ["Will I meet the people and resources I need?", "Colleagues, clients, industry circles, the company's platform"],
+        ["Does it play to my strengths?", "Where you could reach the top 5% without burning out"],
+        ["Will this industry / role still matter in 5–10 years?", "Look at seniors in the field: will AI replace their work?"],
+        ["Is this position title a stepping stone to my next role?", "In the job market, people read your title first"],
+      ],
+      roleSugg: ["Director", "Regional Tech Lead", "Senior Manager", "Consultant", "Startup founder", "Domain expert"],
+      industrySugg: ["AI / Tech", "Finance", "E-commerce", "Healthcare", "Education", "Manufacturing / Supply chain", "Consulting", "Media / Content"],
+      strengths: ["Technical research", "Logical analysis", "Communication", "Sales & negotiation", "Creative design", "Aesthetics", "Leading teams", "Getting things done", "Fast learner", "Data sense", "Writing", "Detail & patience"],
+      skillSugg: ["Python", "Data analysis", "Project management", "English communication", "Leading teams", "AI tools", "Presenting / pitching", "Finance basics", "Portfolio"],
+      netSugg: ["Industry mentor", "LinkedIn network", "Industry community", "Client relationships", "Investors", "Professional certificate"],
+      stops: { y10: "In 10 years", y5: "In 5 years", y3: "In 3 years", y1: "In 1 year" },
+      steps: ["Your goal", "Path back", "Your gaps", "Rate jobs", "Action plan"],
+      criteriaSugg: ["Position title", "Team size", "Income level", "Own product / company", "Location / time freedom"],
+      obstacleSugg: ["No work experience", "No industry network", "Not enough money", "Not enough time", "Low confidence", "Don't know where to start", "Family doesn't support it", "Industry changes fast"],
+      support: [
+        ["knowledge", "Knowledge", "courses, certificates, books", ["Online course", "Professional certificate", "A classic book in the field"]],
+        ["people", "People", "mentors, peers, sponsors", ["1 mentor", "Peer support group", "Industry seniors"]],
+        ["money", "Money", "fees, a living buffer", ["3 months of living costs", "Course budget", "Equipment budget"]],
+        ["habits", "Habits", "what you do daily / weekly", ["Study 1 hour a day", "10 applications a week", "Monthly review"]],
+        ["systems", "Systems", "tools, trackers, environment", ["Job-search tracker", "Notion plan", "Portfolio website"]],
+      ],
+      jobLabels: ["Job A", "Job B", "Current job"],
+      verdict: { none: ["Not rated", "Answer the 5 questions"], go: ["✅ Take it", "It's moving you toward your goal"], mid: ["⚠️ Stepping stone", "Take it, but set a date to move on"], no: ["❌ Can't get you there", "However good the pay, it's time you won't get back"] },
+      addAnother: "Add another…", tagHelp: "Press Enter or a comma to add", remove: "Remove",
+      step: "STEP",
+      landing: {
+        kicker: "Ming Creatives · Free tool", h1a: "Career", h1b: " Plan",
+        lead: "Write down where you want to end up, work backwards to today, then ask: ", leadB: "can this job get me there?",
+        cont: "Continue →", start: "Plan my career now (5 min) →", example: "See an example",
+        private: "🔒 Your answers stay on your device", report: "📄 Ends with your own report", reset: "Clear and start over",
+        cards: [["Set your goal, work back to today", "Who do you want to be in 5–10 years? What skills and people does each stop need?"], ["Can this job get you there?", "5 questions score it: take it, use it as a stepping stone, or skip it"], ["Turn it into a plan", "Your gaps, listed automatically, become 3 actions this year and one this week"]],
+        quote: ["Don't pick a job on salary alone.", "Choosing the wrong first job is ", "worse", " than finding one a few months later."],
+      },
+      goal: {
+        title: "Your goal", sub: "Who do you want to be in 5–10 years? Be specific. It's fine to change it later.",
+        name: "Your name (shown on your report)", namePh: "e.g. Alex",
+        role: "In 5–10 years, I want to be…", rolePh: "Role / position",
+        industry: "In which industry / field?", industryPh: "e.g. AI, fintech",
+        day: "What does a working day look like then?", dayHelp: "What are you doing? Who with? How many people do you lead?", dayPh: "e.g. Leading a team of 10, meeting regional clients…",
+        life: "What life do you want then?", lifeHelp: "Where you live, money, family, time freedom. Work serves this life.", lifePh: "e.g. My own home in KL, weekends free…",
+        whyTitle: "Why does this matter to me?", whyHelp: "Come back to this line when you feel like giving up.", whyPh: "e.g. I want to prove that…",
+        criteria: "What counts as \"made it\"? (success criteria)", criteriaHelp: "Write 2–3 checkable conditions, not just \"success\".", criteriaPh: "e.g. Leading a team of 10+",
+        fitTitle: "Why does it suit me?", strengths: "My strengths (pick up to 3)", edge: "Compared with 10 people, why am I one of the special 2?", edgePh: "A sentence or two",
+      },
+      plan: {
+        title: "Work backwards", sub: "Walk back from 10 years out. At each stop: what you'll be, the skills you need, the people you need.",
+        example: "Example (CS engineer): 10 yrs Regional AI Tech Lead → 5 yrs Senior AI Engineer → 3 yrs ML Engineer → 1 yr Software Engineer (on AI projects)",
+        notYet: "Not filled in", role: "I'll be (role / status)", rolePh: "Role / status",
+        marker: "How will I know I've arrived?", markerPh: "e.g. Title becomes ML Engineer, shipped 1 project",
+        skills: "Skills needed", skillsPh: "e.g. Python, leading teams", network: "People / resources / proof needed", networkPh: "e.g. Industry mentor, certificate",
+      },
+      gap: {
+        title: "See your gaps", sub: "Write what you have now. Your 1- and 3-year needs are compared automatically to show what's still missing.",
+        now: "Now", nowRole: "I am currently", nowRolePh: "e.g. CS graduate, job hunting",
+        haveSkills: "Skills I already have", haveSkillsPh: "e.g. Python", haveNet: "People / resources I already have", haveNetPh: "e.g. Seniors from university",
+        heroTitle: "⭐ What your next job should help you fill", heroSub: "= what you need in 1–3 years − what you have now",
+        skills: "Skills", network: "People / resources", allSet: "🎉 You already have these. Aim one stop higher.", fillFirst: "First add the skills needed \"in 1 / 3 years\" in step 2", none: "None yet",
+        obstacles: "What might stop me?", obstaclesHelp: "Once an obstacle is written down, it's less scary.", obstaclesPh: "e.g. No work experience",
+        support: "What support do I need?", supportHelp: "Turn obstacles into concrete needs. 1–2 per type is enough.",
+      },
+      actions: {
+        title: "Action plan", sub: "Turn your gaps into 3 actions for the next 12 months. Not perfect, but specific.",
+        ideas: "Ideas from your gaps:", ideaFill: (x) => `Build "${x}"`, ideaNet: (x) => `Get / meet "${x}"`, ideaHelp: "Tap one to fill the next empty action",
+        action: "Action", what: "What I'll do", whatPh: "Specific, doable, checkable", by: "Deadline (month)",
+        first: "⚡ This week's first step", firstHelp: "Small enough to start today. e.g. Find 5 industry seniors on LinkedIn tonight.", firstPh: "This week I will…",
+      },
+      jobs: {
+        title: "Can this job get you there?", sub: "Rate each offer, even your current job. You don't need all 3; skip this if you have no offer yet.",
+        name: (label) => `${label}: company / role`, namePh: "e.g. Junior SWE at an AI startup", yes: "Yes", no: "No",
+        leave: "I'll leave by (if it's a stepping stone)",
+      },
+      report: {
+        png: "⬇ Download image", pdf: "🖨 Save as PDF", edit: "✎ Go back and edit",
+        kicker: "CAREER PLAN · PERSONAL REPORT", who: (n) => (n ? `${n}'s ` : "My "), titleA: "Career", titleB: " Plan", redo: "Redo it every 6 months",
+        goal: "My goal", goalLine: "In 5–10 years, I want to be ", notWritten: "(not written yet)", field: "Field: ",
+        day: "My working day", life: "The life I want", criteria: "How I'll know I made it", why: "Why this matters to me", strengths: "My strengths", edge: "What makes me special",
+        path: "My path back", markerLabel: "✓ Arrived when: ", now: "Now",
+        gapTitle: "What my next job should help me fill", gapCount: (n) => `${n} gap${n === 1 ? "" : "s"}`, noGap: "No gaps for now", noGapHelp: "Aim one stop higher, or finish step 2.",
+        obstacles: "Obstacles & support", mightStop: "What might stop me", supportNeeded: "Support I need",
+        jobs: "Can this job get me there?", noJobs: "No job rated yet. When you get an offer, rate it in step 4.", best: "★ Closest to my goal", leaveBy: (m) => `⏳ Plan to leave by <b style="color:var(--ink)">${m}</b>`,
+        acts: "Actions for the next 12 months", byMonth: (m) => `by ${m}`, noActs: "No actions yet. Go back to step 5 to turn gaps into 3 actions.", first: "⚡ This week's first step",
+        quote: ["Get the ", "direction", " right, and the rest follows."], madeBy: "Made with Ming Creatives",
+      },
+      nav: { needGoal: "Write your goal in step 1 to create the report", back: "Back", generate: "Create my report ✨", next: (s) => `Next: ${s} →` },
+      toast: { max3: "Pick up to 3. Deselect one first.", full: "All 3 actions are filled. Clear one first.", example: "Example loaded. Edit anything.", resetConfirm: "Clear everything you've filled in?", pngFail: "Image tool didn't load. Use \"Save as PDF\".", busy: "Creating…", pngDone: "Downloaded. Save it or share it.", pngErr: "Download failed. Use \"Save as PDF\"." },
+      month: (y, m) => new Date(+y, +m - 1, 1).toLocaleDateString("en-GB", { month: "short", year: "numeric" }),
+      file: (n) => `Career-Plan-${n || "me"}.png`,
+      example: {
+        name: "Alex", role: "Regional AI Tech Lead", industry: "AI / Tech",
+        day: "Leading a 10-person AI team, meeting clients across Southeast Asia, deciding what AI product we build next.",
+        life: "Living in KL in my own home, a family trip abroad every year, no weekend overtime.",
+        why: "I want to prove CS graduates can do more than write code: lead teams and ship products that matter across the region.",
+        criteria: ["Leading a team of 10+", "Owning a regional AI product", "A year of savings"],
+        strengths: ["Technical research", "Logical analysis", "Fast learner"],
+        edge: "I pick up new tech fast and can explain it to non-technical people.",
+        plan: {
+          y10: { role: "Regional AI Tech Lead", marker: "Title says Lead; I run projects across countries", skills: ["Team management", "AI product strategy", "Cross-border communication"], network: ["Regional clients", "Industry leaders"] },
+          y5: { role: "Senior AI Engineer", marker: "Can ship an AI project on my own", skills: ["System design", "MLOps", "Mentoring juniors"], network: ["Industry mentor", "Tech community"] },
+          y3: { role: "ML Engineer", marker: "Title officially becomes ML Engineer", skills: ["Machine learning", "MLOps", "Cloud platforms"], network: ["LinkedIn network", "Open-source community"] },
+          y1: { role: "Software Engineer (on AI projects)", marker: "Shipped 1 AI feature", skills: ["Python", "Portfolio", "Data processing"], network: ["Industry mentor"] },
+        },
+        now: { role: "CS graduate, job hunting", skills: ["Python", "Data processing"], network: [] },
+        obstacles: ["No work experience", "No industry network", "Don't know where to start"],
+        support: { knowledge: ["MLOps course"], people: ["1 AI mentor"], money: ["3 months of living costs"], habits: ["Study 1 hour a day"], systems: ["Weekly application tracker"] },
+        jobs: [["IT Support at a large company", [false, false, false, false, true]], ["Junior SWE at an AI startup", [true, true, true, true, false]]],
+        actions: ["Build 1 MLOps project for my portfolio", "Meet 1 AI professional a week for coffee / a video call", "Land an AI-related Software Engineer offer"],
+        firstStep: "Tonight: find 5 ML Engineers on LinkedIn and send connection requests",
+      },
+    },
+    cn: {
+      htmlLang: "zh-Hans", brand: "职业规划表", saved: "✓ 已自动保存",
+      questions: [
+        ["能学到「1年 / 3年后」需要的技能吗？", "对照你在第 3 步写的「还差的技能」"],
+        ["能接触到我需要的人脉 / 资源吗？", "同事、客户、行业圈子、公司平台"],
+        ["能发挥我的优势吗？", "在擅长的地方，不用拼命也可能做到前 5%"],
+        ["这个行业 / 岗位 5–10 年后还在吗？", "看看业内 senior 的人，在 AI 时代会被取代吗？"],
+        ["这个 position title，能当我下一站的跳板吗？", "在打工的世界，大家最后看的是你的 title"],
+      ],
+      roleSugg: ["Director", "Regional Tech Lead", "Senior Manager", "Consultant", "自己创业", "领域专家"],
+      industrySugg: ["AI / 科技", "金融", "电商", "医疗", "教育", "制造 / 供应链", "咨询", "媒体 / 内容"],
+      strengths: ["技术研究", "逻辑分析", "沟通表达", "销售谈判", "创意设计", "审美", "带团队", "执行力", "学习能力快", "数据敏感", "写作", "细心耐心"],
+      skillSugg: ["Python", "数据分析", "项目管理", "英文沟通", "带团队", "AI 工具应用", "演讲 / Pitch", "财务基础", "作品集"],
+      netSugg: ["业内前辈 / mentor", "LinkedIn 人脉", "行业社群", "客户资源", "投资人", "专业证书"],
+      stops: { y10: "10年后", y5: "5年后", y3: "3年后", y1: "1年后" },
+      steps: ["写下终点", "倒推路线", "看清差距", "评估工作", "行动计划"],
+      criteriaSugg: ["职位 title", "管多少人", "收入水平", "有自己的作品 / 公司", "工作地点 / 时间自由"],
+      obstacleSugg: ["没有工作经验", "没有业内人脉", "钱不够", "时间不够", "不够自信", "不知道从哪开始", "家人不支持", "行业变化太快"],
+      support: [
+        ["knowledge", "知识", "课程、证书、书", ["线上课程", "专业证书", "一本领域经典书"]],
+        ["people", "人", "mentor、同行、贵人", ["1 位 mentor", "同行互助群", "业内前辈"]],
+        ["money", "钱", "学费、生活缓冲", ["3 个月生活费", "课程预算", "设备预算"]],
+        ["habits", "习惯", "每天 / 每周固定做的事", ["每天学 1 小时", "每周投 10 份简历", "每月复盘一次"]],
+        ["systems", "系统", "工具、追踪表、环境", ["求职追踪表", "Notion 计划表", "作品集网站"]],
+      ],
+      jobLabels: ["工作 A", "工作 B", "现在的工"],
+      verdict: { none: ["未评估", "先回答 5 个问题"], go: ["✅ 去", "它在帮你走向终点"], mid: ["⚠️ 当跳板", "可以去，但写下离开日期"], no: ["❌ 给不了", "薪水再高，也是在白做"] },
+      addAnother: "再加一个…", tagHelp: "输入后按 Enter 或逗号加入", remove: "删除",
+      step: "STEP",
+      landing: {
+        kicker: "Ming Creatives · 免费工具", h1a: "职业", h1b: "规划表",
+        lead: "先写下终点，再倒推回今天，然后问：", leadB: "这份工，给得了吗？",
+        cont: "继续填写 →", start: "立即规划我的职业（5 分钟）→", example: "先看示例",
+        private: "🔒 资料只存在你的手机 / 电脑里", report: "📄 最后生成你专属的报告", reset: "清空重新开始",
+        cards: [["写下终点，倒推回今天", "5–10 年后你想成为谁？每一站需要什么技能和人脉"], ["这份工给得了吗？", "5 题打分，自动算出该去、当跳板，还是白做"], ["变成行动计划", "自动列出你的差距，定下今年 3 个行动和这周第一步"]],
+        quote: ["找工不能只看薪水。", "第一份工选错了，比晚几个月找到工", "更可怕", "。"],
+      },
+      goal: {
+        title: "写下终点", sub: "5–10 年后，你想成为谁？越具体越好。写错也没关系，之后可以改。",
+        name: "你的名字（会显示在报告上）", namePh: "例：小明",
+        role: "5–10 年后，我想成为…", rolePh: "职位 / 角色",
+        industry: "在哪个行业 / 领域？", industryPh: "例：AI、金融科技",
+        day: "那时候，我工作的一天长什么样？", dayHelp: "在做什么？跟谁一起工作？管多少人？", dayPh: "例：带一个 10 人团队，跟区域客户开会…",
+        life: "那时候，我想过怎样的生活？", lifeHelp: "住在哪、财务状况、家庭、时间自由度。工作是为了这个生活服务的。", lifePh: "例：住在 KL，有自己的房子，周末不用加班…",
+        whyTitle: "为什么这对我重要？", whyHelp: "当你想放弃的时候，回来看这一句。", whyPh: "例：我想证明自己不只是…",
+        criteria: "怎样才算「做到了」？（成功标准）", criteriaHelp: "写 2–3 个能被验证的条件，不要只写「成功」。", criteriaPh: "例：管 10 人以上团队",
+        fitTitle: "为什么适合我？", strengths: "我的优势（选最多 3 个）", edge: "跟 10 个人比，我凭什么是特别的那 2 个？", edgePh: "一两句就好",
+      },
+      plan: {
+        title: "从终点倒推", sub: "从 10 年后往回走。每一站：要成为什么、需要什么技能、需要什么人脉。",
+        example: "例（CS 工程师）：10年 Regional AI Tech Lead → 5年 Senior AI Engineer → 3年 ML Engineer → 1年 Software Engineer（能碰到 AI 项目）",
+        notYet: "还没填", role: "我要成为（职位 / 状态）", rolePh: "职位 / 状态",
+        marker: "怎么知道我到了这一站？", markerPh: "例：title 变成 ML Engineer、带过 1 个项目上线",
+        skills: "需要的技能", skillsPh: "例：Python、带团队", network: "需要的人脉 / 资源 / 证明", networkPh: "例：业内前辈、证书",
+      },
+      gap: {
+        title: "看清差距", sub: "写下你现在有什么。系统会自动对比「1年 / 3年后」需要的东西，算出你还差什么。",
+        now: "现在", nowRole: "我现在是", nowRolePh: "例：CS 毕业生，求职中",
+        haveSkills: "我已有的技能", haveSkillsPh: "例：Python", haveNet: "我已有的人脉 / 资源", haveNetPh: "例：学长学姐",
+        heroTitle: "⭐ 下一份工要帮你补上的", heroSub: "= 1年 / 3年后需要的 − 你现在已有的",
+        skills: "技能", network: "人脉 / 资源", allSet: "🎉 你已经具备了，往更高一站看吧", fillFirst: "先在第 2 步填「1年 / 3年后」需要的技能", none: "暂无",
+        obstacles: "什么可能会阻止我？", obstaclesHelp: "先把阻碍写出来，它就没那么可怕了。", obstaclesPh: "例：没有工作经验",
+        support: "我需要什么支持？", supportHelp: "把阻碍变成具体需要的东西，每一类写 1–2 个就好。",
+      },
+      actions: {
+        title: "行动计划", sub: "把差距变成接下来 12 个月的 3 个行动。计划不用完美，但一定要具体。",
+        ideas: "从你的差距来的灵感：", ideaFill: (x) => `补上「${x}」`, ideaNet: (x) => `认识 / 拿到「${x}」`, ideaHelp: "点一下，填进下一个空的行动",
+        action: "行动", what: "我要做的事", whatPh: "具体、做得到、可以检查", by: "截止月份",
+        first: "⚡ 这周的第一步", firstHelp: "小到今天就能开始。例：今晚在 LinkedIn 找 5 位业内前辈。", firstPh: "我这周会…",
+      },
+      jobs: {
+        title: "这份工，给得了吗？", sub: "每个 offer、甚至现在的工，都评一次。不用 3 个都填，填你在考虑的就好；还没有 offer 可以先跳过。",
+        name: (label) => `${label}：公司 / 职位名称`, namePh: "例：AI 初创 Junior SWE", yes: "是", no: "否",
+        leave: "我会在这天前离开（当跳板）",
+      },
+      report: {
+        png: "⬇ 下载图片", pdf: "🖨 存成 PDF", edit: "✎ 回去修改",
+        kicker: "职业规划表 · 个人报告", who: (n) => (n ? `${n} 的` : "我的"), titleA: "职业", titleB: "规划报告", redo: "建议每 6 个月重新做一次",
+        goal: "我的终点", goalLine: "5–10 年后，我想成为 ", notWritten: "（还没写）", field: "领域：",
+        day: "我工作的一天", life: "我想过的生活", criteria: "做到的标准", why: "为什么这对我重要", strengths: "我的优势", edge: "我凭什么特别",
+        path: "倒推路线", markerLabel: "✓ 到站标准：", now: "现在",
+        gapTitle: "下一份工要帮我补上的", gapCount: (n) => `${n} 项差距`, noGap: "暂时没有差距", noGapHelp: "往更高一站看，或回去把第 2 步填完整。",
+        obstacles: "阻碍 & 需要的支持", mightStop: "可能阻止我的", supportNeeded: "我需要的支持",
+        jobs: "这份工，给得了吗？", noJobs: "还没有评估任何工作。拿到 offer 时，回到第 4 步评一次。", best: "★ 最接近终点", leaveBy: (m) => `⏳ 计划在 <b style="color:var(--ink)">${m}</b> 前离开`,
+        acts: "接下来 12 个月的行动", byMonth: (m) => `${m} 前`, noActs: "还没写行动。回到第 5 步，把差距变成 3 个行动。", first: "⚡ 这周的第一步",
+        quote: ["只要", "方向", "对，你就不会差到哪里去。"], madeBy: "这个工具由 Ming Creatives 制作",
+      },
+      nav: { needGoal: "至少要在第 1 步写下终点，才能生成报告", back: "上一步", generate: "生成我的报告 ✨", next: (s) => `下一步：${s} →` },
+      toast: { max3: "最多选 3 个，先取消一个", full: "3 个行动都填好了，先清空一个", example: "已载入示例，可以随意修改", resetConfirm: "确定清空所有填写的内容？", pngFail: "图片工具载入失败，请用「存成 PDF」", busy: "生成中…", pngDone: "已下载，可以存到相册或分享", pngErr: "下载失败，请用「存成 PDF」" },
+      month: (y, m) => `${y}年${+m}月`,
+      file: (n) => `职业规划报告-${n || "我"}.png`,
+      example: {
+        name: "小明", role: "Regional AI Tech Lead", industry: "AI / 科技",
+        day: "带一个 10 人的 AI 团队，跟东南亚各国的客户开会，决定公司下一个 AI 产品要做什么。",
+        life: "住在 KL，有自己的房子，每年带家人出国一次，周末不用加班。",
+        why: "我想证明 CS 毕业生不只是写 code，也能带团队、做影响区域的产品。",
+        criteria: ["管 10 人以上团队", "负责区域级 AI 产品", "存款够 1 年生活费"],
+        strengths: ["技术研究", "逻辑分析", "学习能力快"],
+        edge: "我对新技术上手很快，又能把技术讲给非技术的人听。",
+        plan: {
+          y10: { role: "Regional AI Tech Lead", marker: "title 有 Lead，负责多个国家的项目", skills: ["团队管理", "AI 产品策略", "跨国沟通"], network: ["区域客户", "业内高层"] },
+          y5: { role: "Senior AI Engineer", marker: "能独立带一个 AI 项目上线", skills: ["系统设计", "MLOps", "带新人"], network: ["业内前辈 / mentor", "技术社群"] },
+          y3: { role: "ML Engineer", marker: "title 正式变成 ML Engineer", skills: ["机器学习", "MLOps", "云平台"], network: ["LinkedIn 人脉", "开源社群"] },
+          y1: { role: "Software Engineer（能碰到 AI 项目）", marker: "参与过 1 个上线的 AI 功能", skills: ["Python", "作品集", "数据处理"], network: ["业内前辈 / mentor"] },
+        },
+        now: { role: "CS 毕业生，求职中", skills: ["Python", "数据处理"], network: [] },
+        obstacles: ["没有工作经验", "没有业内人脉", "不知道从哪开始"],
+        support: { knowledge: ["MLOps 课程"], people: ["1 位 AI 领域 mentor"], money: ["3 个月生活费"], habits: ["每天学 1 小时"], systems: ["每周投递追踪表"] },
+        jobs: [["大公司 IT Support", [false, false, false, false, true]], ["AI 初创 Junior SWE", [true, true, true, true, false]]],
+        actions: ["做 1 个 MLOps 项目放进作品集", "每周约 1 位 AI 业内人士喝咖啡 / 视频聊", "拿到 AI 相关的 Software Engineer offer"],
+        firstStep: "今晚在 LinkedIn 找 5 位 ML Engineer，发 connection request",
+      },
+    },
+  };
+  function detectLang() {
+    const q = new URLSearchParams(location.search).get("lang");
+    if (q === "en" || q === "cn") return q;
+    return /^zh/i.test(navigator.language || "") ? "cn" : "en";
+  }
+  let L = T.en;
+
+  const STOP_KEYS = ["y10", "y5", "y3", "y1"];
+  const TOTAL = 5;            // wizard steps 1..TOTAL
+  const REPORT = TOTAL + 1;   // report view index
 
   const blank = () => ({
-    v: 2, step: 0, name: "", date: new Date().toISOString().slice(0, 10),
+    v: 2, step: 0, lang: "", name: "", date: new Date().toISOString().slice(0, 10),
     goal: { role: "", industry: "", day: "", life: "", why: "", criteria: [], strengths: [], edge: "" },
     plan: { y10: stop(), y5: stop(), y3: stop(), y1: stop() },
     now: { role: "", skills: [], network: [] },
     obstacles: [],
     support: { knowledge: [], people: [], money: [], habits: [], systems: [] },
-    jobs: [job("工作 A"), job("工作 B"), job("现在的工")],
+    jobs: [job(), job(), job()],
     actions: [action(), action(), action()], firstStep: "",
     activeJob: 0, open: "y10",
   });
   function stop() { return { role: "", marker: "", skills: [], network: [] }; }
-  function job(label) { return { label, name: "", answers: [null, null, null, null, null], leave: "" }; }
+  function job() { return { label: "", name: "", answers: [null, null, null, null, null], leave: "" }; }
   function action() { return { what: "", by: "" }; }
-
-  const EXAMPLE = () => ({
-    ...blank(), step: 1, name: "小明",
-    goal: {
-      role: "Regional AI Tech Lead", industry: "AI / 科技",
-      day: "带一个 10 人的 AI 团队，跟东南亚各国的客户开会，决定公司下一个 AI 产品要做什么。",
-      life: "住在 KL，有自己的房子，每年带家人出国一次，周末不用加班。",
-      why: "我想证明 CS 毕业生不只是写 code，也能带团队、做影响区域的产品。",
-      criteria: ["管 10 人以上团队", "负责区域级 AI 产品", "存款够 1 年生活费"],
-      strengths: ["技术研究", "逻辑分析", "学习能力快"],
-      edge: "我对新技术上手很快，又能把技术讲给非技术的人听。",
-    },
-    plan: {
-      y10: { role: "Regional AI Tech Lead", marker: "title 有 Lead，负责多个国家的项目", skills: ["团队管理", "AI 产品策略", "跨国沟通"], network: ["区域客户", "业内高层"] },
-      y5: { role: "Senior AI Engineer", marker: "能独立带一个 AI 项目上线", skills: ["系统设计", "MLOps", "带新人"], network: ["业内前辈 / mentor", "技术社群"] },
-      y3: { role: "ML Engineer", marker: "title 正式变成 ML Engineer", skills: ["机器学习", "MLOps", "云平台"], network: ["LinkedIn 人脉", "开源社群"] },
-      y1: { role: "Software Engineer（能碰到 AI 项目）", marker: "参与过 1 个上线的 AI 功能", skills: ["Python", "作品集", "数据处理"], network: ["业内前辈 / mentor"] },
-    },
-    now: { role: "CS 毕业生，求职中", skills: ["Python", "数据处理"], network: [] },
-    obstacles: ["没有工作经验", "没有业内人脉", "不知道从哪开始"],
-    support: { knowledge: ["MLOps 课程"], people: ["1 位 AI 领域 mentor"], money: ["3 个月生活费"], habits: ["每天学 1 小时"], systems: ["每周投递追踪表"] },
-    jobs: [
-      { label: "工作 A", name: "大公司 IT Support", answers: [false, false, false, false, true], leave: "" },
-      { label: "工作 B", name: "AI 初创 Junior SWE", answers: [true, true, true, true, false], leave: "" },
-      { label: "现在的工", name: "", answers: [null, null, null, null, null], leave: "" },
-    ],
-    actions: [
-      { what: "做 1 个 MLOps 项目放进作品集", by: nextMonth(2) },
-      { what: "每周约 1 位 AI 业内人士喝咖啡 / 视频聊", by: nextMonth(3) },
-      { what: "拿到 AI 相关的 Software Engineer offer", by: nextMonth(6) },
-    ],
-    firstStep: "今晚在 LinkedIn 找 5 位 ML Engineer，发 connection request",
-  });
   function nextMonth(n) { const d = new Date(); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0, 7); }
 
+  const EXAMPLE = () => {
+    const x = L.example;
+    return {
+      ...blank(), step: 1, lang: S.lang, name: x.name,
+      goal: { role: x.role, industry: x.industry, day: x.day, life: x.life, why: x.why, criteria: [...x.criteria], strengths: [...x.strengths], edge: x.edge },
+      plan: JSON.parse(JSON.stringify(x.plan)),
+      now: JSON.parse(JSON.stringify(x.now)),
+      obstacles: [...x.obstacles],
+      support: JSON.parse(JSON.stringify(x.support)),
+      jobs: [...x.jobs.map(([name, answers]) => ({ label: "", name, answers: [...answers], leave: "" })), job()],
+      actions: x.actions.map((what, i) => ({ what, by: nextMonth([2, 3, 6][i]) })),
+      firstStep: x.firstStep,
+    };
+  };
+
   let S = load();
+  if (S.lang !== "en" && S.lang !== "cn") S.lang = detectLang();
+  L = T[S.lang];
   const app = document.getElementById("app");
   const nav = document.getElementById("nav");
 
@@ -445,7 +651,7 @@
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { return; }
     const el = document.getElementById("saved");
-    el.textContent = "✓ 已自动保存"; el.style.opacity = 1;
+    el.textContent = L.saved; el.style.opacity = 1;
     clearTimeout(saveT); saveT = setTimeout(() => (el.style.opacity = 0), 1400);
   }
 
@@ -460,12 +666,14 @@
   const uniq = (arr) => { const seen = new Set(); return arr.filter((x) => { const k = norm(x); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
   const score = (j) => j.answers.filter((a) => a === true).length;
   const answered = (j) => j.answers.filter((a) => a !== null).length;
+  const jobLabel = (i) => L.jobLabels[i] ?? L.jobLabels[0];
   function verdict(j) {
-    if (answered(j) === 0) return { cls: "v-none", t: "未评估", d: "先回答 5 个问题" };
+    const pick = (key, cls) => ({ cls, t: L.verdict[key][0], d: L.verdict[key][1] });
+    if (answered(j) === 0) return pick("none", "v-none");
     const n = score(j);
-    if (n >= 4) return { cls: "v-go", t: "✅ 去", d: "它在帮你走向终点" };
-    if (n >= 2) return { cls: "v-mid", t: "⚠️ 当跳板", d: "可以去，但写下离开日期" };
-    return { cls: "v-no", t: "❌ 给不了", d: "薪水再高，也是在白做" };
+    if (n >= 4) return pick("go", "v-go");
+    if (n >= 2) return pick("mid", "v-mid");
+    return pick("no", "v-no");
   }
   function gaps() {
     const need = uniq([...S.plan.y1.skills, ...S.plan.y3.skills]);
@@ -474,11 +682,12 @@
     const haveN = new Set(S.now.network.map(norm));
     return { skills: need.filter((x) => !have.has(norm(x))), network: needN.filter((x) => !haveN.has(norm(x))) };
   }
-  const usedJobs = () => S.jobs.filter((j) => j.name.trim() || answered(j) > 0);
+  const usedJobs = () => S.jobs.map((j, i) => ({ ...j, i })).filter((j) => j.name.trim() || answered(j) > 0);
   function toast(msg) {
     const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
     setTimeout(() => t.classList.remove("show"), 2000);
   }
+  function fmtMonth(v) { const [y, m] = String(v).split("-"); return m ? L.month(y, m) : esc(v); }
 
   // ---------- components ----------
   const input = (path, ph = "", type = "text") =>
@@ -496,255 +705,265 @@
     const list = get(path);
     const rest = sugg.filter((x) => !list.map(norm).includes(norm(x)));
     return `<div class="tagbox" data-tagbox="${path}">
-      ${list.map((t, i) => `<span class="tag${gapSet && gapSet.has(norm(t)) ? " gap" : ""}">${esc(t)}<button type="button" aria-label="删除 ${esc(t)}" data-untag="${path}" data-i="${i}">×</button></span>`).join("")}
-      <input data-tag="${path}" placeholder="${list.length ? "再加一个…" : esc(ph)}" enterkeyhint="done" aria-label="${esc(ph)}">
+      ${list.map((t, i) => `<span class="tag${gapSet && gapSet.has(norm(t)) ? " gap" : ""}">${esc(t)}<button type="button" aria-label="${L.remove} ${esc(t)}" data-untag="${path}" data-i="${i}">×</button></span>`).join("")}
+      <input data-tag="${path}" placeholder="${list.length ? L.addAnother : esc(ph)}" enterkeyhint="done" aria-label="${esc(ph)}">
     </div>
     ${rest.length ? `<div class="chips suggest">${rest.slice(0, 6).map((x) => `<button type="button" class="chip add" data-addtag="${path}" data-val="${esc(x)}">${esc(x)}</button>`).join("")}</div>` : ""}
-    <p class="help" style="margin:6px 0 0">输入后按 Enter 或逗号加入</p>`;
+    <p class="help" style="margin:6px 0 0">${L.tagHelp}</p>`;
   }
   const head = (i, title, sub) => `
-    <div class="step-count">STEP ${i} / ${TOTAL}</div>
+    <div class="step-count">${L.step} ${i} / ${TOTAL}</div>
     <div class="step-head"><div class="num">${i}</div><h2>${title}</h2></div>
     <p class="step-sub">${sub}</p>`;
 
   // ---------- views ----------
   function viewLanding() {
+    const x = L.landing;
     const has = S.goal.role || S.plan.y10.role || usedJobs().length;
     return `<section class="hero fade-in">
-      <div class="kicker">Ming Creatives · 免费工具</div>
-      <h1><mark>职业</mark>规划表</h1>
-      <p class="lead">先写下终点，再倒推回今天，然后问：<b>这份工，给得了吗？</b></p>
+      <div class="kicker">${x.kicker}</div>
+      <h1><mark>${x.h1a}</mark>${x.h1b}</h1>
+      <p class="lead">${x.lead}<b>${x.leadB}</b></p>
       <div class="hero-cta">
-        <button class="btn btn-primary" data-go="1">${has ? "继续填写 →" : "立即规划我的职业（5 分钟）→"}</button>
-        <button class="btn btn-ghost" data-act="example">先看示例</button>
+        <button class="btn btn-primary" data-go="1">${has ? x.cont : x.start}</button>
+        <button class="btn btn-ghost" data-act="example">${x.example}</button>
       </div>
-      <div class="meta-row"><span>🔒 资料只存在你的手机 / 电脑里</span><span>📄 最后生成你专属的报告</span></div>
-      ${has ? `<button class="btn-text" data-act="reset" style="margin-top:8px">清空重新开始</button>` : ""}
+      <div class="meta-row"><span>${x.private}</span><span>${x.report}</span></div>
+      ${has ? `<button class="btn-text" data-act="reset" style="margin-top:8px">${x.reset}</button>` : ""}
       <div class="steps-preview">
-        <div class="sp"><div class="num">1</div><div><h3>写下终点，倒推回今天</h3><p>5–10 年后你想成为谁？每一站需要什么技能和人脉</p></div></div>
-        <div class="sp"><div class="num">2</div><div><h3>这份工给得了吗？</h3><p>5 题打分，自动算出该去、当跳板，还是白做</p></div></div>
-        <div class="sp"><div class="num">3</div><div><h3>变成行动计划</h3><p>自动列出你的差距，定下今年 3 个行动和这周第一步</p></div></div>
+        ${x.cards.map(([h, p], i) => `<div class="sp"><div class="num">${i + 1}</div><div><h3>${h}</h3><p>${p}</p></div></div>`).join("")}
       </div>
-      <div class="quote-band">找工不能只看薪水。<br>第一份工选错了，比晚几个月找到工<b>更可怕</b>。</div>
+      <div class="quote-band">${x.quote[0]}<br>${x.quote[1]}<b>${x.quote[2]}</b>${x.quote[3]}</div>
     </section>`;
   }
 
   function viewGoal() {
-    return `<section class="fade-in">${head(1, "写下终点", "5–10 年后，你想成为谁？越具体越好。写错也没关系，之后可以改。")}
+    const x = L.goal;
+    return `<section class="fade-in">${head(1, x.title, x.sub)}
       <div class="card">
-        <div class="field"><label>你的名字（会显示在报告上）</label>${input("name", "例：小明")}</div>
-        <div class="field"><label>5–10 年后，我想成为…</label>${input("goal.role", "职位 / 角色")}${suggest("goal.role", ROLE_SUGG)}</div>
-        <div class="field"><label>在哪个行业 / 领域？</label>${input("goal.industry", "例：AI、金融科技")}${suggest("goal.industry", INDUSTRY_SUGG)}</div>
-        <div class="field"><label>那时候，我工作的一天长什么样？</label><p class="help">在做什么？跟谁一起工作？管多少人？</p>${textarea("goal.day", "例：带一个 10 人团队，跟区域客户开会…")}</div>
-        <div class="field"><label>那时候，我想过怎样的生活？</label><p class="help">住在哪、财务状况、家庭、时间自由度。工作是为了这个生活服务的。</p>${textarea("goal.life", "例：住在 KL，有自己的房子，周末不用加班…")}</div>
+        <div class="field"><label>${x.name}</label>${input("name", x.namePh)}</div>
+        <div class="field"><label>${x.role}</label>${input("goal.role", x.rolePh)}${suggest("goal.role", L.roleSugg)}</div>
+        <div class="field"><label>${x.industry}</label>${input("goal.industry", x.industryPh)}${suggest("goal.industry", L.industrySugg)}</div>
+        <div class="field"><label>${x.day}</label><p class="help">${x.dayHelp}</p>${textarea("goal.day", x.dayPh)}</div>
+        <div class="field"><label>${x.life}</label><p class="help">${x.lifeHelp}</p>${textarea("goal.life", x.lifePh)}</div>
       </div>
       <div class="card">
-        <div class="card-title">为什么这对我重要？</div>
-        <div class="field"><p class="help">当你想放弃的时候，回来看这一句。</p>${textarea("goal.why", "例：我想证明自己不只是…")}</div>
-        <div class="field"><span class="label">怎样才算「做到了」？（成功标准）</span><p class="help">写 2–3 个能被验证的条件，不要只写「成功」。</p>${tags("goal.criteria", "例：管 10 人以上团队", CRITERIA_SUGG)}</div>
+        <div class="card-title">${x.whyTitle}</div>
+        <div class="field"><p class="help">${x.whyHelp}</p>${textarea("goal.why", x.whyPh)}</div>
+        <div class="field"><span class="label">${x.criteria}</span><p class="help">${x.criteriaHelp}</p>${tags("goal.criteria", x.criteriaPh, L.criteriaSugg)}</div>
       </div>
       <div class="card">
-        <div class="card-title">为什么适合我？</div>
-        <div class="field"><span class="label">我的优势（选最多 3 个）</span>${suggest("goal.strengths", STRENGTHS, true)}</div>
-        <div class="field"><label>跟 10 个人比，我凭什么是特别的那 2 个？</label>${textarea("goal.edge", "一两句就好")}</div>
+        <div class="card-title">${x.fitTitle}</div>
+        <div class="field"><span class="label">${x.strengths}</span>${suggest("goal.strengths", L.strengths, true)}</div>
+        <div class="field"><label>${x.edge}</label>${textarea("goal.edge", x.edgePh)}</div>
       </div>
     </section>`;
   }
 
   function stopSummary(p) {
     const parts = [p.role, ...p.skills.slice(0, 2)].filter(Boolean);
-    return parts.length ? esc(parts.join(" · ")) : "还没填";
+    return parts.length ? esc(parts.join(" · ")) : L.plan.notYet;
   }
   function viewPlan() {
-    const cards = STOPS.map(([k, label]) => {
+    const x = L.plan;
+    const cards = STOP_KEYS.map((k) => {
       const p = S.plan[k]; const open = S.open === k;
       return `<div class="card" data-open="${open}">
         <button type="button" class="collapse-head" data-open-stop="${k}" aria-expanded="${open}">
-          <span class="pill">${label}</span><span class="sum">${stopSummary(p)}</span><span class="chev">▾</span>
+          <span class="pill">${L.stops[k]}</span><span class="sum">${stopSummary(p)}</span><span class="chev">▾</span>
         </button>
         <div class="collapse-body">
-          <div class="field"><label>我要成为（职位 / 状态）</label>${input(`plan.${k}.role`, k === "y10" ? (S.goal.role || "职位 / 状态") : "职位 / 状态")}</div>
-          <div class="field"><label>怎么知道我到了这一站？</label>${input(`plan.${k}.marker`, "例：title 变成 ML Engineer、带过 1 个项目上线")}</div>
-          <div class="field"><span class="label">需要的技能</span>${tags(`plan.${k}.skills`, "例：Python、带团队", SKILL_SUGG)}</div>
-          <div class="field"><span class="label">需要的人脉 / 资源 / 证明</span>${tags(`plan.${k}.network`, "例：业内前辈、证书", NET_SUGG)}</div>
+          <div class="field"><label>${x.role}</label>${input(`plan.${k}.role`, k === "y10" ? (S.goal.role || x.rolePh) : x.rolePh)}</div>
+          <div class="field"><label>${x.marker}</label>${input(`plan.${k}.marker`, x.markerPh)}</div>
+          <div class="field"><span class="label">${x.skills}</span>${tags(`plan.${k}.skills`, x.skillsPh, L.skillSugg)}</div>
+          <div class="field"><span class="label">${x.network}</span>${tags(`plan.${k}.network`, x.networkPh, L.netSugg)}</div>
         </div>
       </div>`;
     }).join("");
-    return `<section class="fade-in">${head(2, "从终点倒推", "从 10 年后往回走。每一站：要成为什么、需要什么技能、需要什么人脉。")}
-      <div class="example-box">例（CS 工程师）：10年 Regional AI Tech Lead → 5年 Senior AI Engineer → 3年 ML Engineer → 1年 Software Engineer（能碰到 AI 项目）</div>
+    return `<section class="fade-in">${head(2, x.title, x.sub)}
+      <div class="example-box">${x.example}</div>
       <div class="tl">${cards}</div>
     </section>`;
   }
 
   function viewGap() {
+    const x = L.gap;
     const g = gaps();
-    const gapSet = new Set(g.skills.map(norm));
-    return `<section class="fade-in">${head(3, "看清差距", "写下你现在有什么。系统会自动对比「1年 / 3年后」需要的东西，算出你还差什么。")}
+    return `<section class="fade-in">${head(3, x.title, x.sub)}
       <div class="card">
-        <div class="card-title"><span class="pill now">现在</span></div>
-        <div class="field"><label>我现在是</label>${input("now.role", "例：CS 毕业生，求职中")}</div>
-        <div class="field"><span class="label">我已有的技能</span>${tags("now.skills", "例：Python", uniq([...S.plan.y1.skills, ...S.plan.y3.skills]))}</div>
-        <div class="field"><span class="label">我已有的人脉 / 资源</span>${tags("now.network", "例：学长学姐", uniq([...S.plan.y1.network, ...S.plan.y3.network]))}</div>
+        <div class="card-title"><span class="pill now">${x.now}</span></div>
+        <div class="field"><label>${x.nowRole}</label>${input("now.role", x.nowRolePh)}</div>
+        <div class="field"><span class="label">${x.haveSkills}</span>${tags("now.skills", x.haveSkillsPh, uniq([...S.plan.y1.skills, ...S.plan.y3.skills]))}</div>
+        <div class="field"><span class="label">${x.haveNet}</span>${tags("now.network", x.haveNetPh, uniq([...S.plan.y1.network, ...S.plan.y3.network]))}</div>
       </div>
       <div class="gap-hero">
-        <h3>⭐ 下一份工要帮你补上的</h3>
-        <p>= 1年 / 3年后需要的 − 你现在已有的</p>
-        <div class="label" style="color:#fff;font-size:13px">技能</div>
-        ${g.skills.length ? `<div class="r-chips">${g.skills.map((x) => `<span class="r-chip y">${esc(x)}</span>`).join("")}</div>` : `<p class="empty">${S.plan.y1.skills.length + S.plan.y3.skills.length ? "🎉 你已经具备了，往更高一站看吧" : "先在第 2 步填「1年 / 3年后」需要的技能"}</p>`}
-        <div class="label" style="color:#fff;font-size:13px;margin-top:12px">人脉 / 资源</div>
-        ${g.network.length ? `<div class="r-chips">${g.network.map((x) => `<span class="r-chip y">${esc(x)}</span>`).join("")}</div>` : `<p class="empty">暂无</p>`}
+        <h3>${x.heroTitle}</h3>
+        <p>${x.heroSub}</p>
+        <div class="label" style="color:#fff;font-size:13px">${x.skills}</div>
+        ${g.skills.length ? `<div class="r-chips">${g.skills.map((s) => `<span class="r-chip y">${esc(s)}</span>`).join("")}</div>` : `<p class="empty">${S.plan.y1.skills.length + S.plan.y3.skills.length ? x.allSet : x.fillFirst}</p>`}
+        <div class="label" style="color:#fff;font-size:13px;margin-top:12px">${x.network}</div>
+        ${g.network.length ? `<div class="r-chips">${g.network.map((s) => `<span class="r-chip y">${esc(s)}</span>`).join("")}</div>` : `<p class="empty">${x.none}</p>`}
       </div>
       <div class="card">
-        <div class="card-title">什么可能会阻止我？</div>
-        <p class="help">先把阻碍写出来，它就没那么可怕了。</p>
-        ${tags("obstacles", "例：没有工作经验", OBSTACLE_SUGG)}
+        <div class="card-title">${x.obstacles}</div>
+        <p class="help">${x.obstaclesHelp}</p>
+        ${tags("obstacles", x.obstaclesPh, L.obstacleSugg)}
       </div>
       <div class="card">
-        <div class="card-title">我需要什么支持？</div>
-        <p class="help">把阻碍变成具体需要的东西，每一类写 1–2 个就好。</p>
-        ${SUPPORT.map(([k, label, hint, sugg]) => `<div class="field"><span class="label">${label} <span class="help" style="display:inline;font-weight:400">· ${hint}</span></span>${tags(`support.${k}`, sugg[0], sugg)}</div>`).join("")}
+        <div class="card-title">${x.support}</div>
+        <p class="help">${x.supportHelp}</p>
+        ${L.support.map(([k, label, hint, sugg]) => `<div class="field"><span class="label">${label} <span class="help" style="display:inline;font-weight:400">· ${hint}</span></span>${tags(`support.${k}`, sugg[0], sugg)}</div>`).join("")}
       </div>
     </section>`;
   }
 
   function viewActions() {
+    const x = L.actions;
     const g = gaps();
-    const ideas = [...g.skills.map((x) => `补上「${x}」`), ...g.network.map((x) => `认识 / 拿到「${x}」`)];
+    const ideas = [...g.skills.map(x.ideaFill), ...g.network.map(x.ideaNet)];
     const rows = S.actions.map((a, i) => `<div class="card">
-        <div class="card-title"><span class="pill">${i + 1}</span>行动 ${i + 1}</div>
-        <div class="field"><label>我要做的事</label>${input(`actions.${i}.what`, "具体、做得到、可以检查")}</div>
-        <div class="field"><label>截止月份</label>${input(`actions.${i}.by`, "", "month")}</div>
+        <div class="card-title"><span class="pill">${i + 1}</span>${x.action} ${i + 1}</div>
+        <div class="field"><label>${x.what}</label>${input(`actions.${i}.what`, x.whatPh)}</div>
+        <div class="field"><label>${x.by}</label>${input(`actions.${i}.by`, "", "month")}</div>
       </div>`).join("");
-    return `<section class="fade-in">${head(5, "行动计划", "把差距变成接下来 12 个月的 3 个行动。计划不用完美，但一定要具体。")}
-      ${ideas.length ? `<div class="example-box"><b>从你的差距来的灵感：</b><div class="chips suggest" style="margin-top:8px">${ideas.slice(0, 6).map((x) => `<button type="button" class="chip add" data-idea="${esc(x)}">${esc(x)}</button>`).join("")}</div><p class="help" style="margin:8px 0 0">点一下，填进下一个空的行动</p></div>` : ""}
+    return `<section class="fade-in">${head(5, x.title, x.sub)}
+      ${ideas.length ? `<div class="example-box"><b>${x.ideas}</b><div class="chips suggest" style="margin-top:8px">${ideas.slice(0, 6).map((s) => `<button type="button" class="chip add" data-idea="${esc(s)}">${esc(s)}</button>`).join("")}</div><p class="help" style="margin:8px 0 0">${x.ideaHelp}</p></div>` : ""}
       ${rows}
       <div class="card" style="border:2px solid var(--ink);box-shadow:0 4px 0 var(--yellow)">
-        <div class="card-title">⚡ 这周的第一步</div>
-        <div class="field"><p class="help">小到今天就能开始。例：今晚在 LinkedIn 找 5 位业内前辈。</p>${input("firstStep", "我这周会…")}</div>
+        <div class="card-title">${x.first}</div>
+        <div class="field"><p class="help">${x.firstHelp}</p>${input("firstStep", x.firstPh)}</div>
       </div>
     </section>`;
   }
 
   function viewJobs() {
+    const x = L.jobs;
     const a = S.activeJob; const j = S.jobs[a]; const v = verdict(j);
-    const tabs = S.jobs.map((x, i) => `<button type="button" class="job-tab" role="tab" aria-selected="${i === a}" data-tab="${i}">
-      ${esc(x.name.trim() || x.label)}${answered(x) ? `<span class="sc">${score(x)}/5</span>` : ""}</button>`).join("");
-    const qs = QUESTIONS.map(([t, h], qi) => `<div class="q">
+    const tabs = S.jobs.map((item, i) => `<button type="button" class="job-tab" role="tab" aria-selected="${i === a}" data-tab="${i}">
+      ${esc(item.name.trim() || jobLabel(i))}${answered(item) ? `<span class="sc">${score(item)}/5</span>` : ""}</button>`).join("");
+    const qs = L.questions.map(([t, h], qi) => `<div class="q">
       <div class="q-text">${qi + 1}. ${t}</div><div class="q-hint">${h}</div>
-      <div class="seg" role="group" aria-label="${t}">
-        <button type="button" class="yes" data-ans="${qi}" data-val="1" aria-pressed="${j.answers[qi] === true}">是</button>
-        <button type="button" class="no" data-ans="${qi}" data-val="0" aria-pressed="${j.answers[qi] === false}">否</button>
+      <div class="seg" role="group" aria-label="${esc(t)}">
+        <button type="button" class="yes" data-ans="${qi}" data-val="1" aria-pressed="${j.answers[qi] === true}">${x.yes}</button>
+        <button type="button" class="no" data-ans="${qi}" data-val="0" aria-pressed="${j.answers[qi] === false}">${x.no}</button>
       </div></div>`).join("");
-    return `<section class="fade-in">${head(4, "这份工，给得了吗？", "每个 offer、甚至现在的工，都评一次。不用 3 个都填，填你在考虑的就好；还没有 offer 可以先跳过。")}
+    return `<section class="fade-in">${head(4, x.title, x.sub)}
       <div class="job-tabs" role="tablist">${tabs}</div>
       <div class="card">
-        <div class="field"><label>${esc(j.label)}：公司 / 职位名称</label>${input(`jobs.${a}.name`, "例：AI 初创 Junior SWE")}</div>
+        <div class="field"><label>${x.name(jobLabel(a))}</label>${input(`jobs.${a}.name`, x.namePh)}</div>
         ${qs}
         <div class="scorebar" id="scorebar">
           <div class="score-num">${score(j)}<small>/5</small></div>
           <div><span class="verdict-tag ${v.cls}">${v.t}</span><div class="q-hint">${v.d}</div></div>
         </div>
         <div class="field" id="leave" style="margin-top:14px" ${score(j) >= 2 && score(j) <= 3 ? "" : "hidden"}>
-          <label>我会在这天前离开（当跳板）</label>${input(`jobs.${a}.leave`, "", "month")}
+          <label>${x.leave}</label>${input(`jobs.${a}.leave`, "", "month")}
         </div>
       </div>
     </section>`;
   }
 
   function viewReport() {
+    const x = L.report;
     const g = gaps();
     const jobs = usedJobs();
     const best = jobs.length ? Math.max(...jobs.map(score)) : -1;
-    const bestJobs = jobs.filter((j) => answered(j) && score(j) === best);
-    const chipList = (arr, cls = "") => arr.length ? `<div class="r-chips">${arr.map((x) => `<span class="r-chip ${cls}">${esc(x)}</span>`).join("")}</div>` : "";
-    const stops = STOPS.map(([k, label]) => {
+    const bestIdx = jobs.filter((j) => answered(j) && score(j) === best).map((j) => j.i);
+    const chipList = (arr, cls = "") => arr.length ? `<div class="r-chips">${arr.map((s) => `<span class="r-chip ${cls}">${esc(s)}</span>`).join("")}</div>` : "";
+    const stops = STOP_KEYS.map((k) => {
       const p = S.plan[k];
-      return `<div class="r-stop"><div class="r-when">${label}</div>
-        <div class="r-role ${p.role ? "" : "empty"}">${esc(p.role || "（还没填）")}</div>
-        ${p.marker ? `<div class="r-marker">✓ 到站标准：${esc(p.marker)}</div>` : ""}
+      return `<div class="r-stop"><div class="r-when">${L.stops[k]}</div>
+        <div class="r-role ${p.role ? "" : "empty"}">${esc(p.role || x.notWritten)}</div>
+        ${p.marker ? `<div class="r-marker">${x.markerLabel}${esc(p.marker)}</div>` : ""}
         ${chipList(p.skills, "dark")}${p.network.length ? `<div style="margin-top:6px">${chipList(p.network)}</div>` : ""}</div>`;
     }).join("");
-    const supportRows = SUPPORT.filter(([k]) => S.support[k].length)
+    const supportRows = L.support.filter(([k]) => S.support[k].length)
       .map(([k, label]) => `<div class="r-support"><b>${label}</b>${chipList(S.support[k])}</div>`).join("");
     const acts = S.actions.filter((a) => a.what.trim());
     const jobCards = jobs.map((j) => {
       const v = verdict(j); const n = score(j);
-      const isBest = bestJobs.includes(j) && jobs.length > 1 && best > 0;
+      const isBest = bestIdx.includes(j.i) && jobs.length > 1 && best > 0;
       return `<div class="r-job ${isBest ? "best" : ""}">
         <div class="r-job-top">
-          <div class="r-job-name">${isBest ? `<span class="best-flag">★ 最接近终点</span>` : ""}${esc(j.name || j.label)}<small>${esc(j.label)}</small></div>
+          <div class="r-job-name">${isBest ? `<span class="best-flag">${x.best}</span>` : ""}${esc(j.name || jobLabel(j.i))}<small>${esc(jobLabel(j.i))}</small></div>
           <div class="r-score">${n}<small>/5</small></div>
         </div>
         <div class="bars">${[0, 1, 2, 3, 4].map((i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</div>
         <span class="verdict-tag ${v.cls}">${v.t}</span> <span class="q-hint" style="display:inline">${v.d}</span>
-        ${n >= 2 && n <= 3 && j.leave ? `<div class="q-hint" style="margin-top:6px">⏳ 计划在 <b style="color:var(--ink)">${fmtMonth(j.leave)}</b> 前离开</div>` : ""}
-        <div class="r-ans">${QUESTIONS.map(([t], i) => `<div class="${j.answers[i] === true ? "" : "x"}">${j.answers[i] === true ? "✓" : j.answers[i] === false ? "✗" : "–"} ${t}</div>`).join("")}</div>
+        ${n >= 2 && n <= 3 && j.leave ? `<div class="q-hint" style="margin-top:6px">${x.leaveBy(fmtMonth(j.leave))}</div>` : ""}
+        <div class="r-ans">${L.questions.map(([t], i) => `<div class="${j.answers[i] === true ? "" : "x"}">${j.answers[i] === true ? "✓" : j.answers[i] === false ? "✗" : "–"} ${t}</div>`).join("")}</div>
       </div>`;
     }).join("");
-    const who = S.name.trim() ? esc(S.name.trim()) + " 的" : "我的";
+    const gapTotal = g.skills.length + g.network.length;
     return `<section class="fade-in">
       <div class="report-actions no-print">
-        <button class="btn btn-primary" data-act="png">⬇ 下载图片</button>
-        <button class="btn btn-ghost" data-act="print">🖨 存成 PDF</button>
-        <button class="btn btn-text" data-go="1">✎ 回去修改</button>
+        <button class="btn btn-primary" data-act="png">${x.png}</button>
+        <button class="btn btn-ghost" data-act="print">${x.pdf}</button>
+        <button class="btn btn-text" data-go="1">${x.edit}</button>
       </div>
       <article class="report" id="report">
         <div class="r-head">
-          <div class="kicker">职业规划表 · 个人报告</div>
-          <h2>${who}<span>职业</span>规划报告</h2>
-          <div class="r-meta">${esc(S.date)} · 建议每 6 个月重新做一次</div>
+          <div class="kicker">${x.kicker}</div>
+          <h2>${esc(x.who(S.name.trim()))}<span>${x.titleA}</span>${x.titleB}</h2>
+          <div class="r-meta">${esc(S.date)} · ${x.redo}</div>
         </div>
         <div class="r-sec">
-          <h3><span class="num">1</span>我的终点</h3>
-          <div class="r-goal">5–10 年后，我想成为 <mark>${esc(S.goal.role || "（还没写）")}</mark></div>
-          ${S.goal.industry ? `<div class="r-sub">领域：${esc(S.goal.industry)}</div>` : ""}
-          ${S.goal.day ? `<div class="r-label">我工作的一天</div><div class="r-day">「${esc(S.goal.day)}」</div>` : ""}
-          ${S.goal.life ? `<div class="r-label">我想过的生活</div><div class="r-day">「${esc(S.goal.life)}」</div>` : ""}
-          ${S.goal.criteria.length ? `<div class="r-label">做到的标准</div>${chipList(S.goal.criteria.map((x) => "✓ " + x), "y")}` : ""}
-          ${S.goal.why ? `<div class="r-why"><span>为什么这对我重要</span>${esc(S.goal.why)}</div>` : ""}
-          ${S.goal.strengths.length ? `<div class="r-label">我的优势</div>${chipList(S.goal.strengths, "dark")}` : ""}
-          ${S.goal.edge ? `<div class="r-label">我凭什么特别</div><div>${esc(S.goal.edge)}</div>` : ""}
+          <h3><span class="num">1</span>${x.goal}</h3>
+          <div class="r-goal">${x.goalLine}<mark>${esc(S.goal.role || x.notWritten)}</mark></div>
+          ${S.goal.industry ? `<div class="r-sub">${x.field}${esc(S.goal.industry)}</div>` : ""}
+          ${S.goal.day ? `<div class="r-label">${x.day}</div><div class="r-day">“${esc(S.goal.day)}”</div>` : ""}
+          ${S.goal.life ? `<div class="r-label">${x.life}</div><div class="r-day">“${esc(S.goal.life)}”</div>` : ""}
+          ${S.goal.criteria.length ? `<div class="r-label">${x.criteria}</div>${chipList(S.goal.criteria.map((c) => "✓ " + c), "y")}` : ""}
+          ${S.goal.why ? `<div class="r-why"><span>${x.why}</span>${esc(S.goal.why)}</div>` : ""}
+          ${S.goal.strengths.length ? `<div class="r-label">${x.strengths}</div>${chipList(S.goal.strengths, "dark")}` : ""}
+          ${S.goal.edge ? `<div class="r-label">${x.edge}</div><div>${esc(S.goal.edge)}</div>` : ""}
         </div>
         <div class="r-sec">
-          <h3><span class="num">2</span>倒推路线</h3>
+          <h3><span class="num">2</span>${x.path}</h3>
           <div class="r-tl">${stops}
-            <div class="r-stop now"><div class="r-when">现在</div>
-              <div class="r-role ${S.now.role ? "" : "empty"}">${esc(S.now.role || "（还没填）")}</div>
+            <div class="r-stop now"><div class="r-when">${x.now}</div>
+              <div class="r-role ${S.now.role ? "" : "empty"}">${esc(S.now.role || x.notWritten)}</div>
               ${chipList(S.now.skills)}</div>
           </div>
         </div>
         <div class="r-gap">
-          <h3><span class="num">⭐</span>下一份工要帮我补上的</h3>
-          ${g.skills.length || g.network.length
-            ? `<div class="big">${g.skills.length + g.network.length} 项差距</div>${chipList([...g.skills, ...g.network])}`
-            : `<div class="big">暂时没有差距</div><div>往更高一站看，或回去把第 2 步填完整。</div>`}
+          <h3><span class="num">⭐</span>${x.gapTitle}</h3>
+          ${gapTotal
+            ? `<div class="big">${x.gapCount(gapTotal)}</div>${chipList([...g.skills, ...g.network])}`
+            : `<div class="big">${x.noGap}</div><div>${x.noGapHelp}</div>`}
         </div>
         ${S.obstacles.length || supportRows ? `<div class="r-sec">
-          <h3><span class="num">3</span>阻碍 & 需要的支持</h3>
-          ${S.obstacles.length ? `<div class="r-label" style="margin-top:0">可能阻止我的</div>${chipList(S.obstacles)}` : ""}
-          ${supportRows ? `<div class="r-label">我需要的支持</div><div class="r-support-grid">${supportRows}</div>` : ""}
+          <h3><span class="num">3</span>${x.obstacles}</h3>
+          ${S.obstacles.length ? `<div class="r-label" style="margin-top:0">${x.mightStop}</div>${chipList(S.obstacles)}` : ""}
+          ${supportRows ? `<div class="r-label">${x.supportNeeded}</div><div class="r-support-grid">${supportRows}</div>` : ""}
         </div>` : ""}
         <div class="r-sec">
-          <h3><span class="num">4</span>这份工，给得了吗？</h3>
-          ${jobs.length ? `<div class="r-jobs">${jobCards}</div>` : `<div class="q-hint">还没有评估任何工作。拿到 offer 时，回到第 4 步评一次。</div>`}
+          <h3><span class="num">4</span>${x.jobs}</h3>
+          ${jobs.length ? `<div class="r-jobs">${jobCards}</div>` : `<div class="q-hint">${x.noJobs}</div>`}
         </div>
         <div class="r-sec">
-          <h3><span class="num">5</span>接下来 12 个月的行动</h3>
-          ${acts.length ? `<div class="r-acts">${acts.map((a) => `<div class="r-act"><span class="box"></span><div>${esc(a.what)}${a.by ? `<small>${fmtMonth(a.by)} 前</small>` : ""}</div></div>`).join("")}</div>` : `<div class="q-hint">还没写行动。回到第 5 步，把差距变成 3 个行动。</div>`}
-          ${S.firstStep.trim() ? `<div class="r-first"><span>⚡ 这周的第一步</span>${esc(S.firstStep)}</div>` : ""}
+          <h3><span class="num">5</span>${x.acts}</h3>
+          ${acts.length ? `<div class="r-acts">${acts.map((a) => `<div class="r-act"><span class="box"></span><div>${esc(a.what)}${a.by ? `<small>${x.byMonth(fmtMonth(a.by))}</small>` : ""}</div></div>`).join("")}</div>` : `<div class="q-hint">${x.noActs}</div>`}
+          ${S.firstStep.trim() ? `<div class="r-first"><span>${x.first}</span>${esc(S.firstStep)}</div>` : ""}
         </div>
         <div class="r-foot">
-          <div class="q">只要<b>方向</b>对，你就不会差到哪里去。</div>
+          <div class="q">${x.quote[0]}<b>${x.quote[1]}</b>${x.quote[2]}</div>
           <small>Ming Creatives · mingcreatives.com/product/career-plan</small>
         </div>
       </article>
-      <footer class="site no-print">这个工具由 Ming Creatives 制作<br><a href="/">mingcreatives.com</a></footer>
+      <footer class="site no-print">${x.madeBy}<br><a href="/">mingcreatives.com</a></footer>
     </section>`;
   }
 
   // ---------- render ----------
   const VIEWS = [viewLanding, viewGoal, viewPlan, viewGap, viewJobs, viewActions, viewReport];
+  function renderChrome() {
+    document.documentElement.lang = L.htmlLang;
+    document.getElementById("brand-name").textContent = L.brand;
+    document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
+  }
   function render(scrollTop = true) {
+    renderChrome();
     app.innerHTML = VIEWS[S.step]();
     document.getElementById("bar").style.width = `${Math.min(S.step, REPORT) / REPORT * 100}%`;
     renderNav();
@@ -755,16 +974,20 @@
     nav.hidden = false;
     const last = S.step === TOTAL;
     const ready = !!S.goal.role.trim();
-    nav.innerHTML = `${last && !ready ? `<div class="nav-msg">至少要在第 1 步写下终点，才能生成报告</div>` : ""}
+    nav.innerHTML = `${last && !ready ? `<div class="nav-msg">${L.nav.needGoal}</div>` : ""}
       <div class="bottom-nav-inner">
-        <button class="btn btn-ghost" data-go="${S.step - 1}" aria-label="上一步">←</button>
+        <button class="btn btn-ghost" data-go="${S.step - 1}" aria-label="${L.nav.back}">←</button>
         ${last
-          ? `<button class="btn btn-primary" data-go="${REPORT}" ${ready ? "" : "disabled"}>生成我的报告 ✨</button>`
-          : `<button class="btn btn-primary" data-go="${S.step + 1}">下一步：${STEPS[S.step]} →</button>`}
+          ? `<button class="btn btn-primary" data-go="${REPORT}" ${ready ? "" : "disabled"}>${L.nav.generate}</button>`
+          : `<button class="btn btn-primary" data-go="${S.step + 1}">${L.nav.next(L.steps[S.step])}</button>`}
       </div>`;
   }
   function go(n) { S.step = Math.max(0, Math.min(REPORT, n)); save(); app.classList.remove("no-anim"); render(); }
-  function fmtMonth(v) { const [y, m] = String(v).split("-"); return m ? `${y}年${+m}月` : esc(v); }
+  function setLang(lang) {
+    if (lang === S.lang || !T[lang]) return;
+    S.lang = lang; L = T[lang]; save();
+    app.classList.add("no-anim"); render(false);
+  }
 
   // ---------- events ----------
   document.addEventListener("input", (e) => {
@@ -810,8 +1033,8 @@
     // update tabs + score without losing input focus
     const a = S.activeJob, j = S.jobs[a], v = verdict(j);
     document.querySelectorAll("[data-tab]").forEach((el, i) => {
-      const x = S.jobs[i];
-      el.innerHTML = `${esc(x.name.trim() || x.label)}${answered(x) ? `<span class="sc">${score(x)}/5</span>` : ""}`;
+      const item = S.jobs[i];
+      el.innerHTML = `${esc(item.name.trim() || jobLabel(i))}${answered(item) ? `<span class="sc">${score(item)}/5</span>` : ""}`;
     });
     const sb = document.getElementById("scorebar");
     if (sb) sb.innerHTML = `<div class="score-num">${score(j)}<small>/5</small></div><div><span class="verdict-tag ${v.cls}">${v.t}</span><div class="q-hint">${v.d}</div></div>`;
@@ -825,12 +1048,13 @@
     if (!el) return;
     const d = el.dataset;
     if (el.classList.contains("tagbox") && !e.target.closest("button")) { el.querySelector("input")?.focus(); return; }
+    if (d.lang) return setLang(d.lang);
     if (d.go !== undefined) return go(+d.go);
     if (d.pick) {
       const cur = get(d.pick);
       if (d.multi === "true") {
         const has = cur.includes(d.val);
-        if (!has && cur.length >= 3) return toast("最多选 3 个，先取消一个");
+        if (!has && cur.length >= 3) return toast(L.toast.max3);
         set(d.pick, has ? cur.filter((x) => x !== d.val) : [...cur, d.val]);
       } else set(d.pick, cur === d.val ? "" : d.val);
       return rerenderKeepFocus(null);
@@ -838,7 +1062,7 @@
     if (d.addtag) { set(d.addtag, uniq([...get(d.addtag), d.val])); return rerenderKeepFocus(null); }
     if (d.idea) {
       const slot = S.actions.find((a) => !a.what.trim());
-      if (!slot) return toast("3 个行动都填好了，先清空一个");
+      if (!slot) return toast(L.toast.full);
       slot.what = d.val || d.idea; save(); return rerenderKeepFocus(null);
     }
     if (d.untag) { const l = get(d.untag); l.splice(+d.i, 1); save(); return rerenderKeepFocus(d.untag); }
@@ -850,26 +1074,26 @@
       el.parentElement.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", j.answers[+d.ans] === (b.dataset.val === "1")));
       return refreshJobChrome();
     }
-    if (d.act === "example") { S = EXAMPLE(); save(); toast("已载入示例，可以随意修改"); return render(); }
-    if (d.act === "reset") { if (confirm("确定清空所有填写的内容？")) { S = blank(); save(); render(); } return; }
+    if (d.act === "example") { S = EXAMPLE(); save(); toast(L.toast.example); return render(); }
+    if (d.act === "reset") { if (confirm(L.toast.resetConfirm)) { const lang = S.lang; S = blank(); S.lang = lang; save(); render(); } return; }
     if (d.act === "print") return window.print();
     if (d.act === "png") return downloadPng(el);
   });
 
   async function downloadPng(btn) {
-    if (!window.html2canvas) return toast("图片工具载入失败，请用「存成 PDF」");
-    btn.disabled = true; const old = btn.textContent; btn.textContent = "生成中…";
+    if (!window.html2canvas) return toast(L.toast.pngFail);
+    btn.disabled = true; const old = btn.textContent; btn.textContent = L.toast.busy;
     try {
       await document.fonts?.ready;
       const node = document.getElementById("report");
       const canvas = await html2canvas(node, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
-      a.href = url; a.download = `职业规划报告-${S.name.trim() || "我"}.png`;
+      a.href = url; a.download = L.file(S.name.trim());
       document.body.appendChild(a); a.click(); a.remove();
-      toast("已下载，可以存到相册或分享");
+      toast(L.toast.pngDone);
     } catch (err) {
-      toast("下载失败，请用「存成 PDF」");
+      toast(L.toast.pngErr);
     } finally { btn.disabled = false; btn.textContent = old; }
   }
 
