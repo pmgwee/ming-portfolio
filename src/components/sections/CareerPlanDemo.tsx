@@ -17,6 +17,8 @@ import {
   type Text,
 } from "@/lib/career-plan";
 import { CAREER_EVIDENCE, EVIDENCE_REVIEWED } from "@/lib/career-evidence";
+import { nextMoveFor, OPPORTUNITY_STATES, weeklyTime } from "@/lib/career-next-move";
+import { CareerOpportunityMap } from "./CareerOpportunityMap";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const EMPTY: Answer[] = [null, null, null, null, null];
@@ -48,9 +50,6 @@ const UI = {
     pathEmpty: "Pick a goal and your path appears here.",
     stages: ["Start", "Grow", "Level up", "Goal"],
     skillsHeading: "Skills this goal needs",
-    yearsLabel: "Typically reached after",
-    sourcesSummary: "How these paths were built",
-    sourcesIntro: "Curated examples, not a live labour-market forecast. Sources support specific responsibilities or requirements, not every step in a route. Job listings are snapshots; individual careers are examples, not typical outcomes. Exercises are our editorial suggestions.",
     jobHeading: "Job check",
     jobFallback: "The job you're considering",
     insightsHeading: "What to watch",
@@ -91,9 +90,6 @@ const UI = {
     pathEmpty: "选好目标，你的路线就会出现在这里。",
     stages: ["起步", "成长", "进阶", "终点"],
     skillsHeading: "这个目标需要的技能",
-    yearsLabel: "通常需要",
-    sourcesSummary: "这些路线的依据",
-    sourcesIntro: "这是经过整理的示例，不是实时就业市场预测。来源支持具体职责或资格要求，不代表路线上的每一步。招聘是时间快照，个体经历不等于典型结果。练习是我们编辑的建议。",
     jobHeading: "这份工，给得了吗？",
     jobFallback: "你在考虑的工作",
     insightsHeading: "要注意的地方",
@@ -155,12 +151,15 @@ export function CareerPlanDemo() {
   const [role, setRole] = useState("AI Engineering Lead");
   const [industryId, setIndustryId] = useState("tech");
   const [copied, setCopied] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<number | null>(null);
+  const [weeklyHours, setWeeklyHours] = useState(3);
   const [error, setError] = useState("");
   const [jobName, setJobName] = useState("");
   const [answers, setAnswers] = useState<Answer[]>(EMPTY);
   const [busy, setBusy] = useState(false);
   const [unwrapKey, setUnwrapKey] = useState(0);
   const reportRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
   const wasComplete = useRef(false);
 
   const ui = UI[lang];
@@ -177,6 +176,11 @@ export function CareerPlanDemo() {
   const complete = ready && answeredCount === 5;
   const today = new Date().toISOString().slice(0, 10);
   const goalText = matched ? tx(matched.name) : role.trim();
+  const nextMove = nextMoveFor(answers, selectedArea);
+  const time = weeklyTime(weeklyHours);
+  const weeklyTask = (nextMove.index === 0 || nextMove.index === 4) && evidence
+    ? tx(evidence.experiment)
+    : tx(nextMove.action);
 
   // The "unwrap" moment: once, when the plan becomes complete.
   useEffect(() => {
@@ -189,6 +193,8 @@ export function CareerPlanDemo() {
 
   function answer(i: number, value: boolean) {
     setAnswers((prev) => prev.map((a, j) => (j === i ? (a === value ? null : value) : a)));
+    setSelectedArea(null);
+    setCopied(false);
   }
 
   function pickRole(text: Text) {
@@ -196,6 +202,7 @@ export function CareerPlanDemo() {
     setRole(role === value ? "" : value);
     // A job's fit is relative to a goal; don't reuse a score for a new goal.
     setAnswers(EMPTY);
+    setSelectedArea(null);
     setCopied(false);
   }
 
@@ -206,13 +213,23 @@ export function CareerPlanDemo() {
     setAnswers(EMPTY);
     setTab("goal");
     setCopied(false);
+    setSelectedArea(null);
+    setWeeklyHours(3);
     setError("");
   }
 
+  function rateJob() {
+    setTab("job");
+    controlsRef.current?.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+  }
+
   async function copyNextStep() {
-    if (!evidence) return;
+    if (!ready) return;
     try {
-      await navigator.clipboard.writeText(`${goalText}\n\n${tx(evidence.experiment)}\n\n${tx(evidence.ask)}\n\n${evidence.sources.map((s) => `${s.title}: ${s.url}`).join("\n")}\nReviewed: ${EVIDENCE_REVIEWED}. Editorial exercise; not a forecast.`);
+      const budget = lang === "en"
+        ? `${time.hours} hours this week: define ${time.define} min / make ${time.make} min / review ${time.review} min.`
+        : `这周投入 ${time.hours} 小时：定范围 ${time.define} 分钟 / 动手做 ${time.make} 分钟 / 复盘 ${time.review} 分钟。`;
+      await navigator.clipboard.writeText(`${goalText}\n${jobName.trim()}\n\n${tx(OPPORTUNITY_STATES[nextMove.state].label)} · ${tx(nextMove.area.label)}\n${tx(nextMove.action)}\n\n${budget}\n${weeklyTask}`);
       setCopied(true);
       setError("");
     } catch {
@@ -349,21 +366,21 @@ export function CareerPlanDemo() {
             className="overflow-hidden rounded-2xl border border-white/10 bg-[#101219] shadow-[0_25px_80px_rgba(0,0,0,0.32),0_0_0_1px_rgba(255,212,0,0.08)]"
             style={{ fontFamily: FONT }}
           >
-            <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-2 border-b border-white/10 px-3 py-3 sm:gap-3 sm:px-4">
               <span className="hidden gap-1.5 sm:flex" aria-hidden="true">
                 <i className="size-3 rounded-full bg-[#ff5f57]" />
                 <i className="size-3 rounded-full bg-[#febc2e]" />
                 <i className="size-3 rounded-full bg-[#28c840]" />
               </span>
               <span className="hidden text-sm font-semibold text-zinc-100 md:inline">{ui.title}</span>
-              <div role="group" aria-label="Demo steps" className="mx-auto flex rounded-full bg-black/40 p-1 text-sm">
+              <div role="group" aria-label="Demo steps" className="mx-auto flex rounded-full bg-black/40 p-1 text-xs sm:text-sm">
                 {(["goal", "job"] as const).map((key) => (
                   <button
                     key={key}
                     type="button"
                     aria-pressed={tab === key}
                     onClick={() => setTab(key)}
-                    className={`min-h-11 whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-colors ${focusRing} ${
+                    className={`whitespace-nowrap rounded-full px-2.5 py-1.5 font-medium transition-colors sm:px-3 ${focusRing} ${
                       tab === key ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
                     }`}
                   >
@@ -371,7 +388,7 @@ export function CareerPlanDemo() {
                   </button>
                 ))}
               </div>
-              <div role="group" aria-label="Language" className="flex shrink-0 rounded-full border border-white/15 p-0.5 text-xs font-semibold">
+              <div role="group" aria-label="Language" className="grid h-10 w-24 shrink-0 grid-cols-2 rounded-full border border-white/15 p-1 text-xs font-semibold sm:w-28">
                 {(
                   [
                     ["en", "EN"],
@@ -382,8 +399,8 @@ export function CareerPlanDemo() {
                     key={key}
                     type="button"
                     aria-pressed={lang === key}
-                    onClick={() => setLang(key)}
-                    className={`min-h-11 rounded-full px-2.5 py-1 transition-colors ${focusRing} ${
+                    onClick={() => { setLang(key); setCopied(false); }}
+                    className={`min-w-0 rounded-full px-2 py-1 transition-colors ${focusRing} ${
                       lang === key ? "bg-[#ffd400] text-[#141414]" : "text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -395,12 +412,12 @@ export function CareerPlanDemo() {
 
             <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
               {/* Controls */}
-              <div className="border-b border-white/10 p-5 md:p-8 lg:sticky lg:top-28 lg:self-start lg:border-b-0">
+              <div ref={controlsRef} className="scroll-mt-28 border-b border-white/10 p-5 md:p-8 lg:sticky lg:top-28 lg:self-start lg:border-b-0">
                 {tab === "goal" ? (
                   <div className="space-y-6">
                     <div>
                       <label htmlFor="cp-role" className="text-base font-semibold text-zinc-100">{ui.goalLabel}</label>
-                      <input id="cp-role" value={role} onChange={(e) => { setRole(e.target.value); setAnswers(EMPTY); setCopied(false); }} placeholder={ui.goalPlaceholder} className={inputClass} />
+                      <input id="cp-role" value={role} onChange={(e) => { setRole(e.target.value); setAnswers(EMPTY); setSelectedArea(null); setCopied(false); }} placeholder={ui.goalPlaceholder} className={inputClass} />
                       <p className="mt-2 text-xs leading-relaxed text-zinc-400">{lang === "en" ? "Start with an example, or write your own. The horizon is your ambition—not a predicted promotion date." : "从示例开始，或写下自己的目标。时间是你的愿景，不是晋升预测。"}</p>
                     </div>
                     <div>
@@ -431,13 +448,6 @@ export function CareerPlanDemo() {
                                 );
                               })}
                             </div>
-                      <details className="group mt-4 text-xs text-zinc-400">
-                        <summary className={`inline-flex cursor-pointer list-none items-center gap-1.5 rounded text-zinc-400 hover:text-zinc-200 ${focusRing}`}>
-                          <span aria-hidden="true" className="transition-transform group-open:rotate-90">›</span> {ui.sourcesSummary}
-                        </summary>
-                        <p className="mt-2 max-w-[60ch] leading-relaxed text-zinc-400">{ui.sourcesIntro}</p>
-                        <p className="mt-2 leading-relaxed">{lang === "en" ? "Malaysia-first where local regulation matters; global frameworks are labelled. No salary forecast, placement probability or guaranteed time-to-role." : "涉及本地资格时以马来西亚规定为主，全球框架会标明范围。不提供薪资预测、就业概率或保证晋升时间。"}</p>
-                      </details>
                     </div>
                     <div>
                       <label htmlFor="cp-name" className="text-base font-semibold text-zinc-100">
@@ -447,7 +457,7 @@ export function CareerPlanDemo() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setTab("job")}
+                      onClick={rateJob}
                       className="inline-flex min-h-11 items-center gap-2 rounded-full bg-zinc-100 px-5 text-sm font-semibold text-[#07080c] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
                     >
                       {ui.next} <ArrowRight aria-hidden="true" weight="bold" className="size-4" />
@@ -459,7 +469,7 @@ export function CareerPlanDemo() {
                 ) : (
                   <div>
                     <label htmlFor="cp-job" className="text-base font-semibold text-zinc-100">{ui.jobLabel}</label>
-                    <input id="cp-job" value={jobName} onChange={(e) => setJobName(e.target.value)} placeholder={ui.jobPlaceholder} className={inputClass} />
+                    <input id="cp-job" value={jobName} onChange={(e) => { setJobName(e.target.value); setCopied(false); }} placeholder={ui.jobPlaceholder} className={inputClass} />
                     <div className="mt-5 flex items-center gap-3 text-xs text-zinc-400">
                       <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
                         <motion.i
@@ -593,15 +603,7 @@ export function CareerPlanDemo() {
                         )}
                       </div>
 
-                      {evidence && <motion.div data-report-block key={matched!.id} initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.3, ease: EASE }} className="border-y border-black/15 py-5">
-                        <h3 className="text-lg font-semibold tracking-tight">{lang === "en" ? "The shift behind the title" : "头衔背后的转变"}</h3>
-                        <p className="mt-2 text-base leading-relaxed">{tx(evidence.shift)}</p>
-                        <h4 className="mt-5 text-sm font-semibold">{lang === "en" ? "Try this week" : "这周试一试"}</h4>
-                        <p className="mt-2 text-sm leading-relaxed text-zinc-700">{tx(evidence.experiment)}</p>
-                        <h4 className="mt-4 text-sm font-semibold">{lang === "en" ? "Ask a hiring manager or mentor" : "问问招聘经理或导师"}</h4>
-                        <p className="mt-2 text-sm italic leading-relaxed text-zinc-700">“{tx(evidence.ask)}”</p>
-                        <p className="mt-3 text-xs text-zinc-600">{lang === "en" ? "Suggested exercise—not an employer requirement or a validated assessment." : "建议练习，不是雇主要求，也不是经过验证的测评。"}</p>
-                      </motion.div>}
+                      {ready ? <CareerOpportunityMap answers={answers} lang={lang} selected={selectedArea} onSelect={(index) => { setSelectedArea(index); setCopied(false); }} hours={weeklyHours} onHours={(hours) => { setWeeklyHours(hours); setCopied(false); }} exercise={weeklyTask} reduced={reduced} onRateJob={rateJob} /> : null}
 
                       {/* Job check */}
                       <div data-report-block className="rounded-xl border border-black/15 p-4">
@@ -637,18 +639,6 @@ export function CareerPlanDemo() {
                         ) : null}
                       </div>
 
-                      {evidence && <details data-report-block className="border-t border-black/15 pt-5">
-                        <summary className="min-h-11 cursor-pointer text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">{lang === "en" ? `Inspect the evidence · ${evidence.sources.length} ${evidence.sources.length === 1 ? "source" : "sources"}` : `查看依据 · ${evidence.sources.length} 个来源`}
-                          <span className="mt-1 block text-xs font-normal text-zinc-600">{lang === "en" ? "Reviewed" : "查阅日期"} {EVIDENCE_REVIEWED} · {lang === "en" ? "Not live data" : "非实时数据"}</span>
-                        </summary>
-                        <ul className="mt-3 space-y-4">
-                          {evidence.sources.map((source) => <li key={source.url}>
-                            <a href={source.url} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-sm font-semibold underline decoration-black/30 underline-offset-4 hover:decoration-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">{source.title} ↗</a>
-                            <p className="mt-1 text-xs text-zinc-600">{tx(source.scope)}</p>
-                            <p className="mt-1 text-xs leading-relaxed text-zinc-700">{tx(source.finding)}</p>
-                          </li>)}
-                        </ul>
-                      </details>}
 
                       <div data-report-block className="rounded-xl bg-[#ffd400] px-4 py-3 text-sm">
                         <p className="font-black">{ui.teaserTitle}</p>
@@ -679,7 +669,7 @@ export function CareerPlanDemo() {
                 </AnimatePresence>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  {evidence && <button type="button" onClick={copyNextStep} className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-indigo-200 px-5 text-sm font-semibold text-[#101219] hover:bg-indigo-100 ${focusRing}`}>
+                  {ready && <button type="button" onClick={copyNextStep} className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-indigo-200 px-5 text-sm font-semibold text-[#101219] hover:bg-indigo-100 ${focusRing}`}>
                     <Check aria-hidden="true" className="size-4" />{copied ? (lang === "en" ? "Next step copied" : "下一步已复制") : (lang === "en" ? "Copy my next step" : "复制我的下一步")}
                   </button>}
                   <button

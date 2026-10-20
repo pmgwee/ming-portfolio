@@ -82,3 +82,7 @@ The demo maps 20 bilingual goals to scoped source findings, an editorial weekly 
 Removed unsupported promotion durations, automated accept/reject recommendations and claims to predict AI replacement or burnout. Incomplete job checks stay neutral. Both the homepage demo and full tool use the same safer five-question interpretation.
 
 `node scripts/test-career-plan.mjs` checks all 20 evidence profiles, exact English/Chinese role matching, 243 answer combinations in both tools and preservation of existing data during handoff. Desktop/mobile browser checks cover role changes, answer reset, language switching and layout. TypeScript and the production build are release checks.
+
+### Interface revision, 20 October 2026
+
+At the user's request, removed the on-screen evidence accordions and replaced the static advice block with an opportunity map. Its five markers directly represent the visitor's answers: unanswered → Check, no → Build, yes → Use. These are self-reported conditions, not a readiness metric. The next-step focus prioritises a gap, then an unanswered question; visitors can select any area instead. A weekly time budget divides the visitor's chosen 1–8 hours into define/make/review sessions. Role-specific exercises remain grounded in the researched profiles; references remain in the PDF appendix. No external data stream, prediction or generated completion percentage is implied.

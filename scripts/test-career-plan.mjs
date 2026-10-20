@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { INDUSTRIES, findRole, verdictFor, handOffToFullTool, CAREER_PLAN_STORE } from "../src/lib/career-plan.ts";
 import { CAREER_EVIDENCE } from "../src/lib/career-evidence.ts";
+import { nextMoveFor, weeklyTime } from "../src/lib/career-next-move.ts";
 
 const roles = INDUSTRIES.flatMap((industry) => industry.roles);
 assert.equal(roles.length, 20);
@@ -52,4 +53,14 @@ assert.equal(result.plan.y1.role, "My existing plan");
 assert.equal(result.jobs[1].name, "Keep B");
 assert.equal(result.lang, "cn");
 assert.equal(result.jobs[0].answers[2], null);
+// Prioritise gaps, keep unknowns distinct, and let the visitor override the focus.
+assert.equal(nextMoveFor([true, null, false, true, null]).index, 2);
+assert.equal(nextMoveFor([true, null, false, true, null], 1).state, 0);
+assert.equal(nextMoveFor([true, true, true, true, true]).index, 4);
+assert.equal(nextMoveFor([null, null, null, null, null]).state, 0);
+for (const hours of [1, 3, 8, 0, 99, NaN]) {
+  const budget = weeklyTime(hours);
+  assert.equal(budget.define + budget.make + budget.review, budget.total);
+  assert.ok(budget.hours >= 1 && budget.hours <= 8);
+}
 console.log("PASS: 20 bilingual evidence profiles; 243 answer states in both tools; exact role matching; handoff preserves existing plans.");
