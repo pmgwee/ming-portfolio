@@ -2,10 +2,10 @@ import { SITE } from "./seo";
 
 /** Versioned review assets, independent of the old S3 frame sequence. */
 export const HERO_FILM = {
-  desktop: "/hero/studio-journey-v1/film-1080.mp4",
-  mobile: "/hero/studio-journey-v1/film-720.mp4",
-  poster: "/hero/studio-journey-v1/opening.webp",
-  ending: "/hero/studio-journey-v1/ending.webp",
+  desktop: "/hero/studio-journey-v2/film-1080.mp4",
+  mobile: "/hero/studio-journey-v2/film-720.mp4",
+  poster: "/hero/studio-journey-v2/opening.webp",
+  ending: "/hero/studio-journey-v2/ending.webp",
   duration: 15,
 } as const;
 

@@ -89,7 +89,7 @@ The in-between moments intentionally leave the artwork unobstructed, including t
 - The ending AI Products link was clicked and reached its section, with the heading positioned below the navigation (112px from the viewport top).
 - Keyboard Enter tests on desktop and mobile confirmed that reading mode focuses its heading and returning restores focus to the visible Read without motion control without an extra scroll jump.
 - After the batched responsive fixes, no horizontal overflow was found. Static reader showed all four chapters, stopped video loading and focused its heading. Browser console captured no warnings or errors.
-- Local film requests support HTTP 206 byte ranges. Poster and film use versioned paths in `public/hero/studio-journey-v1/`, independent of the existing CloudFront configuration.
+- Local film requests support HTTP 206 byte ranges. Poster and film use versioned paths in `public/hero/studio-journey-v2/`, independent of the existing CloudFront configuration.
 - Real-device Safari/Instagram-browser testing remains a user review item; the local checks used a Chromium browser at phone dimensions.
 
 Screenshots are local review evidence under `.impeccable/review/cinematic-hero/`; unrelated existing review files are not part of the commit. The mechanical design detector produced advisory color/type-ramp findings for the custom cinematic overlay treatment. Its results do not replace the independent finish review.

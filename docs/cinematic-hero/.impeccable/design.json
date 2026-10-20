@@ -262,7 +262,7 @@
       "verification": "Extracted from the current curtain/timeline implementation and its recorded emulated review (headless Chromium, real pointer movement). Actual-phone Safari/Instagram review remains pending. Root design/product files are not modified."
     },
     "curtainSource": {
-      "asset": "public/hero/studio-journey-v1/opening.webp",
+      "asset": "public/hero/studio-journey-v2/opening.webp",
       "frame": 8,
       "time": "0.27s",
       "note": "First fully bright frame after the fade-up; replaces poster.webp (frame 0). Plate blur 0px closed, up to 3px open."
