@@ -1,3 +1,5 @@
+import { COLLECTION_CREDITS, collectionKey } from "@/lib/collection";
+
 /* ------------------------------------------------------------------ */
 /*  Showcase — Image fly-through → fullscreen video reveal             */
 /*  All tunable constants live here (mirrors src/lib/hero.ts).         */
@@ -221,12 +223,15 @@ export const FIELD = {
 export const STAGE_VH = 320;
 
 /**
- * Derive a clean carousel/hover label from a clip URL's filename, e.g.
+ * Use the editorial film title when supplied, otherwise derive a clean
+ * carousel/hover label from the clip URL's filename, e.g.
  * "https://…/video/01-flow-state.mp4" → "Flow State". Strips the path,
  * extension and any leading order prefix (01-, 02_…), turns separators into
  * spaces and Title-Cases the result.
  */
 export function labelFromUrl(url: string): string {
+  const title = COLLECTION_CREDITS[collectionKey(url)]?.title;
+  if (title) return title;
   const file = url.split("/").pop() ?? "";
   return file
     .replace(/\.[^.]+$/, "") // strip extension

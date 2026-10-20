@@ -1,4 +1,4 @@
-/** Public, verified credits only. Keys are decoded media paths, not signed URLs.
+/** Public editorial titles and verified credits. Keys are decoded media paths, not signed URLs.
  * Empty fields remain unpublished until the photographer supplies the credits.
  * capturedAt is the capture date/time as supplied, never the S3 upload timestamp.
  */
@@ -61,6 +61,99 @@ const PHOTO_DESCRIPTIONS: Record<string, string> = {
   "zhan hang1.2.webp": "Graduate in a purple gown standing beside a lecture-hall sign.",
 };
 
+// Editorial titles describe each frame's mood; locations and talent stay in
+// the verified credits below. Keys remain stable when the gallery is reordered.
+const PHOTO_TITLES: Record<string, string> = {
+  "candice 1.1.webp": "City in Her Stride",
+  "candice 1.2.webp": "Within Reach",
+  "candice 1.3.webp": "Between Departures",
+  "candice 1.4.webp": "Her Own Frequency",
+  "crystal 1.1.webp": "Botanical Reverie",
+  "crystal 1.2.webp": "Through the Veil",
+  "crystal 1.3.webp": "In the Garden's Keeping",
+  "jasper 1.1.webp": "Between Snow and Sky",
+  "jasper 1.2.webp": "Winter in Profile",
+  "juyi 1.webp": "A Little Daydream",
+  "juyi 2.webp": "Where the Light Settles",
+  "juyi 3.webp": "Through the Green",
+  "juyi 4.webp": "Sun on Her Side",
+  "juyi 5.webp": "Love, All",
+  "juyi 6.webp": "After the Match",
+  "miami.webp": "A Toast to Havana",
+  "ming 1.1.webp": "After Hours, Georgetown",
+  "ming 1.2.webp": "The Green Room",
+  "ming 1.3.webp": "Breaking the Fourth Wall",
+  "ming 2.1.webp": "Light Takes a Turn",
+  "ming 2.2.webp": "Above the Street",
+  "ming 2.3.webp": "Leaning into Night",
+  "ming 2.4.webp": "A Different Angle",
+  "ming 3.1.webp": "Midnight in Turquoise",
+  "ming 3.2.webp": "Orange-Tinted Mischief",
+  "ming 3.3.webp": "The City Can Wait",
+  "sakura.webp": "Beneath a Blushing Sky",
+  "sayaha 1.1.webp": "Flowers for the Afternoon",
+  "sayaha 1.2.webp": "A Turn in the Garden",
+  "sayaha 1.3.webp": "Petals in Motion",
+  "sayaha 1.4.webp": "The Long Way Through",
+  "slyvia 1.1.webp": "Rain, Reflected",
+  "slyvia 1.2.webp": "One Light in the Rain",
+  "slyvia 1.3.webp": "Through a Thousand Drops",
+  "slyvia 1.4.webp": "Shelter in the Storm",
+  "slyvia 1.5.webp": "The Rain Stays Close",
+  "tayar 1.1.webp": "Old Streets, New Stories",
+  "tayar 1.2.webp": "Meet Me at the Corner",
+  "tayar 1.3.webp": "Cover Story",
+  "wat 1.1.webp": "Under the Aurora",
+  "yiwei 1.1.webp": "A Pause on the Street",
+  "yiwei 1.2.webp": "Life Between Errands",
+  "zhan hang 1.webp": "The Next Chapter",
+  "zhan hang1.2.webp": "Beyond the Lecture Hall",
+};
+
+// Motion titles reviewed against the films, including the separate carousel.
+const FILM_CREDITS: Record<string, CollectionCredit> = {
+  "/temp_pictures/bali trip.mp4": {
+    title: "Where the Tide Takes Us",
+    alt: "A figure walks along the shore as waves roll in beneath a pastel sunset.",
+  },
+  "/temp_pictures/firework 2.0.mp4": {
+    title: "A Sky Full of Sparks",
+    alt: "Colorful fireworks burst above a brightly illuminated building at night.",
+  },
+  "/temp_pictures/firework.mp4": {
+    title: "Watching the Night Bloom",
+    alt: "Two people watch fireworks together beneath a glowing light.",
+  },
+  "/temp_pictures/iris shooting.mp4": {
+    title: "Onward, Together",
+    alt: "Graduates in purple gowns walk and leap along a sunlit, tree-lined path.",
+  },
+  "/temp_pictures/johor home moon.mp4": {
+    title: "The Way It Used to Be",
+    alt: "Quiet indoor scenes move from a person lying with a phone to a sunlit window and a silhouette.",
+  },
+  "/temp_pictures/sakura .mp4": {
+    title: "Moon in Full Bloom",
+    alt: "Pale cherry blossoms sway around a bright moon against the night sky.",
+  },
+  "/video/Basketball Animation.mp4": {
+    title: "Flight of the Game",
+    alt: "An animated basketball floats and spins through outdoor basketball courts.",
+  },
+  "/video/Launching Motion Video.mp4": {
+    title: "SemuaSini, in Motion",
+    alt: "A motion design film introduces subscription tracking, AI usage, and Telegram reminders for SemuaSini.",
+  },
+  "/video/Short Film.mp4": {
+    title: "Before the Light Leaves",
+    alt: "A figure moves along a beach while the sunset lights the waves in orange and gold.",
+  },
+  "/video/Startup company trailer.mp4": {
+    title: "GOO.ai: A New Perspective",
+    alt: "A cinematic camera move through an old stone street leads to a GOO.ai brand reveal.",
+  },
+};
+
 // Series and credits supplied by Ming. Explicit membership keeps separate shoots
 // with the same talent distinct and makes every photo in a series consistent.
 const PHOTO_SERIES = [
@@ -87,12 +180,15 @@ const PHOTO_CREDITS: Record<string, CollectionCredit> = Object.fromEntries(
   ),
 );
 
-export const COLLECTION_CREDITS: Record<string, CollectionCredit> = Object.fromEntries(
-  [...new Set([...Object.keys(PHOTO_DESCRIPTIONS), ...Object.keys(PHOTO_CREDITS)])].map(file => [
-    `/temp_pictures/${file}`,
-    { alt: PHOTO_DESCRIPTIONS[file], ...PHOTO_CREDITS[file] },
-  ]),
-);
+export const COLLECTION_CREDITS: Record<string, CollectionCredit> = {
+  ...Object.fromEntries(
+    [...new Set([...Object.keys(PHOTO_DESCRIPTIONS), ...Object.keys(PHOTO_CREDITS), ...Object.keys(PHOTO_TITLES)])].map(file => [
+      `/temp_pictures/${file}`,
+      { title: PHOTO_TITLES[file], alt: PHOTO_DESCRIPTIONS[file], ...PHOTO_CREDITS[file] },
+    ]),
+  ),
+  ...FILM_CREDITS,
+};
 
 export const isCollectionVideo = (src: string) => /\.(mp4|webm|mov|m4v)(?:\?|$)/i.test(src);
 
@@ -104,8 +200,10 @@ export function collectionKey(src: string): string {
 export function collectionEntry(src: string, index: number) {
   const credit = COLLECTION_CREDITS[collectionKey(src)] ?? {};
   const kind = isCollectionVideo(src) ? "Motion study" : "Photographic study";
+  const filenameTitle = collectionKey(src).split("/").pop()
+    ?.replace(/\.[^.]+$/, "").replace(/^\d+[-_\s]*/, "").replace(/[-_]+/g, " ").trim();
   return { ...credit, src, key: collectionKey(src), kind,
-    title: credit.title ?? `${kind} ${String(index + 1).padStart(2, "0")}`,
+    title: credit.title ?? (filenameTitle || kind),
     alt: credit.alt ?? `Ming Creatives collection, ${kind.toLowerCase()} ${index + 1}` };
 }
 
