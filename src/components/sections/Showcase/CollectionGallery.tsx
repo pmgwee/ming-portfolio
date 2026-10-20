@@ -166,9 +166,8 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
           <h2>{entry.title}</h2>
           {entry.description ? <p className={styles.description}>{entry.description}</p> : null}
           <dl className={styles.metadata}>
-            <div><dt>Format</dt><dd>{video ? "Moving image" : "Photography"}</dd></div>
-            {entry.model ? <div><dt>Model</dt><dd>{entry.model.name}{profile ? <><br /><a className={styles.instagram} href={profile} target="_blank" rel="noopener noreferrer"><InstagramLogo aria-hidden="true" />Instagram</a></> : null}</dd></div> : null}
             {entry.location ? <div><dt>Location</dt><dd>{entry.location}</dd></div> : null}
+            {entry.model ? <div><dt>Talent</dt><dd>{entry.model.name}{profile ? <><br /><a className={styles.instagram} href={profile} target="_blank" rel="noopener noreferrer"><InstagramLogo aria-hidden="true" />Instagram</a></> : null}</dd></div> : null}
             {entry.capturedAt ? <div><dt>Captured</dt><dd>{entry.capturedAt}</dd></div> : null}
           </dl>
           <Palette src={src} supplied={entry.palette} />
