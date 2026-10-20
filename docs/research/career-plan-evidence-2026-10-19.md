@@ -86,3 +86,7 @@ Removed unsupported promotion durations, automated accept/reject recommendations
 ### Interface revision, 20 October 2026
 
 At the user's request, removed the on-screen evidence accordions and replaced the static advice block with an opportunity map. Its five markers directly represent the visitor's answers: unanswered → Check, no → Build, yes → Use. These are self-reported conditions, not a readiness metric. The next-step focus prioritises a gap, then an unanswered question; visitors can select any area instead. A weekly time budget divides the visitor's chosen 1–8 hours into define/make/review sessions. Role-specific exercises remain grounded in the researched profiles; references remain in the PDF appendix. No external data stream, prediction or generated completion percentage is implied.
+
+### Teaser simplification, 20 October 2026
+
+User feedback: the demo should be a concise invitation to the full tool. Removed the weekly planner, long coaching paragraphs, score ring, repeated gap lists and competing copy/PDF actions. The preview retains the responsive map, one short answer-derived takeaway and a single primary link into the full plan. Goal, name, language and job answers still carry over. Planning and image/PDF export remain available in the full tool; source research remains in this repository. The map represents the visitor's answers, and does not add a career-success prediction.
