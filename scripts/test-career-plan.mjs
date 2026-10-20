@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { INDUSTRIES, findRole, verdictFor, handOffToFullTool, CAREER_PLAN_STORE } from "../src/lib/career-plan.ts";
 import { CAREER_EVIDENCE } from "../src/lib/career-evidence.ts";
-import { nextMoveFor } from "../src/lib/career-next-move.ts";
+import { completionFor, nextMoveFor } from "../src/lib/career-next-move.ts";
 
 const roles = INDUSTRIES.flatMap((industry) => industry.roles);
 assert.equal(roles.length, 20);
@@ -41,8 +41,12 @@ for (let n = 0; n < 243; n++) {
   const expected = answers.includes(null) ? "none" : yes >= 4 ? "go" : yes >= 2 ? "mid" : "no";
   assert.equal(verdictFor(answers).tone, expected);
   assert.equal(context.check(answers), `v-${expected}`);
+  const completion = completionFor("AI Engineering Lead", answers);
+  assert.equal(completion?.tone ?? "none", expected);
 }
 for (const malformed of [[], [true], [true, true, true, true, undefined]]) assert.equal(verdictFor(malformed).tone, "none");
+assert.equal(completionFor("  ", [true, true, true, true, true]), null);
+assert.equal(completionFor("Custom goal", [true, true, true, true, null]), null);
 
 let saved = JSON.stringify({ goal: { why: "Preserve my reasons" }, plan: { y1: { role: "My existing plan" } }, jobs: [{name:"old"},{name:"Keep B"},{name:"Keep current"}] });
 globalThis.localStorage = { getItem: () => saved, setItem: (key, value) => { assert.equal(key, CAREER_PLAN_STORE); saved = value; } };

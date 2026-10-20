@@ -2,6 +2,27 @@ import type { Answer, Text } from "./career-plan";
 
 const t = (en: string, cn: string): Text => ({ en, cn });
 
+/** Completion celebrates a finished preview; the copy follows the answers. */
+export function completionFor(goal: string, answers: Answer[]) {
+  if (!goal.trim() || answers.length !== 5 || answers.some((answer) => typeof answer !== "boolean")) return null;
+  const score = answers.filter((answer) => answer === true).length;
+  if (score >= 4) return {
+    tone: "go" as const,
+    first: t("This could be", "你的下一步，"),
+    second: t("your next big move.", "大有可为。"),
+  };
+  if (score >= 2) return {
+    tone: "mid" as const,
+    first: t("Big goal.", "目标够大。"),
+    second: t("Let's close the gaps.", "下一步要更准。"),
+  };
+  return {
+    tone: "no" as const,
+    first: t("Your goal.", "目标已清晰。"),
+    second: t("More ways forward.", "打开更多可能。"),
+  };
+}
+
 /** These states describe the user's answers, not measured career readiness. */
 export const OPPORTUNITY_STATES = [
   { label: t("Check", "待确认") },

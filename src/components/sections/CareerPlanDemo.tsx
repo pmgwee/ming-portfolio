@@ -16,7 +16,7 @@ import {
   type Lang,
   type Text,
 } from "@/lib/career-plan";
-import { nextMoveFor } from "@/lib/career-next-move";
+import { completionFor, nextMoveFor } from "@/lib/career-next-move";
 import { CareerOpportunityMap } from "./CareerOpportunityMap";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -114,16 +114,18 @@ export function CareerPlanDemo() {
   const score = answers.filter((a) => a === true).length;
   const verdict = verdictFor(answers);
   const ready = role.trim().length > 0;
-  const complete = ready && answeredCount === 5;
+  const completion = completionFor(role, answers);
+  const complete = completion !== null;
   const goalText = matched ? tx(matched.name) : role.trim();
   const nextMove = nextMoveFor(answers, selectedArea);
   // Track completion once per completed set of answers.
   useEffect(() => {
     if (complete && !wasComplete.current) {
       track("career_plan_complete", { lang, verdict: verdict.tone });
+      previewRef.current?.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
     }
     wasComplete.current = complete;
-  }, [complete, lang, verdict.tone]);
+  }, [complete, lang, verdict.tone, reduced]);
 
   function answer(i: number, value: boolean) {
     setAnswers((prev) => prev.map((a, j) => (j === i ? (a === value ? null : value) : a)));
@@ -363,13 +365,31 @@ export function CareerPlanDemo() {
                     className="relative scroll-mt-28 overflow-hidden rounded-[15px] bg-[#fbfaf6] text-[#141414]"
                     style={{ fontFamily: FONT }}
                   >
-                    <div className="bg-[#141414] px-6 py-4 text-white">
+                    {complete ? <motion.span
+                      role="status"
+                      className="pointer-events-none absolute right-[-42px] top-[18px] z-10 w-[160px] rotate-45 bg-[#ffd400] py-1.5 text-center text-[11px] font-bold tracking-[0.12em] text-[#141414]"
+                      initial={reduced ? false : { opacity: 0, x: 14, y: -14 }}
+                      animate={{ opacity: 1, x: 0, y: 0 }}
+                      transition={{ duration: reduced ? 0 : 0.35, ease: EASE }}
+                    >{lang === "en" ? "READY" : "已就绪"}</motion.span> : null}
+                    <div className={`bg-[#141414] px-6 py-4 text-white ${complete ? "pr-24" : ""}`}>
                       <p className="text-xl font-semibold">{ui.reportTitle(name.trim())}</p>
                     </div>
 
                     <div className="space-y-5 px-6 py-6">
-                      {/* Goal */}
-                      <div>
+                      {/* Completion earns the focal reveal; the first look stays quiet. */}
+                      {completion ? <motion.div
+                        key={`${goalText}-${completion.tone}-${lang}`}
+                        initial={reduced ? false : { opacity: 0, y: 12, clipPath: "inset(0 0 12% 0)" }}
+                        animate={{ opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
+                        transition={{ duration: reduced ? 0 : 0.55, ease: EASE }}
+                      >
+                        <h3 id="cp-completion-headline" className="max-w-[16ch] text-balance text-[clamp(2.25rem,4.1vw,3.75rem)] font-black uppercase leading-[0.98] tracking-[-0.04em]">
+                          <span className="block">{tx(completion.first)}</span>
+                          <span className="mt-1 block">{tx(completion.second)}</span>
+                        </h3>
+                        <p className="mt-4 text-sm leading-relaxed text-zinc-700">{lang === "en" ? <><span className="font-semibold">{score}/5 checks align</span> with your goal of <span className="font-semibold">{goalText}</span>.</> : <>你的回答中，<span className="font-semibold">{score}/5 项</span>与你的<span className="font-semibold">「{goalText}」</span>目标匹配。</>}</p>
+                      </motion.div> : <div>
                         <p className="text-[11px] font-bold tracking-[0.16em] text-zinc-500">{ui.goalHeading.toUpperCase()}</p>
                         <p className="mt-1 text-[22px] font-black leading-snug">
                           {ui.goalLine}{" "}
@@ -377,7 +397,7 @@ export function CareerPlanDemo() {
                             {goalText || ui.goalEmpty}
                           </span>
                         </p>
-                      </div>
+                      </div>}
 
                       {/* Path ladder */}
                       <div>

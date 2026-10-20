@@ -90,3 +90,7 @@ At the user's request, removed the on-screen evidence accordions and replaced th
 ### Teaser simplification, 20 October 2026
 
 User feedback: the demo should be a concise invitation to the full tool. Removed the weekly planner, long coaching paragraphs, score ring, repeated gap lists and competing copy/PDF actions. The preview retains the responsive map, one short answer-derived takeaway and a single primary link into the full plan. Goal, name, language and job answers still carry over. Planning and image/PDF export remain available in the full tool; source research remains in this repository. The map represents the visitor's answers, and does not add a career-success prediction.
+
+### Completion reveal, 20 October 2026
+
+Restored a top-right READY ribbon and introduced a large bilingual completion headline after a non-empty career goal and all five boolean answers. Copy varies for 4–5, 2–3 and 0–1 aligned answers; it does not promise a promotion or recommend accepting/rejecting a job. Completion scrolls the preview into view once, respects reduced motion and clears when an answer is removed or a goal is changed. The focused takeaway and single full-plan CTA remain concise.
