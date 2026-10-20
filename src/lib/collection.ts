@@ -10,6 +10,7 @@ export type CollectionCredit = {
   location?: string;
   capturedAt?: string;
   palette?: string[];
+  poster?: string;
 };
 
 // Visual descriptions reviewed against the published photographs. These are
@@ -114,27 +115,33 @@ const PHOTO_TITLES: Record<string, string> = {
 const FILM_CREDITS: Record<string, CollectionCredit> = {
   "/temp_pictures/bali trip.mp4": {
     title: "Where the Tide Takes Us",
+    poster: "/collection-posters/where-the-tide-takes-us.webp",
     alt: "A figure walks along the shore as waves roll in beneath a pastel sunset.",
   },
   "/temp_pictures/firework 2.0.mp4": {
     title: "A Sky Full of Sparks",
+    poster: "/collection-posters/a-sky-full-of-sparks.webp",
     alt: "Colorful fireworks burst above a brightly illuminated building at night.",
   },
   "/temp_pictures/firework.mp4": {
     title: "Watching the Night Bloom",
+    poster: "/collection-posters/watching-the-night-bloom.webp",
     alt: "Two people watch fireworks together beneath a glowing light.",
   },
   "/temp_pictures/iris shooting.mp4": {
     title: "Onward, Together",
+    poster: "/collection-posters/onward-together.webp",
     alt: "Graduates in purple gowns walk and leap along a sunlit, tree-lined path.",
   },
   "/temp_pictures/johor home moon.mp4": {
     title: "The Way It Used to Be",
+    poster: "/collection-posters/the-way-it-used-to-be.webp",
     alt: "Quiet indoor scenes move from a person lying with a phone to a sunlit window and a silhouette.",
   },
   "/temp_pictures/sakura .mp4": {
     title: "Moon in Full Bloom",
-    alt: "Pale cherry blossoms sway around a bright moon against the night sky.",
+    poster: "/collection-posters/moon-in-full-bloom.webp",
+    alt: "Pale cherry blossoms surround a glowing street lantern against the night sky.",
   },
   "/video/Basketball Animation.mp4": {
     title: "Flight of the Game",

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, InstagramLogo, Play, X } from "@phosphor-icons/react";
 import { collectionEntry, instagramProfile, isCollectionVideo } from "@/lib/collection";
 import { suspendPageScroll } from "@/lib/smooth-scroll";
+import { createGalleryWheelStepper } from "@/lib/gallery-wheel";
 import styles from "./CollectionGallery.module.css";
 
 export type GallerySelection = { index: number; source: HTMLElement; rect: DOMRect };
@@ -51,6 +52,7 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
   const [direction, setDirection] = useState(1);
   const [retry, setRetry] = useState(0);
   const [mediaState, setMediaState] = useState<"loading" | "ready" | "error">("loading");
+  const [wheelStep] = useState(createGalleryWheelStepper);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,26 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
     setIndex(target);
     setRetry(0);
   }, [index, tiles.length]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const onWheel = (event: WheelEvent) => {
+      const target = event.target;
+      if (event.ctrlKey || event.metaKey || event.defaultPrevented || closing.current || tiles.length < 2 || !(target instanceof Element)) return;
+      // Keep native video controls, zoom gestures and editable fields intact.
+      if (target.closest("video, input, textarea, select, [contenteditable='true']")) return;
+      // When the dialog needs vertical scrolling (mobile / zoom / short windows),
+      // retain it outside the filmstrip. Horizontal gestures still browse.
+      if (dialog.scrollHeight > dialog.clientHeight + 1 && Math.abs(event.deltaY) >= Math.abs(event.deltaX) && !stripRef.current?.contains(target)) return;
+      if (!event.deltaX && !event.deltaY) return;
+      event.preventDefault();
+      const step = wheelStep(event, performance.now());
+      if (step) navigate(index + step);
+    };
+    dialog.addEventListener("wheel", onWheel, { passive: false });
+    return () => dialog.removeEventListener("wheel", onWheel);
+  }, [index, navigate, tiles.length, wheelStep]);
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
@@ -105,7 +127,10 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
         const transform = `translate(${origin.left - target.left}px, ${origin.top - target.top}px) scale(${origin.width / target.width}, ${origin.height / target.height})`;
         animations.push(frame.animate([{ transform, opacity: .5 }, { transform: "none", opacity: 1 }], { duration: 680, easing: EASE }));
       } else {
-        animations.push(frame.animate([{ opacity: .35, transform: `translateX(${direction * 44}px)` }, { opacity: 1, transform: "none" }], { duration: 440, easing: EASE }));
+        animations.push(frame.animate([
+          { opacity: .3, transform: `perspective(1200px) translate3d(${direction * 72}px, 0, -80px) rotateY(${-direction * 6}deg)`, transformOrigin: "center" },
+          { opacity: 1, transform: "perspective(1200px) translate3d(0, 0, 0) rotateY(0deg)", transformOrigin: "center" },
+        ], { duration: 480, easing: EASE }));
       }
       if (detailsRef.current) animations.push(detailsRef.current.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: firstFrame.current ? 160 : 0, easing: EASE, fill: "backwards" }));
     }
@@ -156,7 +181,7 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
             if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) navigate(index + (dx < 0 ? 1 : -1));
           }}>
           {mediaState === "error" ? <div className={styles.error}><p>This image couldn’t load.</p><button onClick={() => { setRetry(n => n + 1); setMediaState("loading"); }}>Try again</button></div> : video ?
-            <video key={`${src}:${retry}`} className={styles.media} src={src} controls playsInline preload="metadata" aria-label={entry.title} onLoadedData={() => setMediaState("ready")} onError={() => setMediaState("error")} /> :
+            <video key={`${src}:${retry}`} className={styles.media} src={src} poster={entry.poster} controls playsInline preload="metadata" aria-label={entry.title} onLoadedMetadata={() => { if (entry.poster) setMediaState("ready"); }} onLoadedData={() => setMediaState("ready")} onError={() => setMediaState("error")} /> :
             // Original media, uncropped; thumbnails reuse the already loaded field assets.
             // eslint-disable-next-line @next/next/no-img-element
             <img key={`${src}:${retry}`} className={styles.media} src={src} alt={entry.alt} draggable={false} onLoad={() => setMediaState("ready")} onError={() => setMediaState("error")} />}
@@ -178,13 +203,21 @@ export function CollectionGallery({ tiles, selection, onClose, reducedMotion }: 
         </div>
       </div>
       <footer className={styles.bottom}>
-        <p className={styles.hint}>A closer look.<br />Swipe or use the arrow keys.</p>
+        <p className={styles.hint}>A closer look.<br />Scroll, swipe or use the arrow keys.</p>
         <div className={styles.strip} ref={stripRef} role="group" aria-label="Collection thumbnails">
-          {tiles.map((tile, i) => <button type="button" key={tile} className={styles.thumb} data-index={i} aria-current={i === index} aria-label={`View ${collectionEntry(tile, i).title}`} onClick={() => navigate(i)}>
-            {isCollectionVideo(tile) ? <span className={styles.clipThumb}><Play aria-hidden="true" />{String(i + 1).padStart(2, "0")}</span> :
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={tile} alt="" loading="lazy" draggable={false} />}
-          </button>)}
+          {tiles.map((tile, i) => {
+            const item = collectionEntry(tile, i);
+            return <button type="button" key={tile} className={styles.thumb} data-index={i} aria-current={i === index} aria-label={`View ${item.title}`} title={item.title} onClick={() => navigate(i)}>
+              {isCollectionVideo(tile) ? <span className={styles.clipThumb}>
+                {/* Static posters avoid six extra video decoders and media downloads. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {item.poster ? <img src={item.poster} alt="" loading="lazy" draggable={false} /> : null}
+                <span className={styles.playBadge}><Play weight="fill" aria-hidden="true" /></span>
+              </span> :
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={tile} alt="" loading="lazy" draggable={false} />}
+            </button>;
+          })}
         </div>
       </footer>
     </div>
