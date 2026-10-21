@@ -62,6 +62,14 @@
   .lang-toggle button { border-radius: 999px; padding: 3px 10px; color: var(--muted); }
   .lang-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--yellow); }
   .saved { font-size: 12px; color: var(--muted); transition: opacity .3s; }
+  @media (max-width: 520px) {
+    .topbar-inner { gap: 8px; }
+    .topbar .brand { flex: none; font-size: 13px; white-space: nowrap; margin-inline-end: auto; }
+    .topbar .saved, .topbar .spacer { display: none; }
+    .lang-toggle { flex: none; }
+    .lang-toggle button { padding: 4px 8px; white-space: nowrap; }
+    .home-link { font-size: 11px; padding: 4px 8px; }
+  }
   .progress { height: 4px; background: var(--line); }
   .progress > i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .4s cubic-bezier(.2,.7,.2,1); }
 
@@ -107,6 +115,16 @@
   .step-head h2 { font-size: 26px; font-weight: 900; line-height: 1.2; }
   .step-sub { color: var(--muted); margin-bottom: 22px; font-size: 15px; }
   .step-count { font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 10px; }
+  .required-mark, .field-error { color: #b42318; }
+  .required-mark { margin-inline-start: 4px; font-weight: 700; }
+  .field-error { font-size: 14px; margin-top: 6px; }
+  [aria-invalid="true"] { border-color: #b42318; }
+  .validation-summary { border: 1px solid #b42318; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #fff4f2; }
+  .validation-summary ul { padding-inline-start: 20px; margin-top: 8px; }
+  .validation-summary button { text-align: start; text-decoration: underline; text-underline-offset: 3px; }
+  .none-choice { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; margin: 12px 0; cursor: pointer; }
+  .none-choice input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: var(--ink); }
+  [data-validation], .field, .q { scroll-margin-top: 100px; }
 
   /* ---------- fields ---------- */
   .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); }
@@ -606,6 +624,7 @@
     jobs: [job(), job(), job()],
     actions: [action(), action(), action()], firstStep: "",
     activeJob: 0, open: "y10",
+    none: {}, jobsSkipped: false,
   });
   function stop() { return { role: "", marker: "", skills: [], network: [] }; }
   function job() { return { label: "", name: "", answers: [null, null, null, null, null], leave: "" }; }
@@ -635,15 +654,31 @@
 
   // ---------- storage ----------
   function merge(base, saved) {
-    if (Array.isArray(base) || typeof base !== "object" || base === null) return saved ?? base;
+    if (Array.isArray(base)) {
+      if (!Array.isArray(saved)) return base;
+      return base.length ? base.map((item, i) => merge(item, saved[i])) : saved.filter((item) => typeof item === "string" && item.trim());
+    }
+    if (base === null) return typeof saved === "boolean" ? saved : null;
+    if (typeof base !== "object") return typeof saved === typeof base ? saved : base;
+    if (!saved || typeof saved !== "object" || Array.isArray(saved)) return base;
     const out = { ...base };
-    for (const k in saved) out[k] = k in base ? merge(base[k], saved[k]) : saved[k];
+    for (const k of Object.keys(saved)) {
+      if (["__proto__", "constructor", "prototype"].includes(k)) continue;
+      if (Object.hasOwn(base, k)) out[k] = merge(base[k], saved[k]);
+      else if (typeof saved[k] === "boolean") out[k] = saved[k];
+    }
     return out;
   }
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(STORE));
-      if (d && (d.v === 1 || d.v === 2)) { const m = merge(blank(), d); m.v = 2; return m; }
+      if (d && (d.v === 1 || d.v === 2)) {
+        const m = merge(blank(), d); m.v = 2;
+        m.step = Number.isInteger(m.step) ? Math.max(0, Math.min(REPORT, m.step)) : 0;
+        m.activeJob = [0, 1, 2].includes(m.activeJob) ? m.activeJob : 0;
+        m.open = STOP_KEYS.includes(m.open) ? m.open : "y10";
+        return m;
+      }
     } catch (e) {}
     return blank();
   }
@@ -660,7 +695,11 @@
   const get = (path) => path.split(".").reduce((o, k) => o?.[k], S);
   function set(path, val) {
     const ks = path.split("."); const last = ks.pop();
-    ks.reduce((o, k) => o[k], S)[last] = val; save();
+    ks.reduce((o, k) => o[k], S)[last] = val;
+    if (Array.isArray(val) && val.length) delete S.none[path];
+    if (path.startsWith("support.") && val.length) delete S.none.support;
+    if (path.startsWith("jobs.")) S.jobsSkipped = false;
+    save();
   }
   const norm = (s) => s.trim().toLowerCase();
   const uniq = (arr) => { const seen = new Set(); return arr.filter((x) => { const k = norm(x); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
@@ -689,6 +728,119 @@
   }
   function fmtMonth(v) { const [y, m] = String(v).split("-"); return m ? L.month(y, m) : esc(v); }
 
+  // One rule set owns step navigation, restored drafts, reports and exports.
+  const tr = (en, cn) => S.lang === "cn" ? cn : en;
+  const hasText = (v) => typeof v === "string" && v.trim().length > 0;
+  const values = (v) => Array.isArray(v) ? v.filter(hasText) : [];
+  function requirements(step) {
+    const rows = [];
+    const add = (path, label, kind = "text", min = 1) => rows.push({ path, label, kind, min, step });
+    if (step === 1) {
+      for (const key of ["role", "industry", "day", "life", "why", "edge"]) add(`goal.${key}`, L.goal[key] || L.goal.whyTitle);
+      add("goal.criteria", L.goal.criteria, "list", 2);
+      add("goal.strengths", L.goal.strengths, "list");
+    }
+    if (step === 2) for (const k of STOP_KEYS) for (const key of ["role", "marker", "skills", "network"]) add(`plan.${k}.${key}`, `${L.stops[k]} · ${L.plan[key]}`, ["skills", "network"].includes(key) ? "list" : "text");
+    if (step === 3) {
+      add("now.role", L.gap.nowRole);
+      add("now.skills", L.gap.haveSkills, "acknowledged");
+      add("now.network", L.gap.haveNet, "acknowledged");
+      add("obstacles", L.gap.obstacles, "acknowledged");
+      add("support", L.gap.support, "support");
+    }
+    if (step === 4) {
+      const jobs = usedJobs();
+      if (!jobs.length) add("jobsSkipped", tr("Job assessment", "工作评估"), "skip");
+      for (const j of jobs) {
+        add(`jobs.${j.i}.name`, L.jobs.name(jobLabel(j.i)));
+        for (let q = 0; q < 5; q++) add(`jobs.${j.i}.answers.${q}`, `${jobLabel(j.i)} · ${L.questions[q][0]}`, "boolean");
+      }
+    }
+    if (step === 5) {
+      for (let i = 0; i < 3; i++) {
+        add(`actions.${i}.what`, `${L.actions.action} ${i + 1} · ${L.actions.what}`);
+        add(`actions.${i}.by`, `${L.actions.action} ${i + 1} · ${L.actions.by}`, "month");
+      }
+      add("firstStep", L.actions.first);
+    }
+    return rows;
+  }
+  function fieldError(rule) {
+    const v = get(rule.path);
+    if (rule.kind === "boolean") return typeof v === "boolean" ? "" : tr("Choose Yes or No. If unsure, verify this job first or clear its draft.", "请选择「是」或「否」。不确定时，先核实岗位，或清空这份工作草稿。");
+    if (rule.kind === "skip") return S.jobsSkipped === true ? "" : tr("Assess a job, or confirm that you have no job to assess yet.", "请评估一份工作，或确认目前没有要评估的工作。");
+    if (rule.kind === "support") return Object.values(S.support).some((a) => values(a).length) || S.none.support === true ? "" : tr("Add at least one support need, or select No support needed right now.", "请填写至少一项所需支持，或勾选目前不需要支持。");
+    if (rule.kind === "acknowledged" && S.none[rule.path] === true) return "";
+    if (["list", "acknowledged"].includes(rule.kind)) return values(v).length >= rule.min ? "" : rule.min === 2 ? tr("Add at least 2 checkable success criteria.", "请添加至少 2 项可检查的成功标准。") : tr("Add at least one item, or use the None option where available.", "请添加至少一项；如适用，也可勾选「暂无」。");
+    if (rule.kind === "month") {
+      const current = new Date(); current.setDate(1);
+      const low = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`;
+      current.setMonth(current.getMonth() + 12);
+      const high = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`;
+      return typeof v === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) && v >= low && v <= high ? "" : tr("Choose a deadline from this month through the next 12 months.", "请选择本月至未来 12 个月内的截止月份。");
+    }
+    return hasText(v) ? "" : tr("Please complete this required field.", "请填写此必填项。");
+  }
+  const stepErrors = (step) => requirements(step).map((r) => ({ ...r, message: fieldError(r) })).filter((r) => r.message);
+  function firstIncomplete(target = REPORT) {
+    for (let step = 1; step < target; step++) { const errors = stepErrors(step); if (errors.length) return { step, errors }; }
+    return null;
+  }
+  let showErrors = false;
+  const fieldId = (path) => `field-${path.replaceAll(".", "-")}`;
+  const noneChoice = (path, label) => `<label class="none-choice"><input type="checkbox" data-none="${path}" ${S.none[path] === true ? "checked" : ""}>${label}</label>`;
+  function fieldNode(path) {
+    return app.querySelector(`[data-bind="${path}"], [data-tagbox="${path}"], [data-pick="${path}"], [data-validation="${path}"]`);
+  }
+  function decorateFields() {
+    app.querySelectorAll(".field-error, .validation-summary").forEach((el) => el.remove());
+    for (const rule of requirements(S.step)) {
+      const node = fieldNode(rule.path); if (!node) continue;
+      const control = node.matches(".tagbox") ? node.querySelector("input") : node.matches("input,textarea,button") ? node : node.querySelector("button,input");
+      const group = node.closest(".field, .q") || node;
+      group.id = fieldId(rule.path);
+      const label = group.querySelector("label:not(.none-choice), .label, .q-text, .card-title");
+      if (label && !label.querySelector(".required-mark")) label.insertAdjacentHTML("beforeend", '<span class="required-mark" aria-hidden="true">*</span>');
+      const message = showErrors ? fieldError(rule) : "";
+      if (control) {
+        control.id ||= `input-${fieldId(rule.path)}`;
+        if (label?.tagName === "LABEL") label.htmlFor = control.id;
+        if (!control.matches("button")) control.setAttribute("aria-label", rule.label);
+        else { group.setAttribute("role", "group"); group.setAttribute("aria-label", rule.label); }
+        if (control.matches("input,textarea") && rule.kind === "text") control.required = true;
+        if (control.matches("input,textarea")) control.setAttribute("aria-required", "true");
+        control.setAttribute("aria-invalid", String(!!message));
+        if (message) control.setAttribute("aria-describedby", `error-${fieldId(rule.path)}`);
+        else control.removeAttribute("aria-describedby");
+      }
+      if (rule.kind === "month" && control) {
+        const now = new Date(); now.setDate(1);
+        const month = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        control.min = month(now); now.setMonth(now.getMonth() + 12); control.max = month(now); control.required = true;
+      }
+      if (node.matches('[role="group"]')) node.setAttribute("aria-invalid", String(!!message));
+      if (message) group.insertAdjacentHTML("beforeend", `<p class="field-error" id="error-${fieldId(rule.path)}">${esc(message)}</p>`);
+    }
+    const errors = showErrors ? stepErrors(S.step) : [];
+    if (errors.length) app.querySelector("section").insertAdjacentHTML("afterbegin", `<div class="validation-summary" role="alert"><strong>${tr("Complete the required fields to continue", "请完成必填项后继续")}</strong><ul>${errors.map((r) => `<li><button type="button" data-focus-field="${r.path}">${esc(r.label)}</button></li>`).join("")}</ul></div>`);
+  }
+  function focusField(path) {
+    const stopKey = path.match(/^plan\.(y10|y5|y3|y1)\./)?.[1];
+    const jobIndex = path.match(/^jobs\.(\d+)\./)?.[1];
+    if (stopKey) S.open = stopKey;
+    if (jobIndex !== undefined) S.activeJob = +jobIndex;
+    render(false);
+    const node = fieldNode(path);
+    const control = node?.matches("input,textarea,button") ? node : node?.querySelector("input,button");
+    control?.focus({ preventScroll: true });
+    (node?.closest(".field, .q") || node)?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  function requireComplete() {
+    const missing = firstIncomplete();
+    if (!missing) return true;
+    S.step = missing.step; showErrors = true; save(); render(); focusField(missing.errors[0].path); return false;
+  }
+
   // ---------- components ----------
   const input = (path, ph = "", type = "text") =>
     `<input class="input" type="${type}" data-bind="${path}" value="${esc(get(path))}" placeholder="${esc(ph)}">`;
@@ -714,7 +866,7 @@
   const head = (i, title, sub) => `
     <div class="step-count">${L.step} ${i} / ${TOTAL}</div>
     <div class="step-head"><div class="num">${i}</div><h2>${title}</h2></div>
-    <p class="step-sub">${sub}</p>`;
+    <p class="step-sub">${sub}</p><p class="help" style="margin-bottom:18px"><span class="required-mark" aria-hidden="true">*</span> ${tr("Required. Optional fields are labelled.", "为必填项。选填项已注明。")}</p>`;
 
   // ---------- views ----------
   function viewLanding() {
@@ -741,7 +893,7 @@
     const x = L.goal;
     return `<section class="fade-in">${head(1, x.title, x.sub)}
       <div class="card">
-        <div class="field"><label>${x.name}</label>${input("name", x.namePh)}</div>
+        <div class="field"><label>${x.name} · ${tr("Optional", "选填")}</label>${input("name", x.namePh)}</div>
         <div class="field"><label>${x.role}</label>${input("goal.role", x.rolePh)}${suggest("goal.role", L.roleSugg)}</div>
         <div class="field"><label>${x.industry}</label>${input("goal.industry", x.industryPh)}${suggest("goal.industry", L.industrySugg)}</div>
         <div class="field"><label>${x.day}</label><p class="help">${x.dayHelp}</p>${textarea("goal.day", x.dayPh)}</div>
@@ -749,7 +901,7 @@
       </div>
       <div class="card">
         <div class="card-title">${x.whyTitle}</div>
-        <div class="field"><p class="help">${x.whyHelp}</p>${textarea("goal.why", x.whyPh)}</div>
+        <div class="field"><label>${x.whyTitle}</label><p class="help">${x.whyHelp}</p>${textarea("goal.why", x.whyPh)}</div>
         <div class="field"><span class="label">${x.criteria}</span><p class="help">${x.criteriaHelp}</p>${tags("goal.criteria", x.criteriaPh, L.criteriaSugg)}</div>
       </div>
       <div class="card">
@@ -793,8 +945,8 @@
       <div class="card">
         <div class="card-title"><span class="pill now">${x.now}</span></div>
         <div class="field"><label>${x.nowRole}</label>${input("now.role", x.nowRolePh)}</div>
-        <div class="field"><span class="label">${x.haveSkills}</span>${tags("now.skills", x.haveSkillsPh, uniq([...S.plan.y1.skills, ...S.plan.y3.skills]))}</div>
-        <div class="field"><span class="label">${x.haveNet}</span>${tags("now.network", x.haveNetPh, uniq([...S.plan.y1.network, ...S.plan.y3.network]))}</div>
+        <div class="field"><span class="label">${x.haveSkills}</span>${tags("now.skills", x.haveSkillsPh, uniq([...S.plan.y1.skills, ...S.plan.y3.skills]))}${noneChoice("now.skills", tr("None of these skills yet", "目前还没有相关技能"))}</div>
+        <div class="field"><span class="label">${x.haveNet}</span>${tags("now.network", x.haveNetPh, uniq([...S.plan.y1.network, ...S.plan.y3.network]))}${noneChoice("now.network", tr("No relevant contacts or resources yet", "目前还没有相关人脉或资源"))}</div>
       </div>
       <div class="gap-hero">
         <h3>${x.heroTitle}</h3>
@@ -807,11 +959,12 @@
       <div class="card">
         <div class="card-title">${x.obstacles}</div>
         <p class="help">${x.obstaclesHelp}</p>
-        ${tags("obstacles", x.obstaclesPh, L.obstacleSugg)}
+        <div class="field"><span class="label">${x.obstacles}</span>${tags("obstacles", x.obstaclesPh, L.obstacleSugg)}${noneChoice("obstacles", tr("No obstacles identified right now", "目前没有发现阻碍"))}</div>
       </div>
-      <div class="card">
+      <div class="card" data-validation="support">
         <div class="card-title">${x.support}</div>
         <p class="help">${x.supportHelp}</p>
+        ${noneChoice("support", tr("No support needed right now", "目前不需要额外支持"))}
         ${L.support.map(([k, label, hint, sugg]) => `<div class="field"><span class="label">${label} <span class="help" style="display:inline;font-weight:400">· ${hint}</span></span>${tags(`support.${k}`, sugg[0], sugg)}</div>`).join("")}
       </div>
     </section>`;
@@ -841,13 +994,14 @@
     const a = S.activeJob; const j = S.jobs[a]; const v = verdict(j);
     const tabs = S.jobs.map((item, i) => `<button type="button" class="job-tab" role="tab" aria-selected="${i === a}" data-tab="${i}">
       ${esc(item.name.trim() || jobLabel(i))}${answered(item) ? `<span class="sc">${score(item)}/5</span>` : ""}</button>`).join("");
-    const qs = L.questions.map(([t, h], qi) => `<div class="q">
+    const qs = L.questions.map(([t, h], qi) => `<div class="q" data-validation="jobs.${a}.answers.${qi}">
       <div class="q-text">${qi + 1}. ${t}</div><div class="q-hint">${h}</div>
       <div class="seg" role="group" aria-label="${esc(t)}">
         <button type="button" class="yes" data-ans="${qi}" data-val="1" aria-pressed="${j.answers[qi] === true}">${x.yes}</button>
         <button type="button" class="no" data-ans="${qi}" data-val="0" aria-pressed="${j.answers[qi] === false}">${x.no}</button>
       </div></div>`).join("");
-    return `<section class="fade-in">${head(4, x.title, x.sub)}
+    return `<section class="fade-in">${head(4, x.title, tr("Assess only the jobs you are considering. Each started assessment needs a name and all 5 answers. No job yet? Confirm below.", "只需评估你正在考虑的工作。每份已开始的评估都需填写名称和 5 个回答。暂无工作可评估？请在下方确认。"))}
+      <div class="field" data-validation="jobsSkipped"><span class="label">${tr("Job assessment", "工作评估")}</span><label class="none-choice"><input type="checkbox" data-skip-jobs ${S.jobsSkipped ? "checked" : ""} ${usedJobs().length ? "disabled" : ""}>${tr("I have no job to assess yet", "我目前没有要评估的工作")}</label></div>
       <div class="job-tabs" role="tablist">${tabs}</div>
       <div class="card">
         <div class="field"><label>${x.name(jobLabel(a))}</label>${input(`jobs.${a}.name`, x.namePh)}</div>
@@ -857,8 +1011,9 @@
           <div><span class="verdict-tag ${v.cls}">${v.t}</span><div class="q-hint">${v.d}</div></div>
         </div>
         <div class="field" id="leave" style="margin-top:14px" ${score(j) >= 2 && score(j) <= 3 ? "" : "hidden"}>
-          <label>${x.leave}</label>${input(`jobs.${a}.leave`, "", "month")}
+          <label>${x.leave} · ${tr("Optional", "选填")}</label>${input(`jobs.${a}.leave`, "", "month")}
         </div>
+        <button class="btn-text" data-act="clear-job">${tr("Clear this job assessment", "清空这份工作评估")}</button>
       </div>
     </section>`;
   }
@@ -880,6 +1035,7 @@
     }).join("");
     const supportRows = L.support.filter(([k]) => S.support[k].length)
       .map(([k, label]) => `<div class="r-support"><b>${label}</b>${chipList(S.support[k])}</div>`).join("");
+    const acknowledgedNone = (path, label) => S.none[path] === true ? `<p class="q-hint">${label}: ${tr("None reported", "已确认暂无")}</p>` : "";
     const acts = S.actions.filter((a) => a.what.trim());
     const jobCards = jobs.map((j) => {
       const v = verdict(j); const n = score(j);
@@ -924,7 +1080,7 @@
           <div class="r-tl">${stops}
             <div class="r-stop now"><div class="r-when">${x.now}</div>
               <div class="r-role ${S.now.role ? "" : "empty"}">${esc(S.now.role || x.notWritten)}</div>
-              ${chipList(S.now.skills)}</div>
+              ${chipList(S.now.skills)}${acknowledgedNone("now.skills", L.gap.haveSkills)}${chipList(S.now.network)}${acknowledgedNone("now.network", L.gap.haveNet)}</div>
           </div>
         </div>
         <div class="r-gap">
@@ -933,10 +1089,11 @@
             ? `<div class="big">${x.gapCount(gapTotal)}</div>${chipList([...g.skills, ...g.network])}`
             : `<div class="big">${x.noGap}</div><div>${x.noGapHelp}</div>`}
         </div>
-        ${S.obstacles.length || supportRows ? `<div class="r-sec">
+        ${S.obstacles.length || supportRows || S.none.obstacles || S.none.support ? `<div class="r-sec">
           <h3><span class="num">3</span>${x.obstacles}</h3>
           ${S.obstacles.length ? `<div class="r-label" style="margin-top:0">${x.mightStop}</div>${chipList(S.obstacles)}` : ""}
           ${supportRows ? `<div class="r-label">${x.supportNeeded}</div><div class="r-support-grid">${supportRows}</div>` : ""}
+          ${acknowledgedNone("obstacles", L.gap.obstacles)}${acknowledgedNone("support", L.gap.support)}
         </div>` : ""}
         <div class="r-sec">
           <h3><span class="num">4</span>${x.jobs}</h3>
@@ -964,8 +1121,13 @@
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === S.lang)));
   }
   function render(scrollTop = true) {
+    if (S.step === REPORT) {
+      const missing = firstIncomplete();
+      if (missing) { S.step = missing.step; showErrors = true; save(); }
+    }
     renderChrome();
     app.innerHTML = VIEWS[S.step]();
+    decorateFields();
     document.getElementById("bar").style.width = `${Math.min(S.step, REPORT) / REPORT * 100}%`;
     renderNav();
     if (scrollTop) window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
@@ -974,16 +1136,24 @@
     if (S.step === 0 || S.step === REPORT) { nav.hidden = true; return; }
     nav.hidden = false;
     const last = S.step === TOTAL;
-    const ready = !!S.goal.role.trim();
-    nav.innerHTML = `${last && !ready ? `<div class="nav-msg">${L.nav.needGoal}</div>` : ""}
+    const missing = last ? firstIncomplete() : null;
+    const count = missing ? missing.errors.length : stepErrors(S.step).length;
+    nav.innerHTML = `${count ? `<div class="nav-msg">${tr(`${count} required item(s) left · ${last ? "Create report" : "Next"} will show what's missing`, `还有 ${count} 项必填内容 · 点击${last ? "生成报告" : "下一步"}查看`)}</div>` : ""}
       <div class="bottom-nav-inner">
         <button class="btn btn-ghost" data-go="${S.step - 1}" aria-label="${L.nav.back}">←</button>
         ${last
-          ? `<button class="btn btn-primary" data-go="${REPORT}" ${ready ? "" : "disabled"}>${L.nav.generate}</button>`
+          ? `<button class="btn btn-primary" data-go="${REPORT}">${L.nav.generate}</button>`
           : `<button class="btn btn-primary" data-go="${S.step + 1}">${L.nav.next(L.steps[S.step])}</button>`}
       </div>`;
   }
-  function go(n) { S.step = Math.max(0, Math.min(REPORT, n)); save(); app.classList.remove("no-anim"); render(); }
+  function go(n) {
+    const target = Math.max(0, Math.min(REPORT, n));
+    if (target > S.step) {
+      const missing = firstIncomplete(target);
+      if (missing) { S.step = missing.step; showErrors = true; save(); render(); focusField(missing.errors[0].path); return; }
+    }
+    S.step = target; showErrors = false; save(); app.classList.remove("no-anim"); render();
+  }
   function setLang(lang) {
     if (lang === S.lang || !T[lang]) return;
     S.lang = lang; L = T[lang]; save();
@@ -996,7 +1166,8 @@
     if (b) {
       set(b, e.target.value);
       if (b.startsWith("jobs.")) { refreshJobChrome(); }
-      if (b === "goal.role") renderNav();
+      if (!b.startsWith("jobs.")) renderNav();
+      if (showErrors) decorateFields();
       return;
     }
     const t = e.target.dataset.tag;
@@ -1033,6 +1204,8 @@
   function refreshJobChrome() {
     // update tabs + score without losing input focus
     const a = S.activeJob, j = S.jobs[a], v = verdict(j);
+    const skip = document.querySelector("[data-skip-jobs]");
+    if (skip) { skip.checked = S.jobsSkipped; skip.disabled = usedJobs().length > 0; }
     document.querySelectorAll("[data-tab]").forEach((el, i) => {
       const item = S.jobs[i];
       el.innerHTML = `${esc(item.name.trim() || jobLabel(i))}${answered(item) ? `<span class="sc">${score(item)}/5</span>` : ""}`;
@@ -1042,12 +1215,27 @@
     const lv = document.getElementById("leave");
     if (lv) lv.hidden = !(score(j) >= 2 && score(j) <= 3);
     renderNav();
+    if (showErrors) decorateFields();
   }
+
+  document.addEventListener("change", (e) => {
+    const path = e.target.dataset.none;
+    if (path) {
+      S.none[path] = e.target.checked;
+      if (e.target.checked) {
+        if (path === "support") Object.keys(S.support).forEach((key) => S.support[key] = []);
+        else set(path, []);
+      }
+      save(); return rerenderKeepFocus(null);
+    }
+    if (e.target.matches("[data-skip-jobs]")) { S.jobsSkipped = e.target.checked && !usedJobs().length; save(); rerenderKeepFocus(null); }
+  });
 
   document.addEventListener("click", async (e) => {
     const el = e.target.closest("button, .tagbox");
     if (!el) return;
     const d = el.dataset;
+    if (d.focusField) return focusField(d.focusField);
     if (el.classList.contains("tagbox") && !e.target.closest("button")) { el.querySelector("input")?.focus(); return; }
     if (d.lang) return setLang(d.lang);
     if (d.go !== undefined) return go(+d.go);
@@ -1070,18 +1258,21 @@
     if (d.openStop) { S.open = S.open === d.openStop ? "" : d.openStop; save(); return rerenderKeepFocus(null); }
     if (d.tab !== undefined) { S.activeJob = +d.tab; save(); return render(false); }
     if (d.ans !== undefined) {
+      S.jobsSkipped = false;
       const j = S.jobs[S.activeJob]; const val = d.val === "1";
       j.answers[+d.ans] = j.answers[+d.ans] === val ? null : val; save();
       el.parentElement.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", j.answers[+d.ans] === (b.dataset.val === "1")));
       return refreshJobChrome();
     }
-    if (d.act === "example") { S = EXAMPLE(); save(); toast(L.toast.example); return render(); }
+    if (d.act === "clear-job") { S.jobs[S.activeJob] = job(); save(); return rerenderKeepFocus(null); }
+    if (d.act === "example") { S = EXAMPLE(); S.none["now.network"] = values(S.now.network).length === 0; showErrors = false; save(); toast(L.toast.example); return render(); }
     if (d.act === "reset") { if (confirm(L.toast.resetConfirm)) { const lang = S.lang; S = blank(); S.lang = lang; save(); render(); } return; }
-    if (d.act === "print") return window.print();
+    if (d.act === "print") { if (requireComplete()) window.print(); return; }
     if (d.act === "png") return downloadPng(el);
   });
 
   async function downloadPng(btn) {
+    if (!requireComplete()) return;
     if (!window.html2canvas) return toast(L.toast.pngFail);
     btn.disabled = true; const old = btn.textContent; btn.textContent = L.toast.busy;
     try {
