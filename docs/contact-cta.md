@@ -16,9 +16,15 @@ while the implementation uses the current site’s minimalist styling, not the s
 ContactSection replaces the previously mounted AudiencePaths and owns the homepage’s single `#contact` anchor.
 The existing CareerSection cards and unrelated sections are unchanged by this extension.
 
-The section is restrained, dark, and editorial: invitation and topic rows on the left,
-one raised contact panel on the right at large widths. Smaller screens stack these in reading order.
-Inside the form, short fields pair from the small breakpoint; the message spans the form width.
+The section is restrained, dark, and editorial: a shared invitation header, three topic choices,
+then one full-width response panel. This replaces the unequal sidebar/form composition that
+left empty space for coffee and pushed the email action below the viewport.
+Desktop choices share a row. The four short fields occupy a two-by-two group beside the message,
+with equal lower edges and the action and disclosures beneath. Short fields pair from the small
+breakpoint; below desktop, the message follows them at full width. Mobile choices stack.
+Compact contact-specific spacing targets a complete resting-state desktop composition in one
+viewport without reducing body type or touch targets. Small screens, zoom, errors, resized
+messages, and draft notices expand naturally; there are no fixed heights or nested scrollers.
 Fine rules, quiet icons, and existing pill actions supply hierarchy without another decorative card grid.
 The contact surface has no entrance animation or motion-dependent content.
 
@@ -71,3 +77,12 @@ Recorded implementation verification: `node scripts/test-contact.mjs` and the pr
 The tests cover recruiter routing, required/optional context, email validation, encoded bilingual drafts,
 message limits, and preservation of the approved WhatsApp destination.
 No external test email was sent. These recorded results were not rerun for this documentation-only pass.
+
+The subsequent viewport-alignment fix was verified against the user's rejected split-layout
+screenshots. At 1280 × 800, the complete resting résumé composition, including the heading,
+three topics, five fields, action, disclosures and supporting links, fits beneath navigation.
+At 1024px and 1840px widths the paired inputs and message share their top/bottom edges with
+no horizontal overflow. At 390px the form stacks without overflow; invalid opportunity
+submission focuses Name and flags Name, Email and Message. Coffee retains its exact WhatsApp
+destination; opportunity context remains optional. Contact tests, TypeScript, the production
+build and the layout-scoped detector passed again for this fix.
