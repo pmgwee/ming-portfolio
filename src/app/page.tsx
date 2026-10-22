@@ -5,7 +5,7 @@ import { ServicesSection } from "@/components/sections/ServicesSection";
 import { CareerSection } from "@/components/sections/CareerSection";
 import { CareerPlanDemo } from "@/components/sections/CareerPlanDemo";
 import { FaqSection } from "@/components/sections/FaqSection";
-import { AudiencePaths } from "@/components/sections/AudiencePaths";
+import { ContactSection } from "@/components/sections/ContactSection";
 import { Footer } from "@/components/sections/Footer";
 import { getShowcaseMedia } from "@/lib/showcase-media";
 
@@ -25,8 +25,8 @@ export default async function Home() {
       <CareerPlanDemo />
       <ServicesSection />
       <CareerSection />
+      <ContactSection />
       <FaqSection />
-      <AudiencePaths />
       <Footer />
     </main>
   );
