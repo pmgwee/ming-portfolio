@@ -126,7 +126,7 @@ body {
 
 .showcase-stage {
   --showcase-reveal-height: 230vh;
-  --showcase-video-hold: 0px;
+  --showcase-video-hold: 100vh; /* one screen of full-view video before Services */
   height: calc(var(--showcase-reveal-height) + var(--showcase-video-hold));
 }
 
@@ -149,7 +149,7 @@ body {
      Stable viewport units prevent browser chrome from retiming the sequence. */
   .showcase-stage {
     --showcase-reveal-height: 300vh;
-    --showcase-video-hold: 140vh;
+    --showcase-video-hold: 240vh;
   }
 
   .showcase-viewport {
@@ -165,7 +165,7 @@ body {
 @media (max-width: 768px) {
   .showcase-stage {
     --showcase-reveal-height: 360vh;
-    --showcase-video-hold: 180vh;
+    --showcase-video-hold: 280vh;
   }
 
   .showcase-tile {
@@ -177,14 +177,14 @@ body {
   @media (max-width: 1024px) {
     .showcase-stage {
       --showcase-reveal-height: 300svh;
-      --showcase-video-hold: 140svh;
+      --showcase-video-hold: 240svh;
     }
   }
 
   @media (max-width: 768px) {
     .showcase-stage {
       --showcase-reveal-height: 360svh;
-      --showcase-video-hold: 180svh;
+      --showcase-video-hold: 280svh;
     }
   }
 }

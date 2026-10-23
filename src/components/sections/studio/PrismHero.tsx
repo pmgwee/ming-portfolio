@@ -187,12 +187,12 @@ export function PrismHero({ dark, reduced }: { dark: boolean; reduced: boolean }
               Start a project <ArrowUpRight aria-hidden="true" size={14} weight="bold" />
             </a>
             <a
-              href={SITE.studioExploreUrl}
+              href={SITE.instagram}
               target="_blank"
               rel="noopener noreferrer me"
               className={`inline-flex h-11 items-center rounded-full px-5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 ${secondary}`}
             >
-              Follow @yier.ming
+              Follow @ming.creatives
             </a>
           </div>
         </motion.div>

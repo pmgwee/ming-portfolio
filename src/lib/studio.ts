@@ -142,8 +142,8 @@ export const SERVICE_RAYS = [
 
 /**
  * Real work behind each service, in `SITE.services` order. The hero film is
- * AI-generated (see public/hero/studio-journey-v2/README.md); the agent is a
- * case study; Career Plan is the live product further down the page.
+ * AI-generated (see public/hero/studio-journey-v2/README.md); the agents and
+ * the tracker are Ming's own products, shown from real screenshots.
  */
 export const SERVICE_PROOF = [
   {
@@ -155,16 +155,18 @@ export const SERVICE_PROOF = [
   {
     anchor: "work-agents",
     title: "AI & Data Consultant",
-    image: "/project-previews/personal-ai-agent.webp",
-    caption: "Personal Always-On AI Agent: a morning brief and evening report from calendar, mail, and tasks.",
-    link: { label: "Read the case study", href: "/work/personal-ai-agent" },
+    image: "/project-previews/bersamaai-discord.webp",
+    alt: "BersamaAi community bot posting a filtered industry update into a Discord channel",
+    caption: "BersamaAi Community Agents: a Discord bot that filters online sources into topic channels and summarizes videos without captions.",
+    link: { label: "Read the case study", href: "/work/bersamaai" },
   },
   {
     anchor: "work-web",
     title: "Solution Architect",
-    frame: "/product/career-plan",
-    caption: "Career Plan: a free, bilingual career-planning tool, built and shipped as a web product.",
-    link: { label: "Try it below", href: "#career-plan" },
+    image: "/project-previews/duitsini-dashboard.webp",
+    alt: "DuitSini dashboard showing live Claude and Codex usage limits beside a music player",
+    caption: "DuitSini: an LLM usage and finance tracker, with live agent limits for Claude and Codex at a glance.",
+    link: { label: "View on GitHub", href: "https://github.com/pmgwee/DuitSini" },
   },
 ] as const;
 

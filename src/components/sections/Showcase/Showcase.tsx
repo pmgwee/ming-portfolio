@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ImageField } from "./ImageField";
 import { HeroText } from "./HeroText";
 import { VideoStage } from "./VideoStage";
-import { PHASES, REVEAL } from "@/lib/showcase";
+import { FEATURED_FILMS, PHASES, REVEAL } from "@/lib/showcase";
 import type { ShowcaseMedia } from "@/lib/showcase-media";
 import type { GallerySelection } from "./CollectionGallery";
 import galleryStyles from "./CollectionGallery.module.css";
@@ -106,6 +106,16 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           return;
         }
 
+        const syncProgress = (progress: number) => {
+          setFieldInteractive(progress < PHASES.hingeStart);
+          // Gate interactivity once the video is essentially full-bleed.
+          const s = progress >= PHASES.settledAt;
+          if (s !== settledRef.current) {
+            settledRef.current = s;
+            setSettled(s);
+          }
+        };
+
         const tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
@@ -125,15 +135,10 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
             // Sticky stays in normal flow → zero layout shift. Scrub distance
             // is controlled by `.showcase-reveal-range` in globals.css.
             // `.showcase-stage` also includes the mobile video-viewing hold.
-            onUpdate: (self) => {
-              setFieldInteractive(self.progress < PHASES.hingeStart);
-              // Gate interactivity once the video is essentially full-bleed.
-              const s = self.progress >= PHASES.settledAt;
-              if (s !== settledRef.current) {
-                settledRef.current = s;
-                setSettled(s);
-              }
-            },
+            onUpdate: (self) => syncProgress(self.progress),
+            // A reload restores the scroll position without an update; read
+            // the restored progress so a video already in view starts playing.
+            onRefresh: (self) => syncProgress(self.progress),
           },
         });
 
@@ -213,6 +218,22 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           { opacity: 1, duration: PHASES.controlsEnd - PHASES.controlsStart },
           PHASES.controlsStart,
         );
+
+        // A reload restores the scroll position after ScrollTrigger's first
+        // measurement, so nothing reports it; re-read progress once it lands
+        // so a video already in view starts (with sound) without a nudge.
+        const resync = () => {
+          ScrollTrigger.update();
+          if (tl.scrollTrigger) syncProgress(tl.scrollTrigger.progress);
+        };
+        window.addEventListener("scroll", resync, { once: true, passive: true });
+        window.addEventListener("load", resync, { once: true });
+        const timer = window.setTimeout(resync, 800);
+        return () => {
+          window.removeEventListener("scroll", resync);
+          window.removeEventListener("load", resync);
+          window.clearTimeout(timer);
+        };
       },
     );
 
@@ -261,7 +282,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
           settled={settled}
           isMobile={isMobile}
           reducedMotion={reducedMotion}
-          videos={media.videos}
+          videos={[...FEATURED_FILMS, ...media.videos]}
         />
       </div>
       {gallery ? <CollectionGallery tiles={media.tiles} selection={gallery} onClose={closeGallery} reducedMotion={reducedMotion} /> : null}

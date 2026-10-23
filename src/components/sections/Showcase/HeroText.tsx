@@ -52,12 +52,12 @@ export function HeroText({
           Explore the studio
         </Button>}
         <Button
-          href="https://wa.me/message/DFUGF3HXISNEF1"
+          href={SITE.instagram}
           variant="secondary"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Start a project
+          Book Your Appointment
         </Button>
       </div>
     </div>

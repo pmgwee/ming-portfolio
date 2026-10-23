@@ -113,6 +113,14 @@ const PHOTO_TITLES: Record<string, string> = {
 
 // Motion titles reviewed against the films, including the separate carousel.
 const FILM_CREDITS: Record<string, CollectionCredit> = {
+  "/showcase-films/01-autumn-at-fuji.mp4": {
+    title: "Autumn at Fuji",
+    alt: "A couple looks out across a lake toward snow-capped Mount Fuji, framed by red maple leaves.",
+  },
+  "/showcase-films/02-night-drive.mp4": {
+    title: "Night Drive",
+    alt: "A man speaks to camera beside a car on a quiet Kuala Lumpur street at night.",
+  },
   "/temp_pictures/bali trip.mp4": {
     title: "Where the Tide Takes Us",
     poster: "/collection-posters/where-the-tide-takes-us.webp",

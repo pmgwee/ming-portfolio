@@ -5,21 +5,19 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowSquareOut,
-  BatteryFull,
   Camera,
   CaretLeft,
-  CellSignalFull,
   Checks,
   Microphone,
   Phone,
   Plus,
   Sticker,
   VideoCamera,
-  WifiHigh,
 } from "@phosphor-icons/react";
 import { SITE } from "@/lib/seo";
 import { SERVICE_RAYS, STUDIO_PROMPTS } from "@/lib/studio";
 import { SERVICE_ICONS } from "./serviceIcons";
+import styles from "./Studio.module.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const REPLY_DELAY_MS = 800;
@@ -27,6 +25,40 @@ const TIME = "9:41 AM";
 // An iOS glass capsule: light-to-clear fill, bright top rim, faint lower rim, lift shadow.
 const GLASS =
   "border border-white/[0.18] bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.06))] shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.5),inset_0_-1px_1px_rgba(255,255,255,0.1),0_8px_20px_-8px_rgba(0,0,0,0.65)] backdrop-blur-xl backdrop-saturate-150";
+
+// iOS status-bar glyphs, drawn to the system proportions.
+function IosSignal() {
+  return (
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor">
+      <rect x="0" y="8" width="3" height="4" rx="1" />
+      <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
+      <rect x="10" y="3" width="3" height="9" rx="1" opacity="0.35" />
+      <rect x="15" y="0" width="3" height="12" rx="1" opacity="0.35" />
+    </svg>
+  );
+}
+
+function IosWifi() {
+  return (
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+      <path d="M8 2.4c2.3 0 4.4.9 6 2.4.2.2.5.2.7 0l.9-.9c.2-.2.2-.5 0-.7A10.6 10.6 0 0 0 8 0C5.1 0 2.4 1.1.4 3.2c-.2.2-.2.5 0 .7l.9.9c.2.2.5.2.7 0 1.6-1.5 3.7-2.4 6-2.4Z" />
+      <path d="M8 6c1.3 0 2.4.5 3.3 1.3.2.2.5.2.7 0l.9-.9c.2-.2.2-.5 0-.7A7 7 0 0 0 8 3.6a7 7 0 0 0-4.9 2.1c-.2.2-.2.5 0 .7l.9.9c.2.2.5.2.7 0C5.6 6.5 6.7 6 8 6Z" />
+      <path d="M10.2 9.2c.2-.2.2-.5 0-.7A3.2 3.2 0 0 0 8 7.6c-.8 0-1.6.3-2.2.9-.2.2-.2.5 0 .7l1.8 1.8c.2.2.6.2.8 0l1.8-1.8Z" />
+    </svg>
+  );
+}
+
+function IosBattery({ level }: { level: number }) {
+  return (
+    <span className="flex items-center">
+      <span className="relative h-[13px] w-[27px] overflow-hidden rounded-[4px] bg-white/35">
+        <span className="absolute inset-y-0 left-0 bg-white" style={{ width: `${level}%` }} />
+        <span className="absolute inset-0 grid place-items-center text-[10px] font-bold leading-none text-black">{level}</span>
+      </span>
+      <span className="ml-[1.5px] h-[4.5px] w-[1.5px] rounded-r-full bg-white/40" />
+    </span>
+  );
+}
 
 /**
  * A WhatsApp chat with Ming Creatives on an iPhone, since that is where real
@@ -84,13 +116,25 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
                 with the capsules floating on it as separate pieces of glass. */}
             <span aria-hidden="true" className="absolute inset-x-0 top-0 z-20 h-[136px] bg-[linear-gradient(180deg,rgba(64,64,70,0.5)_0%,rgba(44,44,48,0.32)_60%,rgba(30,30,32,0)_100%)] backdrop-blur-2xl backdrop-saturate-150 [mask-image:linear-gradient(180deg,#000_55%,transparent)]" />
             <div className="absolute inset-x-0 top-0 z-20">
-              <div aria-hidden="true" className="relative flex h-[50px] items-center justify-between px-8 pt-1 text-[15px] font-semibold">
-                <span>9:41</span>
-                <span className="absolute left-1/2 top-[11px] h-[30px] w-[104px] -translate-x-1/2 rounded-full bg-black" />
-                <span className="flex items-center gap-1.5">
-                  <CellSignalFull size={15} weight="fill" />
-                  <WifiHigh size={15} weight="bold" />
-                  <BatteryFull size={22} weight="fill" />
+              <div aria-hidden="true" className="relative flex h-[52px] items-center justify-between pl-9 pr-7 pt-1.5">
+                <span className="text-[16px] font-semibold tracking-[-0.01em]">9:41</span>
+                {/* Dynamic Island with a live activity: artwork left, sound wave right. */}
+                <span className="absolute left-1/2 top-[10px] flex h-[33px] w-[128px] -translate-x-1/2 items-center justify-between rounded-full bg-black pl-[6px] pr-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
+                  <Image src={SITE.logo} alt="" width={22} height={22} className="size-[22px] rounded-[6px] object-cover" />
+                  <span className="flex h-3.5 items-center gap-[2.5px]">
+                    {[0.45, 0.8, 1, 0.65, 0.9, 0.5].map((h, i) => (
+                      <i
+                        key={i}
+                        className={`block w-[2.5px] origin-center rounded-full bg-[#8fb4f0] ${reduced ? "" : styles.wave}`}
+                        style={{ height: `${h * 100}%`, animationDelay: `${i * 0.13}s` }}
+                      />
+                    ))}
+                  </span>
+                </span>
+                <span className="flex items-center gap-[6px]">
+                  <IosSignal />
+                  <IosWifi />
+                  <IosBattery level={59} />
                 </span>
               </div>
               <div className="flex items-center gap-2 px-2.5 pt-1 sm:px-3">

@@ -229,6 +229,16 @@ export const STAGE_VH = 320;
  * extension and any leading order prefix (01-, 02_…), turns separators into
  * spaces and Title-Cases the result.
  */
+/**
+ * Clips that open the video carousel, ahead of the S3 `video/` listing. Served
+ * from /public (web-encoded 1080p H.264 + AAC, faststart); the carousel title
+ * comes from the filename via `labelFromUrl`.
+ */
+export const FEATURED_FILMS = [
+  "/showcase-films/01-autumn-at-fuji.mp4",
+  "/showcase-films/02-night-drive.mp4",
+];
+
 export function labelFromUrl(url: string): string {
   const title = COLLECTION_CREDITS[collectionKey(url)]?.title;
   if (title) return title;

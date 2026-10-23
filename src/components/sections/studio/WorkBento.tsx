@@ -11,7 +11,7 @@ import { SERVICE_ICONS } from "./serviceIcons";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-// Film (2 of 3 columns) beside the agent; the web product runs full width below.
+// Film (2 of 3 columns) beside the agents; the web product runs full width below.
 const LAYOUT = [
   "min-h-[560px] lg:col-span-2 lg:min-h-[620px]",
   "lg:col-span-1",
@@ -20,7 +20,7 @@ const LAYOUT = [
 
 /**
  * Each service with something real behind it: the AI-generated hero film,
- * an agent case study, and the live Career Plan product. Cards carry their
+ * the BersamaAi community agents, and the DuitSini tracker. Cards carry their
  * ray's colour from the prism above.
  */
 export function WorkBento({ reduced }: { reduced: boolean }) {
@@ -73,6 +73,7 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
           const ray = SERVICE_RAYS[i];
           const Icon = SERVICE_ICONS[i];
           const film = i === 0;
+          const wide = i === 2;
 
           const body = (
             <div className={`relative flex flex-col p-6 md:p-8 ${film ? "mt-auto max-w-[620px]" : "flex-1"}`}>
@@ -98,6 +99,7 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
                 </a>
                 <a
                   href={proof.link.href}
+                  {...(proof.link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-white underline decoration-white/35 underline-offset-4 transition-colors hover:decoration-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                 >
                   {proof.link.label} <ArrowRight aria-hidden="true" size={14} />
@@ -131,32 +133,33 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
                   {body}
                 </>
               ) : "image" in proof ? (
-                <>
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <Image
-                      src={proof.image}
-                      alt="Concept art for the Personal Always-On AI Agent case study"
-                      fill
-                      sizes="(min-width: 1024px) 380px, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
-                    />
-                  </div>
-                  {body}
-                </>
-              ) : "frame" in proof ? (
-                <>
-                  {body}
-                  <div aria-hidden="true" className="relative order-first m-3 aspect-[16/10] overflow-hidden rounded-[4px] border border-white/10 bg-white lg:order-none lg:m-4 lg:aspect-auto lg:min-h-[380px]">
-                    <iframe
-                      src={proof.frame}
-                      title="Career Plan preview"
-                      loading="lazy"
-                      tabIndex={-1}
-                      inert
-                      className="pointer-events-none absolute left-0 top-0 h-[250%] w-[250%] origin-top-left scale-[0.4] border-0"
-                    />
-                  </div>
-                </>
+                wide ? (
+                  <>
+                    {body}
+                    <div className="relative order-first m-3 aspect-[16/10] overflow-hidden rounded-[4px] border border-white/10 lg:order-none lg:m-4 lg:aspect-auto lg:min-h-[380px]">
+                      <Image
+                        src={proof.image}
+                        alt={proof.alt}
+                        fill
+                        sizes="(min-width: 1024px) 620px, 100vw"
+                        className="object-cover object-left-top transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image
+                        src={proof.image}
+                        alt={proof.alt}
+                        fill
+                        sizes="(min-width: 1024px) 380px, 100vw"
+                        className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transition-none"
+                      />
+                    </div>
+                    {body}
+                  </>
+                )
               ) : (
                 body
               )}

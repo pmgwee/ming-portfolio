@@ -101,12 +101,55 @@ export function VideoStage({
       if (!v) return;
       if (i === activeIndex && settled && !reducedMotion) {
         v.muted = muted;
-        void v.play().catch(() => {});
+        void v.play().catch(() => {
+          // Browsers refuse sound before any click/tap/key on the page; keep
+          // the picture playing muted and leave the Unmute control to the user.
+          if (v.muted) return;
+          v.muted = true;
+          setMuted(true);
+          setSoundBlocked(true);
+          void v.play().catch(() => {});
+        });
       } else {
         v.pause();
       }
     });
   }, [activeIndex, muted, reducedMotion, settled]);
+
+  // Sound: every arrival on the settled stage (including after a refresh or
+  // scrolling back) plays with sound; it mutes only once the stage has fully
+  // left the viewport. (A hash jump that passes through it isn't an arrival.)
+  const [inView, setInView] = useState(false);
+  const [soundBlocked, setSoundBlocked] = useState(false);
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    const sight = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0 });
+    sight.observe(panel);
+    return () => sight.disconnect();
+  }, [panelRef]);
+
+  useEffect(() => {
+    if (!settled || !inView) {
+      setMuted(true);
+      return;
+    }
+    if (!reducedMotion) setMuted(false);
+  }, [settled, inView, reducedMotion]);
+
+  // Scrolling isn't a gesture browsers accept for sound. If the first offer
+  // was refused, the visitor's first click, tap, or key on the page while the
+  // video is in view turns sound on.
+  useEffect(() => {
+    if (!soundBlocked || !settled || !inView) return;
+    const enable = () => {
+      setSoundBlocked(false);
+      setMuted(false);
+    };
+    const events = ["pointerdown", "keydown", "touchend"] as const;
+    events.forEach((type) => window.addEventListener(type, enable, { once: true, passive: true }));
+    return () => events.forEach((type) => window.removeEventListener(type, enable));
+  }, [soundBlocked, settled, inView]);
 
   // --- Hover target → fed to the parallax/transform loop on mediaRef. ------
   useEffect(() => {

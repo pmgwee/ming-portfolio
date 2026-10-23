@@ -53,3 +53,8 @@
   .pool, .sheen, .glint, .pulse { animation: none; }
   .draw { transition: none; }
 }
+
+/* Dynamic Island live activity: a sound wave that keeps moving. */
+.wave { animation: wave 1s ease-in-out infinite alternate; }
+@keyframes wave { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .wave { animation: none; } }
