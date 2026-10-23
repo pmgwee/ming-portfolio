@@ -31,7 +31,7 @@ export function AudiencePaths() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
               <AnchorLink
                 href="/ai-projects"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-200 underline decoration-brand-300/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
               >
                 Explore AI projects
                 <ArrowUpRight aria-hidden="true" weight="bold" className="size-4" />
@@ -40,7 +40,7 @@ export function AudiencePaths() {
                 href={SITE.linkedin}
                 target="_blank"
                 rel="noopener noreferrer me"
-                className="text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                className="text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
               >
                 LinkedIn profile
               </a>
@@ -48,7 +48,7 @@ export function AudiencePaths() {
                 href={SITE.github}
                 target="_blank"
                 rel="noopener noreferrer me"
-                className="text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                className="text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
               >
                 GitHub profile
               </a>
@@ -67,7 +67,7 @@ export function AudiencePaths() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
               <AnchorLink
                 href="#showcase"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-200 underline decoration-brand-300/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
               >
                 Browse collections
                 <ArrowUpRight aria-hidden="true" weight="bold" className="size-4" />
@@ -76,7 +76,7 @@ export function AudiencePaths() {
                 href={SITE.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
               >
                 Start a studio inquiry
                 <ArrowUpRight aria-hidden="true" weight="bold" className="size-4" />

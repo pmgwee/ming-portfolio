@@ -21,10 +21,10 @@ export function SubpageShell({
       <section className="border-t border-white/10 bg-[#07080c] px-6 py-16 md:px-10">
         <Link
           href={next.href}
-          className="group mx-auto flex w-full max-w-[1400px] flex-wrap items-end justify-between gap-6 rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition-colors hover:border-white/25 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200 md:p-10"
+          className="group mx-auto flex w-full max-w-[1400px] flex-wrap items-end justify-between gap-6 rounded-md border border-white/10 bg-white/[0.03] p-8 transition-colors hover:border-white/25 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200 md:p-10"
         >
           <span>
-            <span className="text-sm font-medium text-indigo-200">Keep exploring</span>
+            <span className="text-sm font-medium text-brand-200">Keep exploring</span>
             <span className="mt-2 block text-[clamp(1.6rem,3vw,2.6rem)] font-semibold leading-tight tracking-[-0.03em] text-zinc-100">
               {next.label}
             </span>

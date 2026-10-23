@@ -31,11 +31,11 @@ export function HeroText({
       ref={wrapRef}
       className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
     >
-      <p className="text-sm font-medium text-zinc-200">Creative work by Gwee Per Ming</p>
+      <p className="text-sm font-medium text-zinc-200">Creative work</p>
 
       <h2
         ref={h1Ref}
-        className="mt-6 max-w-[16ch] text-[clamp(2.5rem,11.5vw,3rem)] font-semibold leading-[1.02] tracking-[-0.04em] md:text-7xl lg:text-8xl"
+        className="mt-6 max-w-[16ch] text-[clamp(2.5rem,11.5vw,3rem)] font-medium leading-[1.02] tracking-[-0.03em] md:text-7xl lg:text-8xl"
       >
         Ming Creatives
       </h2>

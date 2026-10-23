@@ -523,7 +523,7 @@ export function ImageField({
                 onClick={event => src && onSelect(src, event.currentTarget)}
                 aria-label={src ? `View ${collectionEntry(src, tiles.indexOf(src)).title}` : "Collection image"}
                 disabled={!src}
-                className={`${styles.tile} pointer-events-auto showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl opacity-80`}
+                className={`${styles.tile} pointer-events-auto showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-md opacity-80`}
                 style={{
                   aspectRatio: "3 / 4",
                   transform: `translate(calc(-50% + ${x}vmin), calc(-50% + ${y}vmin)) scale(0.9)`,
@@ -572,7 +572,7 @@ export function ImageField({
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className={`${styles.tile} showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl`}
+              className={`${styles.tile} showcase-tile absolute left-1/2 top-1/2 overflow-hidden rounded-md`}
               style={{
                 aspectRatio: "3 / 4",
                 opacity: 0,

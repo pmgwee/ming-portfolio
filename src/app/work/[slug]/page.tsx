@@ -56,15 +56,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
       <div className="mx-auto max-w-[1000px]">
         <Link
           href="/ai-projects"
-          className="inline-flex items-center gap-2 text-sm text-zinc-300 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+          className="inline-flex items-center gap-2 text-sm text-zinc-300 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
         >
           <ArrowLeft aria-hidden="true" weight="bold" className="size-4" />
           All AI projects
         </Link>
 
         <header className="mt-12 pb-10">
-          <p className="text-sm font-medium text-indigo-200">Case study · Gwee Per Ming</p>
-          <h1 className="mt-4 text-[clamp(2.6rem,7vw,5.5rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-white">
+          <p className="text-sm font-medium text-brand-200">Case study · Ming</p>
+          <h1 className="mt-4 text-[clamp(2.6rem,7vw,5.5rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white">
             {project.title}
           </h1>
           <p className="mt-6 max-w-[68ch] text-lg leading-relaxed text-zinc-300">
@@ -101,7 +101,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-start gap-2 text-indigo-100 underline decoration-indigo-200/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                    className="inline-flex items-start gap-2 text-brand-100 underline decoration-brand-200/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                   >
                     <span>{link.label}{link.status ? ` · ${link.status}` : ""}</span>
                     <ArrowUpRight aria-hidden="true" weight="bold" className="mt-0.5 size-4 shrink-0" />
@@ -120,13 +120,13 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         <div className="mt-10 flex flex-wrap gap-5">
           <Link
             href="/experiences"
-            className="text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+            className="text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
           >
             View experience
           </Link>
           <Link
             href="/#contact"
-            className="text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+            className="text-sm font-semibold text-zinc-200 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
           >
             Choose a contact path
           </Link>

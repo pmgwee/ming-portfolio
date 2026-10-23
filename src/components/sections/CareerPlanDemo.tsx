@@ -21,7 +21,7 @@ import { CareerOpportunityMap } from "./CareerOpportunityMap";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const EMPTY: Answer[] = [null, null, null, null, null];
-const FONT = "var(--font-geist-sans), 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif";
+const FONT = "var(--font-figtree), 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif";
 
 const UI = {
   en: {
@@ -160,8 +160,8 @@ export function CareerPlanDemo() {
   }
 
   const inputClass =
-    "mt-2 w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 text-base text-white placeholder:text-zinc-400 focus:border-[#ffd400] focus:outline-none";
-  const focusRing = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300";
+    "mt-2 w-full rounded-md border border-white/15 bg-black/30 px-4 py-3 text-base text-white placeholder:text-zinc-400 focus:border-[#ffd400] focus:outline-none";
+  const focusRing = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-300";
 
   return (
     <section
@@ -172,14 +172,14 @@ export function CareerPlanDemo() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-[38%] h-[46vh] w-[80vw] max-w-5xl -translate-x-1/2 rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(closest-side, rgba(255,212,0,0.35), rgba(99,102,241,0.25) 55%, transparent)" }}
+        style={{ background: "radial-gradient(closest-side, rgba(255,212,0,0.35), rgba(87,123,244,0.25) 55%, transparent)" }}
       />
 
       <div className="relative mx-auto w-full max-w-[1400px]">
         <motion.div className="max-w-3xl" {...reveal}>
           <h2
             id="career-plan-heading"
-            className="mt-4 text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+            className="mt-4 text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"
           >
             Will this job get you there?
           </h2>
@@ -206,7 +206,7 @@ export function CareerPlanDemo() {
           {/* App window */}
           <div
             lang={lang === "cn" ? "zh-Hans" : "en"}
-            className="overflow-hidden rounded-2xl border border-white/10 bg-[#101219] shadow-[0_25px_80px_rgba(0,0,0,0.32),0_0_0_1px_rgba(255,212,0,0.08)]"
+            className="overflow-hidden rounded-md border border-white/10 bg-[#101219] shadow-[0_25px_80px_rgba(0,0,0,0.32),0_0_0_1px_rgba(255,212,0,0.08)]"
             style={{ fontFamily: FONT }}
           >
             <div className="flex flex-wrap items-center gap-2 border-b border-white/10 px-3 py-3 sm:gap-3 sm:px-4">
@@ -267,7 +267,7 @@ export function CareerPlanDemo() {
                       <p className="text-sm font-semibold text-zinc-200">{ui.pickOne}</p>
                       <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={ui.pickOne}>
                         {INDUSTRIES.map((industry) => (
-                          <button key={industry.id} type="button" aria-pressed={industry.id === industryId} onClick={() => setIndustryId(industry.id)} className={`min-h-11 rounded-full border px-3 text-xs font-medium ${focusRing} ${industry.id === industryId ? "border-indigo-200 bg-indigo-200 text-[#101219]" : "border-white/15 text-zinc-300 hover:border-white/40"}`}>
+                          <button key={industry.id} type="button" aria-pressed={industry.id === industryId} onClick={() => setIndustryId(industry.id)} className={`min-h-11 rounded-full border px-3 text-xs font-medium ${focusRing} ${industry.id === industryId ? "border-brand-200 bg-brand-200 text-[#101219]" : "border-white/15 text-zinc-300 hover:border-white/40"}`}>
                             {tx(industry.name)}
                           </button>
                         ))}
@@ -281,7 +281,7 @@ export function CareerPlanDemo() {
                                     type="button"
                                     aria-pressed={on}
                                     onClick={() => pickRole(option.name)}
-                                    className={`flex min-h-14 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors ${focusRing} ${
+                                    className={`flex min-h-14 items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-sm transition-colors ${focusRing} ${
                                       on ? "border-[#ffd400] bg-[#ffd400] text-[#141414]" : "border-white/15 text-zinc-300 hover:border-white/40"
                                     }`}
                                   >
@@ -301,11 +301,11 @@ export function CareerPlanDemo() {
                     <button
                       type="button"
                       onClick={rateJob}
-                      className="inline-flex min-h-11 items-center gap-2 rounded-full bg-zinc-100 px-5 text-sm font-semibold text-[#07080c] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-300"
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full bg-zinc-100 px-5 text-sm font-semibold text-[#07080c] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"
                     >
                       {ui.next} <ArrowRight aria-hidden="true" weight="bold" className="size-4" />
                     </button>
-                    <button type="button" onClick={() => previewRef.current?.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" })} className={`ml-3 min-h-11 rounded-full px-3 text-sm text-indigo-200 lg:hidden ${focusRing}`}>
+                    <button type="button" onClick={() => previewRef.current?.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" })} className={`ml-3 min-h-11 rounded-full px-3 text-sm text-brand-200 lg:hidden ${focusRing}`}>
                       {lang === "en" ? "View my brief ↓" : "查看我的简报 ↓"}
                     </button>
                   </div>
@@ -338,7 +338,7 @@ export function CareerPlanDemo() {
                                 type="button"
                                 aria-pressed={answers[i] === v}
                                 onClick={() => answer(i, v)}
-                                className={`min-h-11 rounded-lg border text-sm font-semibold transition-colors ${focusRing} ${
+                                className={`min-h-11 rounded-md border text-sm font-semibold transition-colors ${focusRing} ${
                                   answers[i] === v
                                     ? v
                                       ? "border-[#ffd400] bg-[#ffd400] text-[#141414]"
@@ -359,10 +359,10 @@ export function CareerPlanDemo() {
 
               {/* A compact preview that leads into the full plan. */}
               <div className="bg-[#0c0d12] p-5 md:p-8">
-                <div className="rounded-2xl shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+                <div className="rounded-md shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
                   <div
                     ref={previewRef}
-                    className="relative scroll-mt-28 overflow-hidden rounded-[15px] bg-[#fbfaf6] text-[#141414]"
+                    className="relative scroll-mt-28 overflow-hidden rounded-[5px] bg-[#fbfaf6] text-[#141414]"
                     style={{ fontFamily: FONT }}
                   >
                     {complete ? <motion.span
@@ -408,7 +408,7 @@ export function CareerPlanDemo() {
                               {[...plan.path, null].map((step, i) => (
                                 <motion.li
                                   key={i}
-                                  className={`relative rounded-lg border px-2.5 py-2 ${i === 3 ? "border-[#141414] bg-[#141414] text-white" : "border-black/10 bg-white"}`}
+                                  className={`relative rounded-md border px-2.5 py-2 ${i === 3 ? "border-[#141414] bg-[#141414] text-white" : "border-black/10 bg-white"}`}
                                   initial={reduced ? false : { opacity: 0, y: 8 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: reduced ? 0 : i * 0.08, duration: 0.4, ease: EASE }}
@@ -429,7 +429,7 @@ export function CareerPlanDemo() {
                             </div>
                           </>
                         ) : (
-                          <p className="mt-2 rounded-lg border border-dashed border-black/15 px-3 py-3 text-sm text-zinc-500">{ui.pathEmpty}</p>
+                          <p className="mt-2 rounded-md border border-dashed border-black/15 px-3 py-3 text-sm text-zinc-500">{ui.pathEmpty}</p>
                         )}
                       </div>
 
@@ -445,7 +445,7 @@ export function CareerPlanDemo() {
                         </p>
                       </div>
 
-                      <a href={CAREER_PLAN_URL} onClick={openFullTool} className="group flex min-h-20 items-center justify-between gap-4 rounded-xl bg-[#ffd400] px-4 py-4 text-[#141414] transition-colors hover:bg-[#ffe34d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#685500]">
+                      <a href={CAREER_PLAN_URL} onClick={openFullTool} className="group flex min-h-20 items-center justify-between gap-4 rounded-md bg-[#ffd400] px-4 py-4 text-[#141414] transition-colors hover:bg-[#ffe34d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#685500]">
                         <span><span className="block text-base font-semibold">{ui.full}</span><span className="mt-1 block text-xs leading-relaxed">{ui.teaser}</span></span>
                         <ArrowRight aria-hidden="true" weight="bold" className="size-5 shrink-0 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" />
                       </a>

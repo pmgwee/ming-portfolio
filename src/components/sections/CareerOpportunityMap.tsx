@@ -35,7 +35,7 @@ export function CareerOpportunityMap({ answers, lang, selected, onSelect, reduce
           const state = opportunityState(answers[index]);
           const active = move.index === index;
           return (
-            <button key={area.label.en} type="button" onClick={() => onSelect(index)} aria-pressed={active} aria-controls="cp-next-move" aria-label={`${area.label[lang]}: ${OPPORTUNITY_STATES[state].label[lang]}`} className={`grid min-h-11 w-full grid-cols-[minmax(84px,0.85fr)_minmax(0,1.5fr)] items-center gap-2 rounded-lg px-2 text-left transition-colors ${active ? "bg-black/[0.05]" : "hover:bg-black/[0.03]"} ${focus}`}>
+            <button key={area.label.en} type="button" onClick={() => onSelect(index)} aria-pressed={active} aria-controls="cp-next-move" aria-label={`${area.label[lang]}: ${OPPORTUNITY_STATES[state].label[lang]}`} className={`grid min-h-11 w-full grid-cols-[minmax(84px,0.85fr)_minmax(0,1.5fr)] items-center gap-2 rounded-md px-2 text-left transition-colors ${active ? "bg-black/[0.05]" : "hover:bg-black/[0.03]"} ${focus}`}>
               <span className={`text-xs leading-snug ${active ? "font-bold" : "font-medium text-zinc-700"}`}>{area.label[lang]}</span>
               <span className="relative block h-10" aria-hidden="true">
                 <span className="absolute inset-x-[16.666%] top-1/2 h-px bg-black/15" />

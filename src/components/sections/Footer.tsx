@@ -21,7 +21,7 @@ const EXPLORE = [
 ];
 
 const linkClass =
-  "text-sm text-zinc-300 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200";
+  "text-sm text-zinc-300 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -40,15 +40,15 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  aria-label={`${social.label} profile for Gwee Per Ming`}
-                  className="rounded-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                  aria-label={`${social.label} profile for Ming`}
+                  className="rounded-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                 >
                   <IconComponent aria-hidden="true" weight="regular" className="size-5" />
                 </a>
               );
             })}
           </div>
-          <p className="mt-7 text-base font-semibold tracking-tight text-white">Gwee Per Ming</p>
+          <p className="mt-7 text-base font-semibold tracking-tight text-white">Ming</p>
           <p className="mt-1 text-sm text-zinc-300">Ming Creatives · creative studio</p>
           <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-zinc-400">
             I am a Malaysian Data &amp; AI Consultant and content creator.
@@ -56,7 +56,7 @@ export function Footer() {
             AI agents and data engineering, and generative-AI creative work.
           </p>
           <p className="mt-6 text-xs text-zinc-500">
-            © {year} Gwee Per Ming · {SITE.nationality}
+            © {year} Ming · {SITE.nationality}
           </p>
         </div>
 

@@ -26,7 +26,7 @@ export function FaqSection() {
     >
       <div className="mx-auto w-full max-w-[1400px]">
         <motion.div className="mx-auto max-w-3xl text-center" {...reveal}>
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-indigo-200">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-brand-200">
             FAQ
           </p>
           <h2
@@ -79,9 +79,9 @@ function FaqItem({
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="group flex min-h-16 w-full items-start gap-5 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-200 md:py-6"
+        className="group flex min-h-16 w-full items-start gap-5 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200 md:py-6"
       >
-        <span className="w-6 shrink-0 pt-0.5 font-mono text-sm tabular-nums text-indigo-200/80">
+        <span className="w-6 shrink-0 pt-0.5 font-mono text-sm tabular-nums text-brand-200/80">
           {String(index + 1).padStart(2, "0")}
         </span>
         <span className="flex-1 text-base font-semibold leading-snug text-zinc-100 transition-colors duration-200 group-hover:text-white md:text-lg">

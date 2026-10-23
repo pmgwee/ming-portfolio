@@ -32,7 +32,7 @@ import {
  * right-side grid. Section-1 hero copy fades out as the fan collapses; a
  * section-2 "how I work" block fades in as the grid forms. Pure scroll, fully
  * reversible. Cloned from the goo-ai ShowcaseMorph and rebuilt on this site's
- * design tokens (indigo/violet accent, neumorphic card shadow, Geist Mono).
+ * design tokens (brand-blue accent, neumorphic card shadow, Geist Mono).
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const; // site-wide mount ease
@@ -162,7 +162,7 @@ function MorphStage() {
             className="pointer-events-none absolute left-1/2 top-1/2 h-[60vh] w-[80vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-3xl"
             style={{
               background:
-                "radial-gradient(closest-side, rgba(99,102,241,0.35), transparent)",
+                "radial-gradient(closest-side, rgba(87,123,244,0.35), transparent)",
             }}
           />
 
@@ -301,7 +301,7 @@ function MorphCard({
 
   return (
     <motion.div
-      className="absolute rounded-[20px]"
+      className="absolute rounded-md"
       style={{
         x,
         y,
@@ -332,7 +332,7 @@ function MorphCard({
           }}
           style={{ opacity: bubbleOpacity, rotate: -fanRot }}
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-violet-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-brand-400 to-brand-200" />
           {card.handle}
         </motion.span>
       )}
@@ -344,10 +344,10 @@ function CardFace({ project }: { project: ShowcaseProject }) {
   return (
     // Frosted-glass tray (iOS-style): a translucent, blurred bezel frames the
     // screenshot so dark app captures separate cleanly from the dark page.
-    <div className="relative aspect-[3/4] rounded-[20px] border border-white/15 bg-white/[0.08] p-1.5 backdrop-blur-xl">
+    <div className="relative aspect-[3/4] rounded-md border border-white/15 bg-white/[0.08] p-1.5 backdrop-blur-xl">
       {/* Inner screenshot — inset + own rounding, on a lifted surface so it
           never reads as a flat black void while loading. */}
-      <div className="relative h-full w-full overflow-hidden rounded-[14px] bg-zinc-900 ring-1 ring-inset ring-white/10">
+      <div className="relative h-full w-full overflow-hidden rounded-sm bg-zinc-900 ring-1 ring-inset ring-white/10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.image}
@@ -367,7 +367,7 @@ function CardFace({ project }: { project: ShowcaseProject }) {
         </div>
       </div>
       {/* Glass specular sheen + top hairline highlight. */}
-      <div className="pointer-events-none absolute inset-0 rounded-[20px] bg-gradient-to-br from-white/15 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-br from-white/15 via-transparent to-transparent" />
       <div className="pointer-events-none absolute inset-x-3 top-px h-px rounded-full bg-white/25" />
     </div>
   );
@@ -467,7 +467,7 @@ function EcommerceText({ p }: { p: MotionValue<number> }) {
       <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
         <div className="max-w-md md:max-w-lg">
           <motion.p
-            className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-indigo-400"
+            className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-brand-400"
             style={{ opacity: eyebrowOpacity, y: eyebrowY }}
           >
             {morphCopy.eyebrow}
@@ -552,7 +552,7 @@ function ScrollArrow({ direction }: { direction: "up" | "down" }) {
       type="button"
       onClick={onClick}
       aria-label={direction === "up" ? "Scroll up" : "Scroll down"}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-zinc-400 transition-colors hover:border-indigo-400 hover:text-indigo-400"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-zinc-400 transition-colors hover:border-brand-400 hover:text-brand-400"
       style={{ boxShadow: "var(--card-shadow)" }}
     >
       {direction === "up" ? (
@@ -588,7 +588,7 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
           {PROJECTS.map((project) => (
             <div
               key={project.id}
-              className="rounded-[20px]"
+              className="rounded-md"
               style={{ boxShadow: "var(--card-shadow)" }}
             >
               <CompactFace project={project} />
@@ -618,7 +618,7 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
       {/* Section 2 — static "how I work" grid. */}
       <section className="bg-[#07080c] px-6 py-16 md:py-24">
         <div className="mx-auto w-full max-w-[1400px] px-0 md:px-4">
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-indigo-400">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-brand-400">
             {morphCopy.eyebrow}
           </p>
           <h2 className="mt-3 max-w-2xl text-[clamp(1.6rem,2.4vw+0.6rem,2.4rem)] font-semibold leading-[1.1] tracking-tighter text-zinc-100">
@@ -653,7 +653,7 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
             {MORPH_CARDS.slice(0, 6).map((card) => (
               <div
                 key={card.key}
-                className="overflow-hidden rounded-[20px]"
+                className="overflow-hidden rounded-md"
                 style={{ boxShadow: "var(--card-shadow)" }}
               >
                 <CardFace project={card} />
@@ -668,8 +668,8 @@ function StaticSections({ hideHero = false }: { hideHero?: boolean }) {
 
 function CompactFace({ project }: { project: ShowcaseProject }) {
   return (
-    <div className="relative aspect-[3/4] rounded-[20px] border border-white/15 bg-white/[0.08] p-1.5 backdrop-blur-xl">
-      <div className="relative h-full w-full overflow-hidden rounded-[14px] bg-zinc-900 ring-1 ring-inset ring-white/10">
+    <div className="relative aspect-[3/4] rounded-md border border-white/15 bg-white/[0.08] p-1.5 backdrop-blur-xl">
+      <div className="relative h-full w-full overflow-hidden rounded-sm bg-zinc-900 ring-1 ring-inset ring-white/10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.image}
@@ -682,7 +682,7 @@ function CompactFace({ project }: { project: ShowcaseProject }) {
           <p className="text-[11px] font-semibold text-white">{project.title}</p>
         </div>
       </div>
-      <div className="pointer-events-none absolute inset-0 rounded-[20px] bg-gradient-to-br from-white/15 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-br from-white/15 via-transparent to-transparent" />
     </div>
   );
 }

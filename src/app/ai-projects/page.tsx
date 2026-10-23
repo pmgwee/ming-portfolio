@@ -4,7 +4,7 @@ import { SubpageShell } from "@/components/sections/SubpageShell";
 import { SITE } from "@/lib/seo";
 
 const DESCRIPTION =
-  "Production AI agents and systems built by Gwee Per Ming: what each one does, how it works, its operating status, and verified outcomes.";
+  "Production AI agents and systems built by Ming: what each one does, how it works, its operating status, and verified outcomes.";
 
 export const metadata: Metadata = {
   title: "AI Projects",

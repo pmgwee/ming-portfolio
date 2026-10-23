@@ -59,10 +59,10 @@ export function WorksShowcase() {
       className="scroll-mt-28 relative z-20 border-t border-white/10 bg-[#07080c] px-6 py-20 md:px-10 md:py-24"
     >
       <div className="mx-auto w-full max-w-[1400px]">
-        <p className="text-sm font-medium text-indigo-200">Selected archive</p>
+        <p className="text-sm font-medium text-brand-200">Selected archive</p>
         <h2
           id="earlier-work-heading"
-          className="mt-3 text-[clamp(2rem,4.2vw,3.75rem)] font-semibold tracking-[-0.04em] text-zinc-100"
+          className="mt-3 text-[clamp(2rem,4.2vw,3.75rem)] font-medium tracking-[-0.03em] text-zinc-100"
         >
           Prototype/MVP
         </h2>
@@ -73,7 +73,7 @@ export function WorksShowcase() {
               <>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs font-medium text-indigo-200">{project.category}</p>
+                    <p className="text-xs font-medium text-brand-200">{project.category}</p>
                     <h3 className="mt-2 text-xl font-semibold tracking-tight text-zinc-100">
                       {project.title}
                     </h3>
@@ -104,7 +104,7 @@ export function WorksShowcase() {
                 onMouseEnter={() => enabled && setActive(project)}
                 onFocus={() => enabled && setActive(project)}
                 onBlur={() => setActive(null)}
-                className={`rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] ${
+                className={`rounded-md border border-white/10 bg-white/[0.03] p-6 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] ${
                   enabled && active && active.id !== project.id ? "opacity-70" : "opacity-100"
                 }`}
                 style={{ boxShadow: "var(--card-shadow)" }}
@@ -115,7 +115,7 @@ export function WorksShowcase() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${project.title}: open public project demo`}
-                    className="block rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                    className="block rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                   >
                     {card}
                   </a>

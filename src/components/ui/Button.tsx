@@ -21,7 +21,7 @@ export function Button({
   rel,
 }: ButtonProps) {
   const base =
-    "group inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200";
+    "group inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200";
   const styles =
     variant === "primary"
       ? "bg-white text-zinc-950 hover:bg-zinc-200"

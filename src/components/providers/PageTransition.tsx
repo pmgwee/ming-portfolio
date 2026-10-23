@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { TRANSITION_KEY, registerTransition, transitionLabel } from "@/lib/page-transition";
 import { jumpToHash, scrollToPosition } from "@/lib/smooth-scroll";
+import { SITE } from "@/lib/seo";
 
 /** Routes rendered by the Next app (client navigation). Others load in full. */
 const APP_ROUTE = /^\/(ai-projects|experiences|side-projects|work\/[^/]+)?\/?$/;
@@ -147,7 +148,7 @@ export function PageTransition() {
           <div
             aria-hidden="true"
             className="pointer-events-none absolute left-1/2 top-1/2 h-[50vh] w-[60vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-3xl"
-            style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.55), transparent)" }}
+            style={{ background: "radial-gradient(closest-side, rgba(87,123,244,0.55), transparent)" }}
           />
           <motion.div
             className="relative flex flex-col items-center gap-5"
@@ -155,7 +156,7 @@ export function PageTransition() {
             animate={{ y: 0, opacity: 1, transition: { delay: 0.12, duration: 0.5, ease: EASE } }}
             exit={reduced ? undefined : { y: -10, opacity: 0, transition: { duration: 0.3, ease: EASE } }}
           >
-            <Image src="/logo-resized.png" alt="" width={44} height={44} priority className="opacity-90" />
+            <Image src={SITE.logo} alt="" width={44} height={44} priority className="opacity-90" />
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">ming.creatives</p>
             <p className="text-[clamp(1.6rem,3vw,2.4rem)] font-semibold tracking-[-0.03em] text-zinc-100">{label}</p>
             <span className="relative mt-1 block h-[2px] w-40 overflow-hidden rounded-full bg-white/10">

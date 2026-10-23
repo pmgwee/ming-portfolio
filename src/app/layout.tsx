@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { Figtree } from "next/font/google";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
@@ -9,6 +9,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Closest open-licence match to OpenAI Sans (the Codex site's proprietary face).
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
 
 // CloudFront base for the heavy media (frames, tiles, clips). Inlined at build.
 const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_BASE;
@@ -59,7 +62,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${figtree.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body id="top">
         {/* Pre-paint: keep the screen covered when arriving via a page transition. */}
         <script dangerouslySetInnerHTML={{ __html: TRANSITION_BOOT_SCRIPT }} />

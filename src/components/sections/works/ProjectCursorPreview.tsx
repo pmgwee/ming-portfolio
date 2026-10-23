@@ -42,7 +42,7 @@ export function ProjectCursorPreview({
               // Clean shrink only — no opacity fade or tilt (avoids the exit flash).
               exit={{ scale: 0, transition: { duration: 0.22, ease: "easeIn" } }}
               transition={{ type: "spring", stiffness: 240, damping: 22, mass: 0.7 }}
-              className="relative w-[510px] max-w-[80vw] overflow-hidden rounded-2xl border border-white/15 bg-zinc-900 shadow-2xl ring-1 ring-white/10"
+              className="relative w-[510px] max-w-[80vw] overflow-hidden rounded-md border border-white/15 bg-zinc-900 shadow-2xl ring-1 ring-white/10"
             >
               {/* Natural aspect, no crop/upscale → full resolution, no blur. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,7 +56,7 @@ export function ProjectCursorPreview({
               {/* Legibility scrim + category chip for the high-end feel. */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <figcaption className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-violet-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-brand-400 to-brand-200" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/85">
                   {active.category}
                 </span>

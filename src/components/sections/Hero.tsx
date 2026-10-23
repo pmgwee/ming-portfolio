@@ -175,7 +175,7 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading}
-      className={`scroll-animation ${styles.hero}`} aria-label="Gwee Per Ming and Ming Creatives — an introduction in four chapters">
+      className={`scroll-animation ${styles.hero}`} aria-label="Ming and Ming Creatives: an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={HERO_FILM.poster} alt="" fetchPriority="high" loading="eager" className={styles.film} />

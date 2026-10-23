@@ -10,9 +10,9 @@
   --card-bg: rgba(255, 255, 255, 0.04);
   --border-subtle: rgba(255, 255, 255, 0.1);
 
-  /* Accent gradient */
-  --accent-from: #6366f1; /* indigo-500 */
-  --accent-to: #8b5cf6; /* violet-500 */
+  /* Accent gradient (brand blue, sampled from the Codex sky) */
+  --accent-from: #577bf4; /* brand-500 */
+  --accent-to: #9bb8ff; /* brand-300 */
 
   /* Neumorphic shadow stack (the signature — keep the whole stack) */
   --card-shadow:
@@ -29,8 +29,23 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-figtree);
   --font-mono: var(--font-geist-mono);
+}
+
+/* Premium brand blue. 500 is the core; 200 is the accent text on dark. */
+@theme {
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dde7ff;
+  --color-brand-200: #c0d3ff;
+  --color-brand-300: #9bb8ff;
+  --color-brand-400: #7496fb;
+  --color-brand-500: #577bf4;
+  --color-brand-600: #3d5ee8;
+  --color-brand-700: #2f49c9;
+  --color-brand-800: #283d9e;
+  --color-brand-900: #1d2c72;
+  --color-brand-950: #0b1647;
 }
 
 * {
@@ -56,7 +71,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-family: var(--font-figtree), Arial, sans-serif;
   line-height: 1.65;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
@@ -217,12 +232,12 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #c7d2fe;
+  outline: 2px solid var(--color-brand-200);
   outline-offset: 4px;
 }
 
 ::selection {
-  background: #c7d2fe;
+  background: var(--color-brand-200);
   color: #09090b;
 }
 

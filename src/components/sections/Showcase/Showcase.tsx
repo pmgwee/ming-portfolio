@@ -236,7 +236,7 @@ export function Showcase({ media }: { media: ShowcaseMedia }) {
       >
         {/* Faint oversized background glow (z0) */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute left-1/2 top-1/2 h-[80vmax] w-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.10),transparent_60%)] blur-3xl" />
+          <div className="absolute left-1/2 top-1/2 h-[80vmax] w-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(87,123,244,0.10),transparent_60%)] blur-3xl" />
         </div>
 
         {/* Layer 1 — image field (own opacity wrapper for the hinge fade) */}

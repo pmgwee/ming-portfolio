@@ -18,7 +18,7 @@ const CARDS = [
     body: "See what each system does, what I built myself, and how it runs today.",
     chips: [...ENGINEERING_PROJECTS.slice(0, 2).map((project) => project.title), `+${ENGINEERING_PROJECTS.length - 2} more`],
     cta: "Explore AI Projects",
-    glow: "radial-gradient(closest-side, rgba(99,102,241,0.9), transparent)",
+    glow: "radial-gradient(closest-side, rgba(87,123,244,0.9), transparent)",
   },
   {
     href: "/experiences",
@@ -58,10 +58,10 @@ export function CareerSection() {
       className="scroll-mt-28 border-t border-white/10 bg-[#07080c] px-6 py-24 md:px-10 md:py-32"
     >
       <motion.div className="mx-auto w-full max-w-[1400px]" {...reveal}>
-        <p className="text-sm font-medium text-indigo-200">Career</p>
+        <p className="text-sm font-medium text-brand-200">Career</p>
         <h2
           id="career-heading"
-          className="mt-4 max-w-[22ch] text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+          className="mt-4 max-w-[22ch] text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"
         >
           The engineering work that powers the studio.
         </h2>
@@ -71,7 +71,7 @@ export function CareerSection() {
             <Link
               key={card.href}
               href={card.href}
-              className="group relative flex min-h-[340px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#101219] p-7 transition-colors duration-300 hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200 md:p-8"
+              className="group relative flex min-h-[340px] flex-col overflow-hidden rounded-md border border-white/10 bg-[#101219] p-7 transition-colors duration-300 hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200 md:p-8"
             >
               <span
                 aria-hidden="true"

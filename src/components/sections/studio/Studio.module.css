@@ -1,0 +1,55 @@
+/* Studio sky: a top-to-bottom wash ending in the page black, with three soft
+   light pools and a diagonal sheen drifting over it (transform-only motion). */
+.sky { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.pool { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: 0.7; will-change: transform; }
+.pool:nth-child(1) { left: -14%; top: 4%; width: 58%; height: 30%; animation: driftA 24s ease-in-out infinite alternate; }
+.pool:nth-child(2) { right: -16%; top: 0; width: 54%; height: 34%; animation: driftB 28s ease-in-out infinite alternate; }
+.pool:nth-child(3) { left: 26%; top: 22%; width: 46%; height: 22%; opacity: 0.55; animation: driftC 32s ease-in-out infinite alternate; }
+.sheen {
+  position: absolute; left: 34%; top: -6%; width: 70%; height: 30%;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 42%), transparent);
+  filter: blur(40px); transform: rotate(-16deg); opacity: 0.6;
+  animation: sheen 20s ease-in-out infinite alternate;
+}
+
+@keyframes driftA { to { transform: translate3d(9%, 6%, 0) scale(1.12); } }
+@keyframes driftB { to { transform: translate3d(-10%, 8%, 0) scale(0.92); } }
+@keyframes driftC { to { transform: translate3d(-12%, -10%, 0) scale(1.18); } }
+@keyframes sheen { to { transform: rotate(-9deg) translate3d(-8%, 4%, 0); opacity: 0.85; } }
+
+/* Edge-to-edge fade into the black below the sky. */
+.floor { position: absolute; inset: auto 0 0; height: 18%; background: linear-gradient(transparent, #07080c); }
+
+/* Crystal: the logo held as a lit, tilted object rather than an app icon. */
+.bloom {
+  position: absolute; inset: -32%; border-radius: 9999px; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 40%), rgb(201 166 255 / 20%) 45%, transparent 72%);
+  filter: blur(8px);
+}
+.crystal {
+  position: relative; width: 74%; aspect-ratio: 1; overflow: hidden; border-radius: 22%;
+  transform: rotateY(-14deg) rotateX(8deg); will-change: transform;
+  box-shadow: 0 46px 90px -34px rgb(12 16 70 / 75%), 0 0 0 1px rgb(255 255 255 / 22%), 0 0 60px -10px rgb(255 255 255 / 45%);
+}
+.glint {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
+  background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 38%) 48%, transparent 60%);
+  transform: translateX(-120%); animation: glint 7s ease-in-out 1.5s infinite;
+}
+@keyframes glint { 0%, 72% { transform: translateX(-120%); } 88%, 100% { transform: translateX(120%); } }
+
+/* Beam and rays draw in once, then a packet of light travels along each. */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1), stroke-width 300ms ease; }
+.draw[data-lit="true"] { stroke-dashoffset: 0; }
+.ray { transition-delay: calc(0.6s + var(--i) * 0.15s), 0s; }
+.pulse { stroke-dasharray: 0.07 0.93; stroke-dashoffset: 1; animation: pulse 3.6s cubic-bezier(0.45, 0, 0.55, 1) 1.2s infinite both; }
+@keyframes pulse {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  10%, 88% { opacity: 0.9; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool, .sheen, .glint, .pulse { animation: none; }
+  .draw { transition: none; }
+}

@@ -67,7 +67,7 @@ export function EngineeringSection() {
         <div className="max-w-3xl">
           <h2
             id="engineering-heading"
-            className="text-[clamp(2rem,4.2vw,4.25rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+            className="text-[clamp(2rem,4.2vw,4.25rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"
           >
             AI-Project
           </h2>
@@ -80,7 +80,7 @@ export function EngineeringSection() {
               className="grid gap-5 border-b border-white/10 py-9 md:grid-cols-[minmax(15rem,0.75fr)_minmax(0,1.25fr)] md:gap-12 md:py-12"
             >
               <div>
-                <p className="font-mono text-xs tabular-nums text-indigo-200/80">
+                <p className="font-mono text-xs tabular-nums text-brand-200/80">
                   {String(index + 1).padStart(2, "0")} / {String(HOME_PROJECTS.length).padStart(2, "0")}
                 </p>
                 <h3 className="mt-3 max-w-[20ch] text-[clamp(1.5rem,2.4vw,2.5rem)] font-semibold leading-[1.12] tracking-[-0.035em] text-zinc-100">
@@ -92,7 +92,7 @@ export function EngineeringSection() {
                       setActiveSlug(project.slug);
                     }}
                     onPointerLeave={() => setActiveSlug(null)}
-                    className="decoration-white/35 underline decoration-[1px] underline-offset-[0.18em] transition-colors hover:text-white hover:decoration-indigo-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+                    className="decoration-white/35 underline decoration-[1px] underline-offset-[0.18em] transition-colors hover:text-white hover:decoration-brand-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                   >
                     {project.title}
                   </Link>
@@ -107,12 +107,12 @@ export function EngineeringSection() {
               <div>
                 <p className="max-w-[58ch] text-lg font-medium leading-snug tracking-[-0.01em] text-zinc-100 md:text-xl">{project.homeLead}</p>
                 <p className="mt-5 flex max-w-[64ch] flex-wrap gap-x-3 gap-y-1 border-t border-white/10 pt-4 text-sm leading-relaxed">
-                  <span className="font-medium text-indigo-200">{project.homeSignalLabel}</span>
+                  <span className="font-medium text-brand-200">{project.homeSignalLabel}</span>
                   <span className="text-zinc-300">{project.homeSignal}</span>
                 </p>
                 <Link
                   href={`/work/${project.slug}`}
-                  className="group mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-indigo-200 underline decoration-indigo-300/50 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-300"
+                  className="group mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-brand-200 underline decoration-brand-300/50 underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-300"
                 >
                   Read case study
                   <ArrowUpRight aria-hidden="true" weight="bold" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -137,7 +137,7 @@ export function EngineeringSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="w-[360px] overflow-hidden rounded-xl border border-white/20 bg-[#111216] shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
+                className="w-[360px] overflow-hidden rounded-md border border-white/20 bg-[#111216] shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
               >
                 {/* Decorative conceptual artwork, not a product screenshot. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}

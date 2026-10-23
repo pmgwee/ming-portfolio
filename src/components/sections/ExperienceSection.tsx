@@ -11,7 +11,7 @@ export function ExperienceSection() {
         <div className="max-w-3xl">
           <h2
             id="experience-heading"
-            className="text-[clamp(2rem,4.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-zinc-100"
+            className="text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"
           >
             My Career
           </h2>
@@ -35,7 +35,7 @@ export function ExperienceSection() {
                   {entry.dates}
                 </p>
               </div>
-              <ul className="list-disc space-y-4 pl-5 text-sm leading-relaxed text-zinc-300 marker:text-indigo-300 md:text-base">
+              <ul className="list-disc space-y-4 pl-5 text-sm leading-relaxed text-zinc-300 marker:text-brand-300 md:text-base">
                 {entry.bullets.map((bullet) => (
                   <li key={bullet}>{bullet}</li>
                 ))}

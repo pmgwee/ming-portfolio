@@ -13,7 +13,7 @@
 .content { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 320px); gap: clamp(32px, 5vw, 96px); align-items: center; padding: 24px 0; }
 .frame { position: relative; height: clamp(260px, 66vh, 780px); min-width: 0; touch-action: pan-y pinch-zoom; display: grid; place-items: center; }
 .media { position: absolute; inset: 0; display: block; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
-.frame:focus-visible { outline: 2px solid #c7d2fe; outline-offset: 6px; }
+.frame:focus-visible { outline: 2px solid #c0d3ff; outline-offset: 6px; }
 .details { align-self: center; min-width: 0; }
 .details h2 { font-size: clamp(28px, 2.6vw, 48px); font-weight: 500; line-height: 1.08; letter-spacing: -.035em; text-wrap: balance; }
 .description { margin-top: 20px; color: #d4d4d8; font-size: 15px; line-height: 1.65; }
@@ -98,7 +98,7 @@
 .tile[data-hovered] .tileLabel svg, .tile:focus-visible .tileLabel svg, .staticField .tile:hover .tileLabel svg { transform: none; }
 .reducedBrowse { position: absolute; z-index: 80; bottom: 90px; left: 24px; }
 .dialog button, .dialog a, .browse { -webkit-tap-highlight-color: transparent; }
-.dialog button:focus-visible, .dialog a:focus-visible, .browse:focus-visible { outline: 2px solid #c7d2fe; outline-offset: 4px; }
+.dialog button:focus-visible, .dialog a:focus-visible, .browse:focus-visible { outline: 2px solid #c0d3ff; outline-offset: 4px; }
 .dialog ::selection { background: #f4f4f5; color: #07080c; }
 @media (hover: hover) {
   .close:hover, .arrow:hover { background: #20232b; }

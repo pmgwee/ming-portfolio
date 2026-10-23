@@ -9,13 +9,13 @@ import styles from "./Navbar.module.css";
 
 const LINKS = [
   { label: "Studio", href: "#showcase" as const },
-  { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
+  { label: "Product", href: "#career-plan" as const },
   { label: "Career", href: "#career" as const },
 ];
 
 const linkClass =
-  "rounded-sm text-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200";
+  "rounded-sm text-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -61,7 +61,7 @@ export function Navbar() {
       className={`fixed inset-x-0 top-0 z-[60] px-2 sm:px-4 ${styles.header}`}>
       <nav
         aria-label="Main navigation"
-        className={`mx-auto mt-3 w-full max-w-[1400px] rounded-2xl px-3 py-3 transition-colors duration-300 sm:rounded-full sm:px-5 ${
+        className={`mx-auto mt-3 w-full max-w-[1400px] rounded-md px-3 py-3 transition-colors duration-300 sm:rounded-full sm:px-5 ${
           scrolled || menuOpen
             ? "border border-white/15 bg-[#07080c]/90 shadow-xl backdrop-blur-2xl"
             : "border border-white/10 bg-black/20 backdrop-blur-md"
@@ -70,11 +70,11 @@ export function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <AnchorLink
             href="#top"
-            className="flex min-w-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200"
+            className="flex min-w-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
             onNavigate={() => setMenuOpen(false)}
           >
             <Image
-              src="/logo-resized.png"
+              src={SITE.logo}
               alt=""
               width={28}
               height={28}
@@ -83,9 +83,9 @@ export function Navbar() {
             />
             <span className="min-w-0 leading-tight">
               <span className="block truncate text-sm font-semibold tracking-tight text-white">
-                Gwee Per Ming
+                Ming
               </span>
-              <span className="block text-[11px] text-zinc-400">Ming Creatives</span>
+              <span className="block text-[11px] text-zinc-400">{SITE.jobTitle}</span>
             </span>
           </AnchorLink>
 
@@ -102,14 +102,14 @@ export function Navbar() {
               href={SITE.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex min-h-10 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-200 sm:gap-1.5 sm:px-4 sm:text-sm"
+              className="group inline-flex min-h-10 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200 sm:gap-1.5 sm:px-4 sm:text-sm"
             >
               <span>Contact</span>
               <ArrowUpRight aria-hidden="true" weight="bold" className="size-3.5" />
             </a>
             <button
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-200 lg:hidden"
+              className="inline-flex size-10 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200 lg:hidden"
               aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
@@ -130,7 +130,7 @@ export function Navbar() {
               <li key={link.href}>
                 <AnchorLink
                   href={link.href}
-                  className="block rounded-lg px-3 py-3 text-sm text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-200"
+                  className="block rounded-md px-3 py-3 text-sm text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-200"
                   onNavigate={() => setMenuOpen(false)}
                 >
                   {link.label}
@@ -140,7 +140,7 @@ export function Navbar() {
             <li>
               <AnchorLink
                 href="#contact"
-                className="block rounded-lg px-3 py-3 text-sm text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-200"
+                className="block rounded-md px-3 py-3 text-sm text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-200"
                 onNavigate={() => setMenuOpen(false)}
               >
                 Recruiter & client routes

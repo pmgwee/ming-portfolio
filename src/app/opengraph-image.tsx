@@ -25,9 +25,9 @@ export default function OpenGraphImage() {
           style={{
             display: "flex",
             alignItems: "center",
-            borderLeft: "12px solid #818cf8",
+            borderLeft: "12px solid #7496fb",
             paddingLeft: 20,
-            color: "#c7d2fe",
+            color: "#c0d3ff",
             fontSize: 24,
             letterSpacing: 2,
             textTransform: "uppercase",
