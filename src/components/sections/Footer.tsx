@@ -8,7 +8,7 @@ const SOCIAL_ICONS: Record<string, Icon> = {
 };
 
 const EXPLORE = [
-  { label: "Creative work", href: "#showcase" as const },
+  { label: "Gallery", href: "#showcase" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
   { label: "Engineering", href: "#career" as const },

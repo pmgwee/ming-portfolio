@@ -262,7 +262,7 @@ export function Hero() {
           <p className={styles.openingLine}>Creative worlds, made with AI.</p>
           <p className={styles.openingBody}>I share photography, AI films and the creative tech behind them on Instagram as @ming.creatives.</p>
           <div className={styles.actions}>
-            <AnchorLink href="#showcase" className={styles.primary}>See the creative work <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
+            <AnchorLink href="#showcase" className={styles.primary}>See the gallery <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
             <AnchorLink href="#services" className={styles.secondary}>Explore Services</AnchorLink>
           </div>
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>

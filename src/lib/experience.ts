@@ -8,12 +8,12 @@ export interface ExperienceEntry {
   bullets: string[];
 }
 
-// Employers, schools and exact figures are described, never named: they are
-// searchable and would link this brand back to the creator's real-name
-// profiles (see CLAUDE.md, identity separation).
+// Employers, schools, job and degree titles and exact figures are described,
+// never named: pasted into a search engine or an AI, they would match the
+// creator's real-name profiles (see CLAUDE.md, identity separation).
 export const EXPERIENCE: ExperienceEntry[] = [
   {
-    role: "Automation Engineer Intern",
+    role: "Software & Data Engineering",
     organization: "Fintech investment platform",
     field: "Fintech industry",
     dates: "2024 · 6 months",
@@ -25,7 +25,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
     ],
   },
   {
-    role: "Ski & Snowboard Technician",
+    role: "Customer-facing technical role",
     organization: "Ski resort · work and travel programme",
     field: "Customer service",
     dates: "Winter 2025–26",
@@ -36,7 +36,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
     ],
   },
   {
-    role: "Founder",
+    role: "Creative production lead",
     organization: "Independent creative production studio",
     field: "Filmmaking production",
     dates: "2024 – 2025",
@@ -51,12 +51,12 @@ export const EXPERIENCE: ExperienceEntry[] = [
 
 export const EDUCATION = [
   {
-    qualification: "Master of Business Administration · Online Learning",
+    qualification: "Postgraduate business studies",
     institution: "Private university, Malaysia",
     dates: "2026 – Present",
   },
   {
-    qualification: "Bachelor of Computer Science (Honours)",
+    qualification: "Computer Science degree",
     institution: "Public research university, Malaysia",
     dates: "2021 – 2025",
   },

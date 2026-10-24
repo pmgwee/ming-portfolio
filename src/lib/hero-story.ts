@@ -17,7 +17,7 @@ export const HERO_CHAPTERS = [
     start: 2.9, end: 4.95, jump: 3.75, side: "left",
   },
   {
-    id: "studio", number: "02", label: "The creative work", title: "Ming Creatives.",
+    id: "studio", number: "02", label: "The gallery", title: "Ming Creatives.",
     body: "Portrait series, AI-generated films and 3D web experiences, made end to end and shared as @ming.creatives.",
     action: "Discover the collections", href: "#showcase",
     start: 5.05, end: 6.35, jump: 5.65, side: "right",
@@ -38,7 +38,7 @@ export const HERO_CHAPTERS = [
 
 /** The final scene's destinations: the same sections, in the same order, as the navbar. */
 export const HERO_DESTINATIONS = [
-  { label: "Creative work", href: "#showcase", detail: "Collections & films" },
+  { label: "Gallery", href: "#showcase", detail: "Collections & films" },
   { label: "Services", href: "#services", detail: "Work with Ming Creatives" },
   { label: "Product", href: "#career-plan", detail: "Career plan tool" },
   { label: "Engineering", href: "#career", detail: "AI projects & background" },
