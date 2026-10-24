@@ -34,10 +34,6 @@ export function JsonLd() {
       url: SITE.url,
       nationality: { "@type": "Country", name: "Malaysia" },
       knowsAbout: [...SITE.expertise],
-      alumniOf: {
-        "@type": "CollegeOrUniversity",
-        name: "Universiti Sains Malaysia",
-      },
       image: absoluteUrl("/icon.png"),
       sameAs: sameAs(),
       // A content creator who also takes on collaborations (not a studio).

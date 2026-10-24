@@ -134,7 +134,7 @@ export const SITE = {
     },
     {
       q: "What is the engineering background behind Ming Creatives?",
-      a: "The creator behind Ming Creatives holds a Computer Science degree from Universiti Sains Malaysia and completed a six-month Automation Engineer internship at iFAST Capital from March to August 2024, covering a Spring Batch compliance pipeline, an investor-classification enhancement, and fintech releases.",
+      a: "The creator behind Ming Creatives holds a Computer Science degree and completed a six-month automation engineering internship at a Malaysian fintech investment platform in 2024, covering a compliance pipeline, an investor-classification enhancement, and fintech releases.",
     },
     {
       q: "Where can I follow Ming Creatives?",

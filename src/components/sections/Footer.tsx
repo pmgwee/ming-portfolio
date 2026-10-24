@@ -11,7 +11,7 @@ const EXPLORE = [
   { label: "Creative work", href: "#showcase" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
-  { label: "Career", href: "#career" as const },
+  { label: "Engineering", href: "#career" as const },
   { label: "AI Projects", href: "/ai-projects" as const },
   { label: "Experiences", href: "/experiences" as const },
   { label: "Side Projects", href: "/side-projects" as const },

@@ -58,7 +58,7 @@ export function CareerSection() {
       className="scroll-mt-28 border-t border-white/10 bg-[#07080c] px-6 py-24 md:px-10 md:py-32"
     >
       <motion.div className="mx-auto w-full max-w-[1400px]" {...reveal}>
-        <p className="text-sm font-medium text-brand-200">Career</p>
+        <p className="text-sm font-medium text-brand-200">Engineering</p>
         <h2
           id="career-heading"
           className="mt-4 max-w-[22ch] text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"

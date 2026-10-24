@@ -6,37 +6,40 @@ export interface ExperienceEntry {
   bullets: string[];
 }
 
+// Employers, schools and exact figures are described, never named: they are
+// searchable and would link this brand back to the creator's real-name
+// profiles (see CLAUDE.md, identity separation).
 export const EXPERIENCE: ExperienceEntry[] = [
   {
     role: "Automation Engineer Intern",
-    organization: "iFAST Capital Sdn Bhd",
-    dates: "March 2024 – August 2024",
-    location: "Kuala Lumpur, Malaysia",
+    organization: "Fintech investment platform",
+    dates: "2024 · 6 months",
+    location: "Malaysia",
     bullets: [
-      "Architected and implemented a Spring Batch compliance pipeline, designing the job flow and processing patterns to process client account records against complex passport-expiry constraints. Automated transaction restrictions, audit trails and six rule-triggered email notification types, while optimizing the processing workflow through bulk operations and avoiding hard-coded logic.",
-      "Translated an investor-classification requirement into an end-to-end system enhancement, mapping how new investor attributes should be captured, derived, persisted and reloaded across account-opening, account-update and profile-maintenance journeys.",
-      "Collaborated with 14 developers and 4 project directors across monthly sprints, supporting CI/CD pipelines, change request management and production releases for both internal and external business-critical fintech systems.",
+      "Built a Spring Batch compliance pipeline that checks client account records against document-expiry rules, applying transaction restrictions, audit trails and rule-triggered email notifications, with bulk processing in place of hard-coded logic.",
+      "Turned a new investor-classification requirement into an end-to-end enhancement, mapping how new attributes are captured, derived, stored and reloaded across account opening, account updates and profile maintenance.",
+      "Worked in monthly sprints with a cross-functional engineering team, supporting CI/CD pipelines, change requests and production releases for business-critical fintech systems.",
     ],
   },
   {
-    role: "Ski & Snowboard Technician · USA Work & Travel",
-    organization: "Ober Mountain",
-    dates: "December 2025 – May 2026",
-    location: "Gatlinburg, Tennessee",
+    role: "Ski & Snowboard Technician",
+    organization: "Ski resort · work and travel programme",
+    dates: "Winter 2025–26",
+    location: "United States",
     bullets: [
-      "Worked in a diverse, multicultural team representing over 10 countries, adapting to a new work environment by overcoming language barriers.",
-      "Recognized with 2 Honorable Mentions from a manager for resolving complex customer issues with technical expertise.",
+      "Worked in a multicultural team from more than ten countries, adapting quickly to a new work environment and language barriers.",
+      "Recognized by management for resolving complex customer issues with technical expertise.",
     ],
   },
   {
     role: "Founder",
-    organization: "Yierming Production (Studio)",
-    dates: "May 2024 – December 2025",
-    location: "Kuala Lumpur, Malaysia",
+    organization: "Independent creative production studio",
+    dates: "2024 – 2025",
+    location: "Malaysia",
     bullets: [
-      "Designed and launched branding and web content for an AI education startup led by a former technology company AI Director.",
-      "Directed a four-digit budget commercial campaign for a Web3 brand with 14K+ followers.",
-      "Delivered digital marketing strategies for a 400K-follower F&B brand, driving 10K+ Shopee sales for top products.",
+      "Designed and launched branding and web content for an AI education startup.",
+      "Directed a commercial campaign for a Web3 brand.",
+      "Delivered digital marketing strategies for a large F&B brand, driving 10K+ marketplace sales for its top products.",
     ],
   },
 ];
@@ -44,12 +47,12 @@ export const EXPERIENCE: ExperienceEntry[] = [
 export const EDUCATION = [
   {
     qualification: "Master of Business Administration · Online Learning",
-    institution: "INTI International University",
-    dates: "June 2026 – Present",
+    institution: "Private university, Malaysia",
+    dates: "2026 – Present",
   },
   {
     qualification: "Bachelor of Computer Science (Honours)",
-    institution: "Universiti Sains Malaysia",
-    dates: "October 2021 – October 2025",
+    institution: "Public research university, Malaysia",
+    dates: "2021 – 2025",
   },
 ] as const;

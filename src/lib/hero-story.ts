@@ -12,8 +12,8 @@ export const HERO_FILM = {
 export const HERO_CHAPTERS = [
   {
     id: "about", number: "01", label: "About me", title: "About me.",
-    body: `I'm ${SITE.personName}, a Malaysian content creator with a Computer Science background. I make photography, AI films and immersive web, and share them on Instagram.`,
-    action: "Explore my experience", href: "/experiences",
+    body: `I'm ${SITE.personName}, a Malaysian content creator who is more than a Computer Science engineer. I make creative art, AI and immersive products, and share them on Instagram.`,
+    action: "Explore my interests", href: SITE.instagram,
     start: 2.9, end: 4.95, jump: 3.75, side: "left",
   },
   {
@@ -25,7 +25,7 @@ export const HERO_CHAPTERS = [
   {
     id: "ai", number: "03", label: "Production AI", title: "Built for real work.",
     body: SITE.introduction,
-    action: "Explore AI Projects", href: "/ai-projects",
+    action: "Explore Services", href: "#services",
     start: 7.35, end: 10.55, jump: 8.9, side: "left",
   },
   {
@@ -36,12 +36,12 @@ export const HERO_CHAPTERS = [
   },
 ] as const;
 
+/** The final scene's destinations: the same sections, in the same order, as the navbar. */
 export const HERO_DESTINATIONS = [
   { label: "Creative work", href: "#showcase", detail: "Collections & films" },
-  { label: "Collaborate", href: "#services", detail: "Work with Ming Creatives" },
-  { label: "AI Projects", href: "/ai-projects", detail: "Systems & software" },
-  { label: "Experiences", href: "/experiences", detail: "Background & practice" },
-  { label: "Side Projects", href: "/side-projects", detail: "Earlier experiments" },
+  { label: "Services", href: "#services", detail: "Work with Ming Creatives" },
+  { label: "Product", href: "#career-plan", detail: "Career plan tool" },
+  { label: "Engineering", href: "#career", detail: "AI projects & background" },
 ] as const;
 
 /**

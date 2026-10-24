@@ -174,9 +174,9 @@ const FILM_CREDITS: Record<string, CollectionCredit> = {
 const PHOTO_SERIES = [
   { location: "Pasar Seni, Kuala Lumpur", talent: "Candice", files: ["candice 1.1.webp", "candice 1.2.webp", "candice 1.3.webp", "candice 1.4.webp"] },
   { location: "Botanical Garden, Penang", talent: "Crystal", files: ["crystal 1.1.webp", "crystal 1.2.webp", "crystal 1.3.webp"] },
-  { location: "Ober Mountain, Gatlinburg Tennessee (Abroad)", talent: "Jasper", files: ["jasper 1.1.webp", "jasper 1.2.webp"] },
-  { location: "Tasik Harapan USM, Penang", talent: "Juyi", files: ["juyi 1.webp", "juyi 2.webp", "juyi 3.webp"] },
-  { location: "Tennis Court USM, Penang", talent: "Juyi", files: ["juyi 4.webp", "juyi 5.webp", "juyi 6.webp"] },
+  { location: "Tennessee, USA (Abroad)", talent: "Jasper", files: ["jasper 1.1.webp", "jasper 1.2.webp"] },
+  { location: "Campus lake, Penang", talent: "Juyi", files: ["juyi 1.webp", "juyi 2.webp", "juyi 3.webp"] },
+  { location: "Tennis court, Penang", talent: "Juyi", files: ["juyi 4.webp", "juyi 5.webp", "juyi 6.webp"] },
   { location: "Little Havana, Miami (Abroad)", talent: "Ming Creatives", files: ["miami.webp"] },
   { location: "Georgetown, Penang", talent: "Ming Creatives", files: ["ming 1.1.webp", "ming 1.2.webp", "ming 1.3.webp", "ming 2.1.webp", "ming 2.2.webp", "ming 2.3.webp", "ming 2.4.webp"] },
   { location: "Bukit Bintang, Kuala Lumpur", talent: "Ming Creatives", files: ["ming 3.1.webp", "ming 3.2.webp", "ming 3.3.webp"] },
@@ -186,7 +186,7 @@ const PHOTO_SERIES = [
   { location: "Georgetown, Penang", talent: "Tayar", files: ["tayar 1.1.webp", "tayar 1.2.webp", "tayar 1.3.webp"] },
   { location: "Secret place, Alaska (Abroad)", talent: "Ming Creatives", files: ["wat 1.1.webp"] },
   { location: "Georgetown, Penang", talent: "Yiwei", files: ["yiwei 1.1.webp", "yiwei 1.2.webp"] },
-  { location: "USM Campus, Penang", talent: "Zhanhang", files: ["zhan hang 1.webp", "zhan hang1.2.webp"] },
+  { location: "University campus, Penang", talent: "Zhanhang", files: ["zhan hang 1.webp", "zhan hang1.2.webp"] },
 ];
 
 const PHOTO_CREDITS: Record<string, CollectionCredit> = Object.fromEntries(

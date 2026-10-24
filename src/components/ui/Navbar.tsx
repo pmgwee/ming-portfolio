@@ -11,7 +11,7 @@ const LINKS = [
   { label: "Creative work", href: "#showcase" as const },
   { label: "Services", href: "#services" as const },
   { label: "Product", href: "#career-plan" as const },
-  { label: "Career", href: "#career" as const },
+  { label: "Engineering", href: "#career" as const },
 ];
 
 const linkClass =

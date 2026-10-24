@@ -19,6 +19,15 @@ import { CurtainLayer, type CurtainController } from "./CurtainLayer";
  * First viewport: artwork first; the introduction sits behind an interactive
  * curtain layer, with a bottom timeline rail framing the film.
  */
+/** A chapter's link: in-page sections and routes scroll or navigate; outside profiles open in a new tab. */
+function ChapterAction({ href, children }: { href: string; children: React.ReactNode }) {
+  const content = <>{children}<ArrowUpRight aria-hidden="true" size={18} /></>;
+  if (href.startsWith("http")) {
+    return <a href={href} target="_blank" rel="noopener noreferrer me" className={styles.chapterAction}>{content}</a>;
+  }
+  return <AnchorLink href={href as `#${string}` | `/${string}`} className={styles.chapterAction}>{content}</AnchorLink>;
+}
+
 /** How long "Play film" rests on each chapter so its copy can be read. */
 const CHAPTER_HOLD_MS = 2600;
 
@@ -254,7 +263,7 @@ export function Hero() {
           <p className={styles.openingBody}>I share photography, AI films and the creative tech behind them on Instagram as @ming.creatives.</p>
           <div className={styles.actions}>
             <AnchorLink href="#showcase" className={styles.primary}>See the creative work <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
-            <AnchorLink href="/ai-projects" className={styles.secondary}>Explore AI Projects</AnchorLink>
+            <AnchorLink href="#services" className={styles.secondary}>Explore Services</AnchorLink>
           </div>
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>
         </div>
@@ -280,7 +289,7 @@ export function Hero() {
                   Have something in mind? <span>Collaboration inquiry <ArrowUpRight aria-hidden="true" size={16} /></span>
                 </a>
               </>
-            ) : <AnchorLink href={chapter.href} className={styles.chapterAction}>{chapter.action}<ArrowUpRight aria-hidden="true" size={18} /></AnchorLink>}
+            ) : <ChapterAction href={chapter.href}>{chapter.action}</ChapterAction>}
           </div>
         ))}
 
@@ -333,7 +342,7 @@ export function Hero() {
         {HERO_CHAPTERS.map((chapter) => (
           <article key={chapter.id} className={styles.readerChapter}>
             <p className={styles.chapterLabel}><span>{chapter.number}</span> {chapter.label}</p>
-            <div><h3>{chapter.title}</h3><p>{chapter.body}</p><AnchorLink href={chapter.href} className={styles.chapterAction}>{chapter.action}<ArrowUpRight aria-hidden="true" size={18} /></AnchorLink></div>
+            <div><h3>{chapter.title}</h3><p>{chapter.body}</p><ChapterAction href={chapter.href}>{chapter.action}</ChapterAction></div>
           </article>
         ))}
         <AnchorLink href="#showcase" className={styles.primary}>Continue to Collections<ArrowDown aria-hidden="true" size={17} /></AnchorLink>

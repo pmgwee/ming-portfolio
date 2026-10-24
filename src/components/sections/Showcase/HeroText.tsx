@@ -52,7 +52,7 @@ export function HeroText({
           See more on Instagram
         </Button>}
         <Button
-          href={SITE.instagram}
+          href={SITE.whatsapp}
           variant="secondary"
           target="_blank"
           rel="noopener noreferrer"
