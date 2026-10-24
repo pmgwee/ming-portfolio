@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { HERO_FILM, filmTimeAt } from "@/lib/hero-story";
+import { HERO_FILM, endRest, filmTimeAt } from "@/lib/hero-story";
 
 /**
  * Download the whole film before it can be scrubbed. Scroll-scrubbing seeks
@@ -95,7 +95,8 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame, holdRef 
       const travel = section.offsetHeight - window.innerHeight;
       const progress = travel > 0 ? Math.min(1, Math.max(0, -section.getBoundingClientRect().top / travel)) : 0;
       const duration = Number.isFinite(video.duration) ? video.duration : HERO_FILM.duration;
-      desired = Math.min(filmTimeAt(progress), Math.max(0, Math.min(duration, HERO_FILM.duration) - 1 / 30));
+      const filmProgress = progress / (1 - endRest(travel, window.innerHeight));
+      desired = Math.min(filmTimeAt(filmProgress), Math.max(0, Math.min(duration, HERO_FILM.duration) - 1 / 30));
       seek();
     };
     const onScroll = () => { if (!scrollFrame) scrollFrame = requestAnimationFrame(update); };

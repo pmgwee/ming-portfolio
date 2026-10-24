@@ -79,6 +79,23 @@ export function progressAt(time: number) {
   return 1;
 }
 
+/**
+ * Phones: the film finishes before the hero does, so the final chapter rests
+ * on screen for this many screens of scroll, about one relaxed swipe. The
+ * swipe that finishes the film ends on that chapter instead of carrying on
+ * into the creative work. The phone hero height (Hero.module.css) includes it.
+ */
+export const PHONE_END_REST_SCREENS = 1;
+
+let phoneQuery: MediaQueryList | null = null;
+
+/** Share of the hero's scroll travel kept as that rest (0 above phone width). */
+export function endRest(travel: number, viewport: number) {
+  phoneQuery ??= window.matchMedia("(max-width: 768px)");
+  if (travel <= 0 || !phoneQuery.matches) return 0;
+  return Math.min(0.25, (PHONE_END_REST_SCREENS * viewport) / travel);
+}
+
 /** Chapter shown on the timeline for a film time ("Prologue" before 01). */
 export function chapterLabelAt(time: number) {
   const chapter = [...HERO_CHAPTERS].reverse().find((item) => time >= item.start);

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPoi
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FilmStrip, HandPointing, MouseScroll, Pause, Play } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { useScrollFilm } from "@/hooks/useScrollFilm";
-import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, progressAt } from "@/lib/hero-story";
+import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, endRest, progressAt } from "@/lib/hero-story";
 import { SITE } from "@/lib/seo";
 import { followScrollPosition, lockPageScroll, scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
@@ -12,7 +12,7 @@ import { CurtainLayer, type CurtainController } from "./CurtainLayer";
 
 /**
  * Experience: the supplied curtain/TV/ship film leads; HTML restores its four
- * chapters. The film-only section height (1320/1140/950 × --lock-vh) and the HERO_PACING
+ * chapters. The film-only section height (1320/1140/750 × --lock-vh) and the HERO_PACING
  * curve (short opening, long glass-lettering reveal) are user-requested; Lenis
  * settings are unchanged.
  * Signature: decoded video frames, rather than timers, drive the chapter copy.
@@ -186,6 +186,7 @@ export function Hero() {
     if (!section || !video || stopAutoplayRef.current) return;
     const top = window.scrollY + section.getBoundingClientRect().top;
     const travel = Math.max(0, section.offsetHeight - window.innerHeight);
+    const filmTravel = travel * (1 - endRest(travel, window.innerHeight));
     const end = Math.min(HERO_FILM.duration, Number.isFinite(video.duration) ? video.duration : HERO_FILM.duration) - 1 / 30;
     const stops: number[] = HERO_CHAPTERS.map((chapter) => chapter.jump).filter((at) => at > video.currentTime + 0.1 && at < end - 1);
     const events = ["touchstart", "wheel", "keydown"] as const;
@@ -203,7 +204,7 @@ export function Hero() {
     const follow = () => {
       const time = video.currentTime;
       paint(time);
-      followScrollPosition(top + travel * progressAt(time));
+      followScrollPosition(top + filmTravel * progressAt(time));
       if (time >= end) return stop();
       if (stops.length && time >= stops[0]) {
         stops.shift();
@@ -227,7 +228,7 @@ export function Hero() {
     if (!section) return;
     const travel = section.offsetHeight - window.innerHeight;
     const top = window.scrollY + section.getBoundingClientRect().top;
-    scrollToPosition(top + Math.max(0, travel) * progressAt(time));
+    scrollToPosition(top + Math.max(0, travel) * (1 - endRest(travel, window.innerHeight)) * progressAt(time));
   };
 
   const toggleReading = () => {

@@ -106,7 +106,10 @@
 }
 @media (max-width: 1024px) { .hero { height: calc(var(--lock-vh, 1vh) * 1140); } }
 @media (max-width: 768px) {
-  .hero { height: calc(var(--lock-vh, 1vh) * 950); }
+  /* Phones: the film runs over 650 (a relaxed swipe moves it ~3s, so nobody
+     learns to fling), then one screen of rest on the final chapter
+     (PHONE_END_REST_SCREENS) before the creative work: 650 + 100. */
+  .hero { height: calc(var(--lock-vh, 1vh) * 750); }
   /* Preserve every part of the landscape film rather than crop away the TV,
      passenger or glass lettering. The reading area occupies the lower half. */
   .film { object-fit: contain; object-position: center 20%; }
