@@ -51,7 +51,7 @@ export function Footer() {
           <p className="mt-7 text-base font-semibold tracking-tight text-white">Ming</p>
           <p className="mt-1 text-sm text-zinc-300">Ming Creatives · creative studio</p>
           <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-zinc-400">
-            I am a Malaysian Data &amp; AI Consultant and content creator.
+            I am a Malaysian Data &amp; AI Consultant.
             Ming Creatives is my studio for web experiences, 3D animation,
             AI agents and data engineering, and generative-AI creative work.
           </p>

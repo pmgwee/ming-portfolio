@@ -3,7 +3,7 @@ import { SITE } from "@/lib/seo";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = `${SITE.personName}, ${SITE.jobTitle} and content creator. Ming Creatives studio identity.`;
+export const alt = `${SITE.personName}, ${SITE.jobTitle}. Ming Creatives studio identity.`;
 
 export default function OpenGraphImage() {
   return new ImageResponse(

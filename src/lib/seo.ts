@@ -3,7 +3,7 @@
  * Ming is the person (the real name is not published); Ming Creatives is the studio.
  */
 const BIOGRAPHY =
-  "Ming is a Malaysian Data & AI Consultant with a Computer Science background and fintech software engineering internship experience. He builds and scales production AI agents and agentic solutions using emerging AI technologies. He is also building his content creation practice through @ming.creatives on Instagram.";
+  "Ming is a Malaysian Data & AI Consultant with a Computer Science background and fintech software engineering internship experience. He builds and scales production AI agents and agentic solutions using emerging AI technologies. He shares his studio work through @ming.creatives on Instagram.";
 
 export const SITE = {
   url: "https://www.mingcreatives.com",
@@ -16,11 +16,11 @@ export const SITE = {
   alternateNames: ["Ming Creatives"],
   title: "Ming | Data & AI Consultant",
   description:
-    "Ming is a Malaysian Data & AI Consultant building production AI agents and agentic solutions. CS graduate, former fintech engineering intern, and content creator at Ming Creatives.",
+    "Ming is a Malaysian Data & AI Consultant building production AI agents and agentic solutions. CS graduate, former fintech engineering intern, and founder of the Ming Creatives studio.",
   // Current independent identity confirmed by Ming on 2026-10-16, not an
   // employer-held role or a replacement title for the iFAST internship.
   jobTitle: "Data & AI Consultant",
-  headline: "Data & AI Consultant · Content Creator",
+  headline: "Data & AI Consultant",
   biography: BIOGRAPHY,
   introduction:
     "I build and scale production AI agents and data solutions using emerging AI technologies. I translate real-world business needs into end-to-end systems, combining applied AI with data engineering.",
@@ -66,7 +66,6 @@ export const SITE = {
     "Ming",
     "Data & AI Consultant",
     "Data engineering",
-    "Content creator",
     "ming.creatives",
     "Production AI agents",
     "AI agent systems",
@@ -90,7 +89,6 @@ export const SITE = {
     "Business web application development",
     "AI agents and agentic solutions",
     "Generative-AI creative work",
-    "Content creation",
   ],
   services: [
     {
@@ -141,8 +139,8 @@ export const SITE = {
       a: "Ming completed a six-month Automation Engineer internship at iFAST Capital from March to August 2024. His work covered a Spring Batch compliance pipeline, an end-to-end investor-classification enhancement, and collaboration on fintech releases.",
     },
     {
-      q: "Where can I follow Ming's content?",
-      a: "Ming is building his content creation practice on Instagram as @ming.creatives, alongside his Data & AI consulting and creative studio work. The profile is linked through Let's Connect in the introduction and the Instagram link in the footer.",
+      q: "Where can I follow Ming's work?",
+      a: "Ming shares Ming Creatives studio work on Instagram as @ming.creatives, alongside his Data & AI consulting. The profile is linked through Let's Connect in the introduction and the Instagram link in the footer.",
     },
     {
       q: "How can I discuss a Ming Creatives project?",
