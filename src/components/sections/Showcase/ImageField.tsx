@@ -92,11 +92,14 @@ export function ImageField({
   // Start with the same count on server and client to keep hydration stable,
   // then reduce the animation pool on small screens after mount.
   const [N, setN] = useState<number>(FIELD.N_DESKTOP);
+  const [isPhone, setIsPhone] = useState(false);
   useEffect(() => {
     const viewport = window.matchMedia("(max-width: 1024px)");
     const phone = window.matchMedia("(max-width: 768px)");
-    const updatePoolSize = () =>
+    const updatePoolSize = () => {
       setN(phone.matches ? FIELD.N_PHONE : viewport.matches ? FIELD.N_MOBILE : FIELD.N_DESKTOP);
+      setIsPhone(phone.matches);
+    };
     updatePoolSize();
     viewport.addEventListener("change", updatePoolSize);
     phone.addEventListener("change", updatePoolSize);
@@ -112,12 +115,21 @@ export function ImageField({
   // Recomputed when the fetched count changes (empty → loaded). Tiles are
   // client-fetched (empty on the server), so there's no hydration concern;
   // hash01 just gives a stable spread once the list arrives.
+  // Phones fly stills only: several looping clips decoding at once inside
+  // moving cards made the field drop frames there. Every clip is still in the
+  // collection viewer. Falls back to the full pool if it holds only clips.
+  const fieldTiles = useMemo(() => {
+    if (!isPhone) return tiles;
+    const stills = tiles.filter((t) => !isVideoUrl(t));
+    return stills.length ? stills : tiles;
+  }, [isPhone, tiles]);
+
   const tileOrder = useMemo(
     () =>
-      Array.from({ length: tiles.length }, (_, k) => k).sort(
+      Array.from({ length: fieldTiles.length }, (_, k) => k).sort(
         (a, b) => hash01(a, 53.7) - hash01(b, 53.7),
       ),
-    [tiles.length],
+    [fieldTiles.length],
   );
 
   // Per-card identity — stable for the life of the pool. A card's tier sets
@@ -153,7 +165,7 @@ export function ImageField({
   // `tiles` is fetched once by the parent (Showcase) from /api/media, so a new
   // batch of arbitrarily-named files dropped into the S3 prefix "just works".
   const tileAt = (i: number) =>
-    tiles.length ? tiles[tileOrder[i % tiles.length]] : undefined;
+    fieldTiles.length ? fieldTiles[tileOrder[i % fieldTiles.length]] : undefined;
 
   // Reduced-motion cluster shows STILL images only — never autoplay a clip for
   // users who asked for less motion.
@@ -166,8 +178,6 @@ export function ImageField({
     let last = performance.now();
     let advance = 0;
     let running = true;
-    // Each time the field comes into view it starts with a burst (see ENTRY_BOOST).
-    let enteredAt = performance.now();
 
     // Scroll-velocity coupling: the field drifts at FLOW_SPEED when idle and
     // SPEEDS UP with scroll speed (either direction → magnitude). `scrollVel`
@@ -207,6 +217,9 @@ export function ImageField({
     let travelY = 0;
     let burstEndMult: number = FIELD.BURST_SCALE_END_MULT;
     let baseEndMult: number = FIELD.BASE_SCALE_END_MULT;
+    // Phones keep the idle pace throughout: scrolling in used to multiply it
+    // (cards blasting everywhere), which also made the scroll feel too fast.
+    let steady = false;
     const updateGeometry = () => {
       const root = rootRef.current;
       const width = root?.clientWidth ?? window.innerWidth;
@@ -215,6 +228,7 @@ export function ImageField({
       const phone = window.matchMedia("(max-width: 768px)").matches;
       burstEndMult = phone ? FIELD.PHONE_SCALE_END_MULT : FIELD.BURST_SCALE_END_MULT;
       baseEndMult = phone ? FIELD.PHONE_SCALE_END_MULT : FIELD.BASE_SCALE_END_MULT;
+      steady = phone;
       if (window.matchMedia("(max-width: 1024px)").matches) {
         const cardWidth = cardRefs.current[0]?.offsetWidth ?? 0;
         // Include the largest card's half-size and diagonal exit clearance.
@@ -236,7 +250,7 @@ export function ImageField({
     // and avoids repeating a tile across the seam. Runtime-only (inside the
     // effect, never SSR), so Math.random is safe here.
     const makeBag = () => {
-      const b = tiles.map((_, k) => k);
+      const b = fieldTiles.map((_, k) => k);
       for (let j = b.length - 1; j > 0; j--) {
         const r = Math.floor(Math.random() * (j + 1));
         [b[j], b[r]] = [b[r], b[j]];
@@ -261,6 +275,23 @@ export function ImageField({
     // its initially-rendered tile for its first observed cycle, then swaps on
     // every boundary thereafter.
     const lastCycle: (number | null)[] = new Array(N).fill(null);
+    // Last written per-card state; the loop only touches what changed.
+    const selectableNow: (boolean | null)[] = new Array(N).fill(null);
+    const zNow: string[] = new Array(N).fill("");
+    // Phones: cards swap photos mid-flight; decode each off the main thread
+    // and hold the card hidden until its photo is ready to paint.
+    const decodedSrc = new WeakMap<HTMLImageElement, string>();
+    const decoding = new WeakSet<HTMLImageElement>();
+    const decoded = (img: HTMLImageElement) => {
+      if (decodedSrc.get(img) === img.src) return true;
+      if (!decoding.has(img)) {
+        decoding.add(img);
+        const src = img.src;
+        const done = () => { decodedSrc.set(img, src); decoding.delete(img); };
+        img.decode().then(done, done);
+      }
+      return false;
+    };
 
     // Point a card at a tile, showing the right element: a still <img> or a
     // looping muted <video> (the other is hidden). Same swap pattern as before
@@ -321,12 +352,11 @@ export function ImageField({
       lastScrollY = window.scrollY;
       // Exponential smoothing (~150 ms time constant) toward instantaneous vel.
       scrollVel += (instantVel - scrollVel) * (1 - Math.exp(-dt / 0.15));
-      const boost = Math.min(
+      const boost = steady ? 0 : Math.min(
         FIELD.SCROLL_BOOST_MAX,
         FIELD.SCROLL_VEL_GAIN * Math.abs(scrollVel),
       );
-      const entry = FIELD.ENTRY_BOOST * Math.exp(-(now - enteredAt) / 1000 / FIELD.ENTRY_BOOST_S);
-      advance += (FIELD.FLOW_SPEED + boost + entry) * flowMult * dt;
+      advance += (FIELD.FLOW_SPEED + boost) * flowMult * dt;
 
       const fadeIn = (phase: number) => clamp01(phase / FIELD.FADE_IN_PHASE);
 
@@ -349,7 +379,7 @@ export function ImageField({
           lastCycle[i] = cycle; // adopt initial cycle, keep the rendered tile
         } else if (cycle !== lastCycle[i]) {
           lastCycle[i] = cycle;
-          if (tiles.length) applyMedia(i, tiles[drawTile()]);
+          if (fieldTiles.length) applyMedia(i, fieldTiles[drawTile()]);
         }
 
         // BASE tier direction: a golden-angle (phyllotaxis) base unique per
@@ -457,18 +487,25 @@ export function ImageField({
         const showingVideo = !!vid && vid.style.display !== "none";
         const mediaReady = showingVideo
           ? vid.readyState >= 2 // HAVE_CURRENT_DATA — a frame is paintable
-          : !!img && img.complete && img.naturalWidth > 0;
+          : !!img && img.complete && img.naturalWidth > 0 && (!steady || decoded(img));
         if (!mediaReady) opacity = 0;
 
         el.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale}) rotate(${rotation}deg)`;
         el.style.opacity = String(opacity);
         const selectable = opacity > 0.4 && Math.abs(x) < window.innerWidth / 2 && Math.abs(y) < window.innerHeight / 2;
-        el.style.pointerEvents = selectable ? "auto" : "none";
-        el.tabIndex = selectable ? 0 : -1;
-        el.setAttribute("aria-hidden", String(!selectable));
+        if (selectableNow[i] !== selectable) {
+          selectableNow[i] = selectable;
+          el.style.pointerEvents = selectable ? "auto" : "none";
+          el.tabIndex = selectable ? 0 : -1;
+          el.setAttribute("aria-hidden", String(!selectable));
+        }
         // Larger cards sort on top → growing burst cards rise above the
         // calmer base drifters. The focused card rises above them all.
-        el.style.zIndex = i === hovered ? "60" : String(Math.round(scale * 20));
+        const z = i === hovered ? "60" : String(Math.round(scale * 20));
+        if (zNow[i] !== z) {
+          zNow[i] = z;
+          el.style.zIndex = z;
+        }
       }
 
       if (running) rafId = requestAnimationFrame(frame);
@@ -480,7 +517,6 @@ export function ImageField({
       ([entry]) => {
         if (entry.isIntersecting && !running) {
           running = true;
-          enteredAt = performance.now();
           last = performance.now(); // avoid a huge dt jump on resume
           lastScrollY = window.scrollY; // avoid a velocity spike on resume
           scrollVel = 0;
@@ -512,7 +548,7 @@ export function ImageField({
       io.disconnect();
       geometryObserver.disconnect();
     };
-  }, [reducedMotion, N, cards, tiles]);
+  }, [reducedMotion, N, cards, fieldTiles, tiles]);
 
   return (
     <div
@@ -608,6 +644,7 @@ export function ImageField({
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{ display: video ? "none" : undefined }}
                 loading="lazy"
+                decoding={isPhone ? "async" : undefined}
                 draggable={false}
               />
               <video

@@ -150,7 +150,7 @@ body {
   /* Keep a real fly-through on touch screens, not a one-swipe video reveal. */
   .showcase-stage {
     --showcase-reveal-height: calc(var(--lock-vh, 1vh) * 300);
-    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 160);
+    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 240);
   }
 
   .showcase-viewport {
@@ -159,16 +159,16 @@ body {
   }
 
   .showcase-tile {
-    width: clamp(132px, 24vw, 200px);
+    width: clamp(156px, 30vw, 240px);
   }
 }
 
 @media (max-width: 768px) {
   /* The card fly-through keeps its length; the full-view video holds for
-     about a swipe and a half (it was three screens), then Services. */
+     under one screen, so two swipes (not three) carry on into Services. */
   .showcase-stage {
     --showcase-reveal-height: calc(var(--lock-vh, 1vh) * 340);
-    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 140);
+    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 60);
   }
 
   .showcase-tile {
