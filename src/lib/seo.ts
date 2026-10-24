@@ -121,20 +121,20 @@ export const SITE = {
       a: "Photography and portrait series, AI-generated films and commercials, and creative tech: immersive 3D websites and the AI tools behind the content. The work is shared on Instagram as @ming.creatives and collected on this site.",
     },
     {
-      q: "Can I collaborate with Ming Creatives?",
-      a: "Yes. Ming Creatives takes on brand collaborations and projects in AIGC content and AI-driven TV commercials (TVCs), AI agents and data tools, and SaaS and immersive web products. Start a conversation on WhatsApp from any Start a project button.",
+      q: "What services does Ming Creatives offer?",
+      a: "Projects in AIGC content and AI-driven TV commercials (TVCs), AI agents and data tools, and SaaS and immersive web products. Start a conversation on WhatsApp from any Start a project button.",
     },
     {
-      q: "What AI and software work can recruiters explore?",
-      a: "AI Projects features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains the contribution, how the system works, its operating status, and outcomes where verified.",
+      q: "What kind of brand collaborations does Ming Creatives take on?",
+      a: "Sponsored content and product features on Instagram, AI-generated videos and commercials for campaigns, photography, and creative-tech builds such as immersive websites. Share your brand, timeline and goals on WhatsApp to start.",
     },
     {
-      q: "Are the code repositories public?",
-      a: "No. Source repositories aren't linked from this site. Each case study explains how the system works, and a live walkthrough is available on request through WhatsApp or the contact section.",
+      q: "How does Ming Creatives use AI in the work?",
+      a: "AI is part of the toolkit, not a replacement for direction. Each film starts from a concept and storyboard; AI handles generation, then the edit, sound and finish are done by hand. Behind the scenes, AI agents built by Ming Creatives handle research and everyday workflows.",
     },
     {
       q: "What is the engineering background behind Ming Creatives?",
-      a: "The creator behind Ming Creatives holds a Computer Science degree and completed a six-month automation engineering internship at a Malaysian fintech investment platform in 2024, covering a compliance pipeline, an investor-classification enhancement, and fintech releases.",
+      a: "Ming Creatives is more than a Computer Science engineer: a Computer Science degree and engineering experience in the fintech industry sit behind the AI agents and web products featured on this site. The Engineering section has the details.",
     },
     {
       q: "Where can I follow Ming Creatives?",
