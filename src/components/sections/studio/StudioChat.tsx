@@ -10,18 +10,24 @@ import {
   Checks,
   Microphone,
   Phone,
+  Play,
   Plus,
+  SpeakerHigh,
+  SpeakerSlash,
   Sticker,
   VideoCamera,
 } from "@phosphor-icons/react";
 import { SITE } from "@/lib/seo";
-import { SERVICE_RAYS, STUDIO_PROMPTS } from "@/lib/studio";
+import { AIGC_FILM, SERVICE_RAYS, STUDIO_PROMPTS } from "@/lib/studio";
+import { FilmScreening } from "./FilmScreening";
 import { SERVICE_ICONS } from "./serviceIcons";
 import styles from "./Studio.module.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const REPLY_DELAY_MS = 800;
 const TIME = "9:41 AM";
+// The storyboard brief (AIGC) answers with a film.
+const AIGC_INDEX = 0;
 // An iOS glass capsule: light-to-clear fill, bright top rim, faint lower rim, lift shadow.
 const GLASS =
   "border border-white/[0.18] bg-[linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.06))] shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.5),inset_0_-1px_1px_rgba(255,255,255,0.1),0_8px_20px_-8px_rgba(0,0,0,0.65)] backdrop-blur-xl backdrop-saturate-150";
@@ -68,15 +74,30 @@ function IosBattery({ level }: { level: number }) {
 export function StudioChat({ reduced }: { reduced: boolean }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [replying, setReplying] = useState(false);
+  const [filmClosed, setFilmClosed] = useState(false);
+  const [wide, setWide] = useState(false);
   const threadRef = useRef<HTMLDivElement>(null);
   const exchangeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setFilmClosed(false);
     if (picked === null || reduced) return;
     setReplying(true);
     const timer = window.setTimeout(() => setReplying(false), REPLY_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [picked, reduced]);
+
+  // Wide screens screen the AIGC film beside the phone; narrow ones send it
+  // into the chat as a video message.
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => setWide(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  const aigcReply = picked === AIGC_INDEX && !replying;
+  const screening = wide && aigcReply && !filmClosed;
 
   // Keep the newest message in full view. The reply mounts only after the
   // typing dots finish leaving, so follow the conversation's size rather than state.
@@ -104,9 +125,38 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
       };
   const stamp = <span className="float-right ml-2 mt-1.5 text-[10px] leading-none text-white/45">{TIME}</span>;
 
+  // The suggestion rows from the desktop demo: quiet until hovered.
+  const options = (indices: number[], label: string) => (
+    <ul aria-label={label} className="mt-1 space-y-1">
+      {indices.map((i) => {
+        const Icon = SERVICE_ICONS[i];
+        return (
+          <li key={STUDIO_PROMPTS[i]}>
+            <button
+              type="button"
+              onClick={() => setPicked(i)}
+              className="flex min-h-11 w-full items-center gap-3 rounded-md px-2.5 py-1.5 text-left text-[13px] leading-snug text-zinc-300 transition-colors hover:bg-white/[0.04] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200"
+            >
+              <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-md bg-white/[0.06] text-brand-300">
+                <Icon size={16} weight="fill" />
+              </span>
+              <span className="flex-1">{STUDIO_PROMPTS[i]}</span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
-    <div className="relative mx-auto mt-24 flex w-full justify-center px-6 text-white md:mt-32">
-      <motion.figure {...reveal} aria-label="WhatsApp chat tour of Ming's services" className="w-full max-w-[380px]">
+    <div className="relative mx-auto mt-24 flex w-full max-w-[1240px] items-center justify-center gap-10 px-6 text-white md:mt-32 xl:gap-16">
+      <motion.figure
+        {...reveal}
+        layout="position"
+        transition={{ duration: 0.7, ease: EASE, layout: { duration: 0.85, ease: EASE } }}
+        aria-label="WhatsApp chat tour of Ming's services"
+        className="w-[min(380px,100%)] shrink-0"
+      >
         <div className="rounded-[58px] border border-white/15 bg-[#1b1c20] p-[9px] shadow-[0_50px_120px_-40px_rgba(0,0,0,0.85),inset_0_0_0_1px_rgba(255,255,255,0.05)]">
           <div className="relative flex h-[680px] flex-col overflow-hidden rounded-[49px] bg-[#0b0b0c]">
             {/* Plain dark wallpaper with a faint dot weave. */}
@@ -160,29 +210,19 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
                 Pick a service below and I&apos;ll show you how I&apos;d approach it.{stamp}
               </p>
 
-              {/* The suggestion rows from the desktop demo: quiet until hovered or picked. */}
-              <ul aria-label="Pick a service" className="mt-1 space-y-1">
-                {STUDIO_PROMPTS.map((prompt, i) => {
-                  const Icon = SERVICE_ICONS[i];
-                  return (
-                    <li key={prompt}>
-                      <button
-                        type="button"
-                        aria-pressed={picked === i}
-                        onClick={() => setPicked(i)}
-                        className={`flex min-h-11 w-full items-center gap-3 rounded-md px-2.5 py-1.5 text-left text-[13px] leading-snug transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200 ${
-                          picked === i ? "bg-white/[0.07] text-white" : "text-zinc-300 hover:bg-white/[0.04] hover:text-white"
-                        }`}
-                      >
-                        <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-md bg-white/[0.06] text-brand-300">
-                          <Icon size={16} weight="fill" />
-                        </span>
-                        <span className="flex-1">{prompt}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+              {/* Before a pick: all three options. They fold away once one is
+                  sent, so the conversation continues right under Ming. */}
+              <AnimatePresence initial={false}>
+                {picked === null ? (
+                  <motion.div
+                    key="options"
+                    className="overflow-hidden"
+                    exit={reduced ? { opacity: 0 } : { opacity: 0, height: 0, transition: { duration: 0.3, ease: EASE } }}
+                  >
+                    {options([0, 1, 2], "Pick a service")}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
               {service !== null && picked !== null ? (
                 <div key={picked} ref={exchangeRef} className="mt-2 flex flex-col gap-1.5">
@@ -200,26 +240,62 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
                         ))}
                       </motion.span>
                     ) : (
-                      <motion.div key="reply" {...fade} className="max-w-[86%] self-start overflow-hidden rounded-[16px] rounded-tl-[5px] bg-[#262628]">
-                        <div className="px-3 pb-1.5 pt-2">
-                          <p className="font-semibold">{service.name}</p>
-                          <p className="mt-1 text-white/80">{service.description}</p>
-                          <p className="mt-2 text-[12px] font-medium" style={{ color: SERVICE_RAYS[picked].color }}>
-                            {service.outcome}
-                            {stamp}
-                          </p>
+                      <motion.div key="reply" {...fade} className="flex flex-col gap-1.5">
+                        {aigcReply && !wide ? <FilmMessage /> : null}
+                        <div className="max-w-[86%] self-start overflow-hidden rounded-[16px] rounded-tl-[5px] bg-[#262628]">
+                          <div className="px-3 pb-1.5 pt-2">
+                            <p className="font-semibold">{service.name}</p>
+                            <p className="mt-1 text-white/80">{service.description}</p>
+                            {aigcReply && wide ? (
+                              filmClosed ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setFilmClosed(false)}
+                                  className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/15 px-3 text-[12px] font-medium text-white/85 transition-colors hover:border-white/35 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200"
+                                >
+                                  <Play aria-hidden="true" size={12} weight="fill" /> Watch the film again
+                                </button>
+                              ) : (
+                                <p className="mt-2 flex items-center gap-2 text-[12px] text-white/70">
+                                  <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full" style={{ background: SERVICE_RAYS[picked].color }} />
+                                  Now screening beside this chat
+                                </p>
+                              )
+                            ) : null}
+                            <p className="mt-2 text-[12px] font-medium" style={{ color: SERVICE_RAYS[picked].color }}>
+                              {service.outcome}
+                              {stamp}
+                            </p>
+                          </div>
+                          <a
+                            href={SITE.whatsapp}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex min-h-11 items-center justify-center gap-1.5 border-t border-white/10 text-[14px] font-medium text-[#21c063] transition-colors hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-200"
+                          >
+                            <ArrowSquareOut aria-hidden="true" size={16} /> Continue on WhatsApp
+                          </a>
                         </div>
-                        <a
-                          href={SITE.whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex min-h-11 items-center justify-center gap-1.5 border-t border-white/10 text-[14px] font-medium text-[#21c063] transition-colors hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-200"
-                        >
-                          <ArrowSquareOut aria-hidden="true" size={16} /> Continue on WhatsApp
-                        </a>
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  {/* After the reply, Ming offers the other two services. */}
+                  {!replying ? (
+                    <motion.div
+                      initial={reduced ? false : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, ease: EASE, delay: reduced ? 0 : 0.45 }}
+                      className="mt-1.5 flex flex-col gap-1.5"
+                    >
+                      <p className="max-w-[80%] self-start rounded-[16px] rounded-tl-[5px] bg-[#262628] px-3 py-1.5">
+                        Want to see how I&apos;d approach something else?{stamp}
+                      </p>
+                      {options(
+                        [0, 1, 2].filter((i) => i !== picked),
+                        "Explore another service",
+                      )}
+                    </motion.div>
+                  ) : null}
                 </div>
               ) : null}
             </div>
@@ -248,6 +324,58 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
           A quick tour of the services. Replies here are pre-written; real conversations happen on WhatsApp.
         </figcaption>
       </motion.figure>
+
+      {/* popLayout lifts the closing screen out of the flow at once, so the
+          phone glides back to centre while the screen fades. */}
+      <AnimatePresence mode="popLayout">
+        {screening ? <FilmScreening key="film" reduced={reduced} onClose={() => setFilmClosed(true)} /> : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** Narrow screens: the film arrives in the chat as a WhatsApp video message. */
+function FilmMessage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(true);
+  const toggle = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setMuted(video.muted);
+    void video.play().catch(() => {});
+  };
+  return (
+    <div className="self-start overflow-hidden rounded-[16px] rounded-tl-[5px] bg-[#262628] p-1">
+      <div className="relative aspect-[9/16] h-[300px] overflow-hidden rounded-[12px] bg-black">
+        <video
+          ref={videoRef}
+          src={AIGC_FILM.src}
+          poster={AIGC_FILM.poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-label={`${AIGC_FILM.title}, a 15-second AI-generated film`}
+          className="absolute inset-0 size-full object-cover"
+        />
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={muted ? "Play the film with sound" : "Mute the film"}
+          className="absolute inset-0 flex items-end justify-between p-2.5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-200"
+        >
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[11px] text-white backdrop-blur-md">
+            {muted ? <SpeakerSlash aria-hidden="true" size={12} /> : <SpeakerHigh aria-hidden="true" size={12} />}
+            {muted ? "Tap for sound" : "Sound on"}
+          </span>
+          <span className="rounded-full bg-black/55 px-2 py-0.5 text-[10px] tabular-nums text-white/85">0:15</span>
+        </button>
+      </div>
+      <p className="px-2 pb-1 pt-1.5 text-[13px]">
+        {AIGC_FILM.title}
+        <span className="float-right ml-2 mt-1 text-[10px] leading-none text-white/45">{TIME}</span>
+      </p>
     </div>
   );
 }

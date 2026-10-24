@@ -163,12 +163,33 @@ export const SERVICE_PROOF = [
   {
     anchor: "work-web",
     title: "Solution Architect",
-    image: "/project-previews/duitsini-dashboard.webp",
-    alt: "DuitSini dashboard showing live Claude and Codex usage limits beside a music player",
+    image: "/project-previews/duitsini-dashboard-v2.webp",
+    alt: "DuitSini dashboard showing live Claude and Codex usage limits beside a YouTube-synced music player",
     caption: "DuitSini: an LLM usage and finance tracker, with live agent limits for Claude and Codex at a glance.",
     link: { label: "View on GitHub", href: "https://github.com/pmgwee/DuitSini" },
   },
 ] as const;
+
+/**
+ * The AIGC film screened when the storyboard brief is picked: one continuous
+ * AI-generated shot (9:16, 15s, with sound) of a man opening his front door
+ * onto an upside-down world. Shot labels describe what is on screen; `at` is
+ * where each storyboard beat starts, in seconds.
+ */
+export const AIGC_FILM = {
+  title: "Through the Door",
+  src: "/showcase-films/aigc/through-the-door.mp4",
+  poster: "/showcase-films/aigc/poster.webp",
+  duration: 15,
+  shots: [
+    { at: 0, label: "The hallway", frame: "/showcase-films/aigc/shot-1.webp" },
+    { at: 1.6, label: "Hand on the latch", frame: "/showcase-films/aigc/shot-2.webp" },
+    { at: 3.3, label: "The door opens", frame: "/showcase-films/aigc/shot-3.webp" },
+    { at: 5.2, label: "A look back", frame: "/showcase-films/aigc/shot-4.webp" },
+    { at: 7.2, label: "Step through", frame: "/showcase-films/aigc/shot-5.webp" },
+    { at: 9.6, label: "Into the meadow", frame: "/showcase-films/aigc/shot-6.webp" },
+  ],
+} as const;
 
 /** Sample briefs for the chat tour, one per service in `SITE.services` order. */
 export const STUDIO_PROMPTS = [

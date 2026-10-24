@@ -54,6 +54,19 @@
   .draw { transition: none; }
 }
 
+/* Film portal: a spectral rim (the prism's light) turning slowly round the screen. */
+.portalRim {
+  position: relative; isolation: isolate; overflow: hidden; padding: 1.5px; border-radius: 32px;
+  box-shadow: 0 50px 120px -40px rgb(0 0 0 / 85%), 0 0 0 1px rgb(255 255 255 / 6%);
+}
+.portalRim::before {
+  content: ""; position: absolute; inset: -60%; z-index: -1;
+  background: conic-gradient(from 0deg, #ffb86b, #ffe08a, #5ee6d0, #6aa8ff, #c9a6ff, #ff9fc4, #ffb86b);
+  animation: rim 9s linear infinite;
+}
+@keyframes rim { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .portalRim::before { animation: none; } }
+
 /* Dynamic Island live activity: a sound wave that keeps moving. */
 .wave { animation: wave 1s ease-in-out infinite alternate; }
 @keyframes wave { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }

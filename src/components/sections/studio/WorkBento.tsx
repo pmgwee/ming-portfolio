@@ -142,6 +142,9 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
                         alt={proof.alt}
                         fill
                         sizes="(min-width: 1024px) 620px, 100vw"
+                        // A UI screenshot with small text: serve the near-lossless
+                        // file as-is rather than letting the optimizer re-compress it.
+                        unoptimized
                         className="object-cover object-left-top transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none"
                       />
                     </div>
