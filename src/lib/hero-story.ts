@@ -12,13 +12,13 @@ export const HERO_FILM = {
 export const HERO_CHAPTERS = [
   {
     id: "about", number: "01", label: "About me", title: "About me.",
-    body: `I'm ${SITE.personName}, a Malaysian Computer Science graduate. I build production AI systems and software, with a creative technologist's eye for how they look and feel.`,
+    body: `I'm ${SITE.personName}, a Malaysian content creator with a Computer Science background. I make photography, AI films and immersive web, and share them on Instagram.`,
     action: "Explore my experience", href: "/experiences",
     start: 2.9, end: 4.95, jump: 3.75, side: "left",
   },
   {
-    id: "studio", number: "02", label: "The studio", title: "Ming Creatives.",
-    body: "My creative studio for immersive websites, business apps, 3D animation, and generative-AI production. Designed, built, and shipped end to end.",
+    id: "studio", number: "02", label: "The creative work", title: "Ming Creatives.",
+    body: "Portrait series, AI-generated films and 3D web experiences, made end to end and shared as @ming.creatives.",
     action: "Discover the collections", href: "#showcase",
     start: 5.05, end: 6.35, jump: 5.65, side: "right",
   },
@@ -30,15 +30,15 @@ export const HERO_CHAPTERS = [
   },
   {
     id: "explore", number: "04", label: "Explore", title: "Choose your next chapter.",
-    body: "Explore my engineering work, step inside the studio, or tell me what you want to build.",
+    body: "Explore the creative work and the AI behind it, or tell me what you'd like to make together.",
     action: "Start a conversation", href: "#contact",
     start: 13.4, end: 15.5, jump: 14.2, side: "index",
   },
 ] as const;
 
 export const HERO_DESTINATIONS = [
-  { label: "Studio", href: "#showcase", detail: "Visual work" },
-  { label: "Services", href: "#services", detail: "Work with the studio" },
+  { label: "Creative work", href: "#showcase", detail: "Collections & films" },
+  { label: "Collaborate", href: "#services", detail: "Work with Ming Creatives" },
   { label: "AI Projects", href: "/ai-projects", detail: "Systems & software" },
   { label: "Experiences", href: "/experiences", detail: "Background & practice" },
   { label: "Side Projects", href: "/side-projects", detail: "Earlier experiments" },

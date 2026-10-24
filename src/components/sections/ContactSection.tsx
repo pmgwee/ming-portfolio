@@ -110,8 +110,8 @@ export function ContactSection() {
           </form>}
         </div>
         <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm">
-          <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200">{COPY.profile}</a>
-          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200">{COPY.studio}</a>
+          <a href={SITE.instagram} target="_blank" rel="noopener noreferrer me" className="text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200">{COPY.instagram}</a>
+          <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="text-zinc-300 underline decoration-white/30 underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200">{COPY.collab}</a>
         </div>
       </div>
     </section>

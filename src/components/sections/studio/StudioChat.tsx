@@ -154,7 +154,7 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
         {...reveal}
         layout="position"
         transition={{ duration: 0.7, ease: EASE, layout: { duration: 0.85, ease: EASE } }}
-        aria-label="WhatsApp chat tour of Ming's services"
+        aria-label="WhatsApp chat tour of Ming Creatives' services"
         className="w-[min(380px,100%)] shrink-0"
       >
         <div className="rounded-[58px] border border-white/15 bg-[#1b1c20] p-[9px] shadow-[0_50px_120px_-40px_rgba(0,0,0,0.85),inset_0_0_0_1px_rgba(255,255,255,0.05)]">
@@ -204,14 +204,14 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
             <div ref={threadRef} aria-live="polite" data-lenis-prevent className="relative flex flex-1 flex-col gap-1.5 overflow-y-auto px-3 pb-24 pt-[124px] text-[14px] leading-[1.4] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <p className="mx-auto mb-1.5 rounded-full bg-white/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-white/60">Today</p>
               <p className="max-w-[80%] self-start rounded-[16px] rounded-tl-[5px] bg-[#262628] px-3 py-1.5">
-                Hi, I&apos;m Ming. What would you like to create?{stamp}
+                Hi, this is Ming Creatives. What would you like to create?{stamp}
               </p>
               <p className="max-w-[80%] self-start rounded-[16px] rounded-tl-[5px] bg-[#262628] px-3 py-1.5">
                 Pick a service below and I&apos;ll show you how I&apos;d approach it.{stamp}
               </p>
 
               {/* Before a pick: all three options. They fold away once one is
-                  sent, so the conversation continues right under Ming. */}
+                  sent, so the conversation continues right under Ming Creatives. */}
               <AnimatePresence initial={false}>
                 {picked === null ? (
                   <motion.div
@@ -279,7 +279,7 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  {/* After the reply, Ming offers the other two services. */}
+                  {/* After the reply, Ming Creatives offers the other two services. */}
                   {!replying ? (
                     <motion.div
                       initial={reduced ? false : { opacity: 0, y: 8 }}
@@ -309,7 +309,7 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
                 rel="noopener noreferrer"
                 className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-full border border-white/10 bg-white/[0.12] pl-3.5 pr-2 text-[13px] text-white/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] transition-colors hover:text-white/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200"
               >
-                <span className="flex-1 truncate">Message Ming on WhatsApp</span>
+                <span className="flex-1 truncate">Message Ming Creatives</span>
                 <Sticker aria-hidden="true" size={20} className="text-white/70" />
               </a>
               <Camera aria-hidden="true" size={24} />

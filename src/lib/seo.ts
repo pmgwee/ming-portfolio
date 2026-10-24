@@ -1,41 +1,37 @@
 /**
- * Public identity, metadata, and studio details used across the portfolio.
- * Ming is the person (the real name is not published); Ming Creatives is the studio.
+ * Public identity and metadata used across the site.
+ * Ming Creatives (@ming.creatives) is a content-creator brand, not a studio.
+ * It stays separate from the creator's real-name identity: never publish the
+ * real name, and never link the LinkedIn or GitHub profiles built on it.
  */
 const BIOGRAPHY =
-  "Ming is a Malaysian Data & AI Consultant with a Computer Science background and fintech software engineering internship experience. He builds and scales production AI agents and agentic solutions using emerging AI technologies. He shares his studio work through @ming.creatives on Instagram.";
+  "Ming Creatives is a Malaysian content creator on Instagram as @ming.creatives, sharing photography, AI-generated films, and the creative tech behind them. The creator has a Computer Science background and fintech engineering internship experience, and builds the AI agents and immersive web experiences featured here.";
 
 export const SITE = {
   url: "https://www.mingcreatives.com",
-  name: "Ming",
-  shortName: "Ming",
-  studioName: "Ming Creatives",
+  name: "Ming Creatives",
+  shortName: "Ming Creatives",
+  handle: "@ming.creatives",
   // Give each new logo version a new filename: image caches key on the path.
   logo: "/logo-resized.png",
-  personName: "Ming",
-  alternateNames: ["Ming Creatives"],
-  title: "Ming | Data & AI Consultant",
+  personName: "Ming Creatives",
+  alternateNames: ["ming.creatives", "mingcreatives"],
+  title: "Ming Creatives | Content Creator",
   description:
-    "Ming is a Malaysian Data & AI Consultant building production AI agents and agentic solutions. CS graduate, former fintech engineering intern, and founder of the Ming Creatives studio.",
-  // Current independent identity confirmed by Ming on 2026-10-16, not an
-  // employer-held role or a replacement title for the iFAST internship.
-  jobTitle: "Data & AI Consultant",
-  headline: "Data & AI Consultant",
+    "Ming Creatives is a Malaysian content creator on Instagram (@ming.creatives): photography, AI-generated films, and the AI agents and immersive web built behind them.",
+  // Brand identity confirmed by the creator on 2026-10-25: a content creator
+  // on Instagram, replacing the earlier Data & AI Consultant positioning.
+  jobTitle: "Content Creator",
+  headline: "Content Creator",
   biography: BIOGRAPHY,
   introduction:
-    "I build and scale production AI agents and data solutions using emerging AI technologies. I translate real-world business needs into end-to-end systems, combining applied AI with data engineering.",
-  background: "Malaysian · Computer Science graduate · Former fintech engineering intern",
-  studioDescription:
-    "Ming Creatives is Ming's studio for immersive web design, business websites and apps, AI agents and data engineering, and generative-AI creative production.",
+    "The AI agents and data tools behind the work, built to run every day rather than stop at a demo, from automated workflows to retrieval systems that cite their sources.",
   nationality: "Malaysian",
   locale: "en_MY",
-  linkedin: "https://www.linkedin.com/in/gweeperming/",
-  github: "https://github.com/pmgwee",
   instagram: "https://www.instagram.com/ming.creatives/",
-  studioExploreUrl: "https://www.instagram.com/yier.ming/",
   whatsapp: "https://wa.me/message/DFUGF3HXISNEF1",
   contact: {
-    email: "perminggwee@gmail.com",
+    email: "leeahming199@gmail.com",
     title: "Coffee, ideas, and what’s next.",
     description: "A conversation about the work, a potential opportunity, or a résumé request. Choose a starting point.",
     topics: [
@@ -58,20 +54,20 @@ export const SITE = {
     required: "Required fields",
     privacy: "Your details aren’t saved or sent by this website.",
     directEmail: "Or email me directly",
-    profile: "Engineering profile",
-    studio: "Studio inquiry",
+    instagram: "Follow @ming.creatives",
+    collab: "Collaboration inquiry",
   },
   gscVerification: "VY-sT_74iIU6P13LMHLRgPbYhsEdm9uOKgkpgg_QtFs",
   keywords: [
-    "Ming",
-    "Data & AI Consultant",
-    "Data engineering",
-    "ming.creatives",
-    "Production AI agents",
-    "AI agent systems",
-    "RAG systems",
-    "Creative Technologist",
     "Ming Creatives",
+    "ming.creatives",
+    "Content creator",
+    "Malaysian content creator",
+    "AI films",
+    "AIGC",
+    "Photography",
+    "Creative technology",
+    "AI agents",
     "3D web animation",
   ],
   expertise: [
@@ -89,6 +85,8 @@ export const SITE = {
     "Business web application development",
     "AI agents and agentic solutions",
     "Generative-AI creative work",
+    "Content creation",
+    "Photography",
   ],
   services: [
     {
@@ -115,41 +113,39 @@ export const SITE = {
   ],
   faq: [
     {
-      q: "Who is Ming?",
+      q: "Who is Ming Creatives?",
       a: BIOGRAPHY,
     },
     {
-      q: "What is Ming Creatives?",
-      a: "Ming Creatives is Ming's studio identity for client-facing digital and visual work, and the name of his @ming.creatives content channel. Ming is the person. Ming Creatives is the studio. Yierming Production is separate past experience.",
+      q: "What does Ming Creatives make?",
+      a: "Photography and portrait series, AI-generated films and commercials, and creative tech: immersive 3D websites and the AI tools behind the content. The work is shared on Instagram as @ming.creatives and collected on this site.",
     },
     {
-      q: "What services does Ming Creatives offer?",
-      a: "Ming Creatives offers AIGC content and AI-driven TV commercial (TVC) production, AI agents and data engineering, and SaaS and web products, from cinematic 3D and immersive websites to business web apps.",
+      q: "Can I collaborate with Ming Creatives?",
+      a: "Yes. Ming Creatives takes on brand collaborations and projects in AIGC content and AI-driven TV commercials (TVCs), AI agents and data tools, and SaaS and immersive web products. Start a conversation on WhatsApp from any Start a project button.",
     },
     {
       q: "What AI and software work can recruiters explore?",
-      a: "AI Projects features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains Ming’s contribution, how the system works, its operating status, and outcomes where verified.",
+      a: "AI Projects features the Personal Always-On AI Agent, Cross-Agent Context Engineering, BersamaAi Community Agents, the INTI-MBA RAG Chatbot, and Career Ops. Each case study explains the contribution, how the system works, its operating status, and outcomes where verified.",
     },
     {
-      q: "What does his Data & AI consulting focus on?",
-      a: "His independent practice focuses on building and scaling production AI agents and agentic solutions. Data engineering and software development support the work, from source-data pipelines and retrieval to deployment and operation.",
+      q: "Are the code repositories public?",
+      a: "No. Source repositories aren't linked from this site. Each case study explains how the system works, and a live walkthrough is available on request through WhatsApp or the contact section.",
     },
     {
-      q: "What is his fintech engineering background?",
-      a: "Ming completed a six-month Automation Engineer internship at iFAST Capital from March to August 2024. His work covered a Spring Batch compliance pipeline, an end-to-end investor-classification enhancement, and collaboration on fintech releases.",
+      q: "What is the engineering background behind Ming Creatives?",
+      a: "The creator behind Ming Creatives holds a Computer Science degree from Universiti Sains Malaysia and completed a six-month Automation Engineer internship at iFAST Capital from March to August 2024, covering a Spring Batch compliance pipeline, an investor-classification enhancement, and fintech releases.",
     },
     {
-      q: "Where can I follow Ming's work?",
-      a: "Ming shares Ming Creatives studio work on Instagram as @ming.creatives, alongside his Data & AI consulting. The profile is linked through Let's Connect in the introduction and the Instagram link in the footer.",
+      q: "Where can I follow Ming Creatives?",
+      a: "On Instagram as @ming.creatives. The profile is linked from the Follow buttons on this page and the Instagram icon in the footer.",
     },
     {
-      q: "How can I discuss a Ming Creatives project?",
-      a: "Use the creative project contact link on this page to reach Ming Creatives about web, 3D, AI agents, data engineering, or generative-AI production work.",
+      q: "How do I get in touch?",
+      a: "For collaborations, message Ming Creatives on WhatsApp from any Start a project or Contact button. For anything else, use the contact section to open an email draft to leeahming199@gmail.com.",
     },
   ],
   socials: [
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/gweeperming/" },
-    { label: "GitHub", href: "https://github.com/pmgwee" },
     { label: "Instagram", href: "https://www.instagram.com/ming.creatives/" },
   ],
 } as const;
@@ -159,5 +155,5 @@ export function absoluteUrl(path = "/"): string {
 }
 
 export function sameAs(): string[] {
-  return [SITE.linkedin, SITE.github, SITE.instagram];
+  return [SITE.instagram];
 }

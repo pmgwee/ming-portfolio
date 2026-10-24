@@ -1,16 +1,14 @@
-import { GithubLogo, InstagramLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
+import { InstagramLogo } from "@phosphor-icons/react/dist/ssr";
 import type { Icon } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { SITE } from "@/lib/seo";
 
 const SOCIAL_ICONS: Record<string, Icon> = {
-  LinkedIn: LinkedinLogo,
-  GitHub: GithubLogo,
   Instagram: InstagramLogo,
 };
 
 const EXPLORE = [
-  { label: "Studio", href: "#showcase" as const },
+  { label: "Creative work", href: "#showcase" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Services", href: "#services" as const },
   { label: "Career", href: "#career" as const },
@@ -40,7 +38,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  aria-label={`${social.label} profile for Ming`}
+                  aria-label={`${SITE.name} on ${social.label}`}
                   className="rounded-sm text-zinc-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
                 >
                   <IconComponent aria-hidden="true" weight="regular" className="size-5" />
@@ -48,15 +46,15 @@ export function Footer() {
               );
             })}
           </div>
-          <p className="mt-7 text-base font-semibold tracking-tight text-white">Ming</p>
-          <p className="mt-1 text-sm text-zinc-300">Ming Creatives · creative studio</p>
+          <p className="mt-7 text-base font-semibold tracking-tight text-white">{SITE.name}</p>
+          <p className="mt-1 text-sm text-zinc-300">{SITE.jobTitle} · {SITE.handle}</p>
           <p className="mt-4 max-w-[46ch] text-sm leading-relaxed text-zinc-400">
-            I am a Malaysian Data &amp; AI Consultant.
-            Ming Creatives is my studio for web experiences, 3D animation,
-            AI agents and data engineering, and generative-AI creative work.
+            A Malaysian content creator sharing photography, AI films, and the
+            creative tech behind them: immersive web, 3D animation, and AI
+            agents.
           </p>
           <p className="mt-6 text-xs text-zinc-500">
-            © {year} Ming · {SITE.nationality}
+            © {year} {SITE.name} · {SITE.nationality}
           </p>
         </div>
 
@@ -76,16 +74,16 @@ export function Footer() {
         <div>
           <h2 className="text-sm font-semibold text-white">The right conversation</h2>
           <p className="mt-4 max-w-[34ch] text-sm leading-relaxed text-zinc-400">
-            Engineering teams can explore my systems, experience, and public
-            profiles. Creative clients can start a project with Ming Creatives.
+            Brands and creators can start a collaboration with Ming Creatives.
+            Recruiters can explore the AI projects and experience.
           </p>
           <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
-            <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer me" className={linkClass}>
-              Engineering profile
-            </a>
             <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className={linkClass}>
-              Creative inquiry
+              Collaboration inquiry
             </a>
+            <AnchorLink href="/ai-projects" className={linkClass}>
+              AI projects
+            </AnchorLink>
           </div>
         </div>
       </div>

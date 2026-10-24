@@ -44,12 +44,12 @@ export function HeroText({
         {count > 0 ? <button type="button" className={styles.browse} onClick={event => onBrowse(event.currentTarget)}>
           Explore collection <span className={styles.browseCount}>{String(count).padStart(2, "0")}</span><ArrowUpRight aria-hidden="true" />
         </button> : <Button
-          href={SITE.studioExploreUrl}
+          href={SITE.instagram}
           showArrow
           target="_blank"
           rel="noopener noreferrer"
         >
-          Explore the studio
+          See more on Instagram
         </Button>}
         <Button
           href={SITE.instagram}

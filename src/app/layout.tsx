@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   keywords: [...SITE.keywords],
-  applicationName: `${SITE.name} · ${SITE.studioName}`,
+  applicationName: SITE.name,
   authors: [{ name: SITE.personName, url: SITE.url }],
   creator: SITE.personName,
   publisher: SITE.personName,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE.url,
-    siteName: `${SITE.name} · ${SITE.studioName}`,
+    siteName: SITE.name,
     title: SITE.title,
     description: SITE.description,
     locale: SITE.locale,

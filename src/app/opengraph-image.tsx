@@ -3,7 +3,7 @@ import { SITE } from "@/lib/seo";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = `${SITE.personName}, ${SITE.jobTitle}. Ming Creatives studio identity.`;
+export const alt = `${SITE.name}, ${SITE.jobTitle} on Instagram as ${SITE.handle}.`;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -33,7 +33,7 @@ export default function OpenGraphImage() {
             textTransform: "uppercase",
           }}
         >
-          {SITE.studioName}
+          {SITE.handle}
         </div>
         <div
           style={{
@@ -58,7 +58,7 @@ export default function OpenGraphImage() {
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 22, color: "#a1a1aa" }}>
-          Production AI agents · Data engineering · {SITE.nationality}
+          Photography · AI films · Creative tech · {SITE.nationality}
         </div>
       </div>
     ),

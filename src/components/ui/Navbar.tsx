@@ -8,7 +8,7 @@ import { SITE } from "@/lib/seo";
 import styles from "./Navbar.module.css";
 
 const LINKS = [
-  { label: "Studio", href: "#showcase" as const },
+  { label: "Creative work", href: "#showcase" as const },
   { label: "Services", href: "#services" as const },
   { label: "Product", href: "#career-plan" as const },
   { label: "Career", href: "#career" as const },
@@ -83,7 +83,7 @@ export function Navbar() {
             />
             <span className="min-w-0 leading-tight">
               <span className="block truncate text-sm font-semibold tracking-tight text-white">
-                Ming
+                {SITE.name}
               </span>
               <span className="block text-[11px] text-zinc-400">{SITE.jobTitle}</span>
             </span>
@@ -143,7 +143,7 @@ export function Navbar() {
                 className="block rounded-md px-3 py-3 text-sm text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-200"
                 onNavigate={() => setMenuOpen(false)}
               >
-                Recruiter & client routes
+                Contact routes
               </AnchorLink>
             </li>
           </ul>

@@ -169,7 +169,7 @@ const FILM_CREDITS: Record<string, CollectionCredit> = {
   },
 };
 
-// Series and credits supplied by Ming. Explicit membership keeps separate shoots
+// Series and credits supplied by the creator. Explicit membership keeps separate shoots
 // with the same talent distinct and makes every photo in a series consistent.
 const PHOTO_SERIES = [
   { location: "Pasar Seni, Kuala Lumpur", talent: "Candice", files: ["candice 1.1.webp", "candice 1.2.webp", "candice 1.3.webp", "candice 1.4.webp"] },
@@ -177,14 +177,14 @@ const PHOTO_SERIES = [
   { location: "Ober Mountain, Gatlinburg Tennessee (Abroad)", talent: "Jasper", files: ["jasper 1.1.webp", "jasper 1.2.webp"] },
   { location: "Tasik Harapan USM, Penang", talent: "Juyi", files: ["juyi 1.webp", "juyi 2.webp", "juyi 3.webp"] },
   { location: "Tennis Court USM, Penang", talent: "Juyi", files: ["juyi 4.webp", "juyi 5.webp", "juyi 6.webp"] },
-  { location: "Little Havana, Miami (Abroad)", talent: "Ming", files: ["miami.webp"] },
-  { location: "Georgetown, Penang", talent: "Ming", files: ["ming 1.1.webp", "ming 1.2.webp", "ming 1.3.webp", "ming 2.1.webp", "ming 2.2.webp", "ming 2.3.webp", "ming 2.4.webp"] },
-  { location: "Bukit Bintang, Kuala Lumpur", talent: "Ming", files: ["ming 3.1.webp", "ming 3.2.webp", "ming 3.3.webp"] },
-  { location: "Little Havana, Washington DC (Abroad)", talent: "Ming", files: ["sakura.webp"] },
+  { location: "Little Havana, Miami (Abroad)", talent: "Ming Creatives", files: ["miami.webp"] },
+  { location: "Georgetown, Penang", talent: "Ming Creatives", files: ["ming 1.1.webp", "ming 1.2.webp", "ming 1.3.webp", "ming 2.1.webp", "ming 2.2.webp", "ming 2.3.webp", "ming 2.4.webp"] },
+  { location: "Bukit Bintang, Kuala Lumpur", talent: "Ming Creatives", files: ["ming 3.1.webp", "ming 3.2.webp", "ming 3.3.webp"] },
+  { location: "Little Havana, Washington DC (Abroad)", talent: "Ming Creatives", files: ["sakura.webp"] },
   { location: "Botanical Garden, Penang", talent: "Sayaha", files: ["sayaha 1.1.webp", "sayaha 1.2.webp", "sayaha 1.3.webp", "sayaha 1.4.webp"] },
   { location: "Secret place, Kuala Lumpur", talent: "Slyvia", files: ["slyvia 1.1.webp", "slyvia 1.2.webp", "slyvia 1.3.webp", "slyvia 1.4.webp", "slyvia 1.5.webp"] },
   { location: "Georgetown, Penang", talent: "Tayar", files: ["tayar 1.1.webp", "tayar 1.2.webp", "tayar 1.3.webp"] },
-  { location: "Secret place, Alaska (Abroad)", talent: "Ming", files: ["wat 1.1.webp"] },
+  { location: "Secret place, Alaska (Abroad)", talent: "Ming Creatives", files: ["wat 1.1.webp"] },
   { location: "Georgetown, Penang", talent: "Yiwei", files: ["yiwei 1.1.webp", "yiwei 1.2.webp"] },
   { location: "USM Campus, Penang", talent: "Zhanhang", files: ["zhan hang 1.webp", "zhan hang1.2.webp"] },
 ];

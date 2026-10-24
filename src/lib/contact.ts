@@ -28,7 +28,7 @@ export function contactEmailDraft(recipient: string, topic: RecruitmentTopic, de
   const title = topic === "resume" ? "Résumé request" : "Opportunity enquiry";
   const subject = `${title} — ${details.name.trim().replace(/[\r\n]+/g, " ")}`;
   const body = [
-    `Hi Ming,`, "", details.message.trim(), "",
+    `Hi Ming Creatives,`, "", details.message.trim(), "",
     `Name: ${details.name.trim()}`,
     `Reply to: ${details.email.trim()}`,
     details.company.trim() ? `Company / organisation: ${details.company.trim()}` : "",

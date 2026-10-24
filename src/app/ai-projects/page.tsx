@@ -4,7 +4,7 @@ import { SubpageShell } from "@/components/sections/SubpageShell";
 import { SITE } from "@/lib/seo";
 
 const DESCRIPTION =
-  "Production AI agents and systems built by Ming: what each one does, how it works, its operating status, and verified outcomes.";
+  "Production AI agents and systems built by Ming Creatives: what each one does, how it works, its operating status, and verified outcomes.";
 
 export const metadata: Metadata = {
   title: "AI Projects",
@@ -24,7 +24,7 @@ export default function AiProjectsPage() {
       next={{
         href: "/experiences",
         label: "Experiences",
-        hook: "The background behind these systems: Computer Science, fintech engineering, and independent Data & AI consulting.",
+        hook: "The background behind these systems: Computer Science, fintech engineering, and creative production.",
       }}
     >
       <EngineeringSection />

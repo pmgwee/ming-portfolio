@@ -1,9 +1,3 @@
-export interface ProofLink {
-  label: string;
-  href: string;
-  status?: string;
-}
-
 export interface EngineeringProject {
   slug: string;
   title: string;
@@ -18,7 +12,6 @@ export interface EngineeringProject {
   operation: string;
   outcome: string;
   stack: string[];
-  proofLinks: ProofLink[];
 }
 
 export const ENGINEERING_PROJECTS: EngineeringProject[] = [
@@ -42,22 +35,6 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
     outcome:
       "Self-reported: a 6× gain in job-search efficiency and outcomes while using the workflow.",
     stack: ["Go", "TypeScript", "Agentic workflows", "CodeRabbit", "CI/CD"],
-    proofLinks: [
-      {
-        label: "Public project repository",
-        href: "https://github.com/career-ops-hq/career-ops",
-      },
-      {
-        label: "Analytics and progress views · open PR #4310",
-        href: "https://github.com/career-ops-hq/career-ops/pull/4310",
-        status: "Open",
-      },
-      {
-        label: "Assessment follow-up controls · open PR #4317",
-        href: "https://github.com/career-ops-hq/career-ops/pull/4317",
-        status: "Open",
-      },
-    ],
   },
   {
     slug: "personal-ai-agent",
@@ -85,12 +62,6 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
       "MCP",
       "TypeScript",
       "SQLite",
-    ],
-    proofLinks: [
-      {
-        label: "Public project repository",
-        href: "https://github.com/pmgwee/real-ming",
-      },
     ],
   },
   {
@@ -121,12 +92,6 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
       "Codex",
       "Next.js",
     ],
-    proofLinks: [
-      {
-        label: "Public project repository",
-        href: "https://github.com/pmgwee/agent-knowledge-base-codex",
-      },
-    ],
   },
   {
     slug: "bersamaai",
@@ -154,12 +119,6 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
       "GLM-5.2",
       "Groq Whisper ASR",
       "GitHub Actions",
-    ],
-    proofLinks: [
-      {
-        label: "Public project repository",
-        href: "https://github.com/pmgwee/BersamaAi-community",
-      },
     ],
   },
   {
@@ -190,6 +149,5 @@ export const ENGINEERING_PROJECTS: EngineeringProject[] = [
       "AWS EC2",
       "Next.js",
     ],
-    proofLinks: [],
   },
 ];

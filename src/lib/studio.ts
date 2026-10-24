@@ -143,18 +143,18 @@ export const SERVICE_RAYS = [
 /**
  * Real work behind each service, in `SITE.services` order. The hero film is
  * AI-generated (see public/hero/studio-journey-v2/README.md); the agents and
- * the tracker are Ming's own products, shown from real screenshots.
+ * the tracker are the creator's own products, shown from real screenshots.
  */
 export const SERVICE_PROOF = [
   {
     anchor: "work-aigc",
-    title: "Studio",
+    title: "AI Films",
     caption: "The 15-second AI-generated film that opens this website.",
     link: { label: "Watch it at the top", href: "#top" },
   },
   {
     anchor: "work-agents",
-    title: "AI & Data Consultant",
+    title: "AI Agents",
     image: "/project-previews/bersamaai-discord.webp",
     alt: "BersamaAi community bot posting a filtered industry update into a Discord channel",
     caption: "BersamaAi Community Agents: a Discord bot that filters online sources into topic channels and summarizes videos without captions.",
@@ -162,11 +162,11 @@ export const SERVICE_PROOF = [
   },
   {
     anchor: "work-web",
-    title: "Solution Architect",
+    title: "Web Products",
     image: "/project-previews/duitsini-dashboard-v2.webp",
     alt: "DuitSini dashboard showing live Claude and Codex usage limits beside a YouTube-synced music player",
     caption: "DuitSini: an LLM usage and finance tracker, with live agent limits for Claude and Codex at a glance.",
-    link: { label: "View on GitHub", href: "https://github.com/pmgwee/DuitSini" },
+    link: { label: "Ask for a walkthrough", href: "https://wa.me/message/DFUGF3HXISNEF1" },
   },
 ] as const;
 

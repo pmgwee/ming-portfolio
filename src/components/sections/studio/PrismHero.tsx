@@ -169,7 +169,7 @@ export function PrismHero({ dark, reduced }: { dark: boolean; reduced: boolean }
         <motion.div {...reveal} className={`order-2 lg:order-1 ${ink}`}>
           <p className="flex items-center gap-2 text-sm font-medium text-white [text-shadow:0_1px_10px_rgba(20,24,90,0.45)]">
             <span aria-hidden="true" className="h-px w-8 bg-current" />
-            明 · Ming
+            明 · Ming Creatives
           </p>
           <h2 id="studio-heading" className="mt-5 max-w-[13ch] text-balance text-[clamp(2.6rem,5.6vw,5.5rem)] font-medium leading-[1.02] tracking-[-0.035em]">
             Problems in. <span className="block">Ideas out.</span>
@@ -207,7 +207,7 @@ export function PrismHero({ dark, reduced }: { dark: boolean; reduced: boolean }
       </div>
 
       <motion.div {...reveal} className={`relative mt-20 lg:mt-48 ${lightInk}`}>
-        <ol aria-label="What Ming can build for you" className="grid gap-6 lg:grid-cols-3 lg:gap-10">
+        <ol aria-label="What Ming Creatives can make with you" className="grid gap-6 lg:grid-cols-3 lg:gap-10">
           {SITE.services.map((service, i) => {
             const ray = SERVICE_RAYS[i];
             const Icon = SERVICE_ICONS[i];

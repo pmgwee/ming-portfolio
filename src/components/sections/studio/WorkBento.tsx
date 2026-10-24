@@ -67,7 +67,7 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
         <p className="max-w-[40ch] text-[17px] leading-7 text-zinc-300">Something I&apos;ve made for each service, and the place your project could begin.</p>
       </motion.div>
 
-      <motion.ul {...reveal} aria-label="Ming's services" className="mt-12 grid gap-4 md:mt-16 lg:grid-cols-3">
+      <motion.ul {...reveal} aria-label="Ming Creatives' services" className="mt-12 grid gap-4 md:mt-16 lg:grid-cols-3">
         {SITE.services.map((service, i) => {
           const proof = SERVICE_PROOF[i];
           const ray = SERVICE_RAYS[i];

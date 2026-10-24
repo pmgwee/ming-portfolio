@@ -22,14 +22,13 @@ No linter or test runner is configured — TypeScript (`tsc`) is the only static
 
 ## Brand & positioning
 
-- **Public brand:** Ming Creatives (`ming.creatives` wordmark)
-- **Person:** Perming Gwee (international) / Gwee Per Ming (Malaysia order)
-- **Primary hook:** Awwwards-level 3D animated websites for brands and portfolios
-- **Secondary:** Generative AI development
-- **Primary CTA:** WhatsApp — `https://wa.me/message/DFUGF3HXISNEF1`
+- **Public brand:** Ming Creatives (`@ming.creatives` on Instagram) — a **content creator** (IP brand), not a studio and not a consultant. Never call it a studio; use "collaboration" wording (e.g. "Collaboration inquiry").
+- **Identity separation:** the site is kept apart from the creator's real-name identity. Never publish the real name ("Gwee Per Ming", "Per Ming", "Perming", "gweeperming", "pmgwee"), and never link the LinkedIn or GitHub profiles built on it — including project repositories (case studies offer a WhatsApp walkthrough instead).
+- **Job title:** Content Creator. Career content (AI projects, experiences, side projects) stays, described without the old "Data & AI Consultant" identity.
+- **Primary CTA:** WhatsApp — `https://wa.me/message/DFUGF3HXISNEF1`; contact email `leeahming199@gmail.com`
 - **Logo:** `public/logo-resized.png` — crystal "M" icon, used in Navbar beside the wordmark
 
-All copy (title, description, job title, keywords, expertise) derives from `src/lib/seo.ts`. Edit there first; components consume `SITE.*` so nothing else needs touching.
+All copy (title, description, job title, keywords, FAQ) derives from `src/lib/seo.ts`. Edit there first; components consume `SITE.*` so nothing else needs touching.
 
 ## Architecture
 

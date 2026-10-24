@@ -5,7 +5,7 @@ import { SubpageShell } from "@/components/sections/SubpageShell";
 import { SITE } from "@/lib/seo";
 
 const DESCRIPTION =
-  "Earlier products and prototypes by Ming, including Internify, RenoWise, and SatuRun, each with its current status labelled.";
+  "Earlier products and prototypes by Ming Creatives, including Internify, RenoWise, and SatuRun, each with its current status labelled.";
 
 export const metadata: Metadata = {
   title: "Side Projects",

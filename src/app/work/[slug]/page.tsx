@@ -63,7 +63,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         </Link>
 
         <header className="mt-12 pb-10">
-          <p className="text-sm font-medium text-brand-200">Case study · Ming</p>
+          <p className="text-sm font-medium text-brand-200">Case study · {SITE.name}</p>
           <h1 className="mt-4 text-[clamp(2.6rem,7vw,5.5rem)] font-medium leading-[1.02] tracking-[-0.03em] text-white">
             {project.title}
           </h1>
@@ -92,29 +92,21 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         <Detail title="What runs today">{project.operation}</Detail>
         <Detail title="Outcome">{project.outcome}</Detail>
 
-        <Detail title="Proof and source links">
-          {project.proofLinks.length > 0 ? (
-            <ul className="space-y-3">
-              {project.proofLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-start gap-2 text-brand-100 underline decoration-brand-200/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
-                  >
-                    <span>{link.label}{link.status ? ` · ${link.status}` : ""}</span>
-                    <ArrowUpRight aria-hidden="true" weight="bold" className="mt-0.5 size-4 shrink-0" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>
-              The public demo or repository link will be added after a cleaned,
-              shareable version is available.
-            </p>
-          )}
+        {/* Source repositories stay private; a live walkthrough stands in. */}
+        <Detail title="See it running">
+          <p>
+            The source code isn&apos;t public. For a live walkthrough of how it
+            works and runs today, send a message.
+          </p>
+          <a
+            href={SITE.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-start gap-2 text-brand-100 underline decoration-brand-200/50 underline-offset-4 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-200"
+          >
+            <span>Request a walkthrough on WhatsApp</span>
+            <ArrowUpRight aria-hidden="true" weight="bold" className="mt-0.5 size-4 shrink-0" />
+          </a>
         </Detail>
 
         <div className="mt-10 flex flex-wrap gap-5">

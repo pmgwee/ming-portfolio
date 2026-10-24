@@ -240,7 +240,7 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-at-start="true" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading} data-autoplaying={autoplaying}
-      className={`scroll-animation ${styles.hero}`} aria-label="Ming and Ming Creatives: an introduction in four chapters">
+      className={`scroll-animation ${styles.hero}`} aria-label="Ming Creatives: an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={HERO_FILM.poster} alt="" fetchPriority="high" loading="eager" className={styles.film} />
@@ -250,11 +250,11 @@ export function Hero() {
         <div ref={openingRef} id="hero-introduction" className={styles.opening} aria-hidden="true" inert>
           <p className={styles.role}>{SITE.headline}</p>
           <h1 id="hero-heading">{SITE.personName}</h1>
-          <p className={styles.openingLine}>Production AI. Creative worlds.</p>
-          <p className={styles.openingBody}>I build AI systems that work beyond the prototype, and digital experiences through my studio, Ming Creatives.</p>
+          <p className={styles.openingLine}>Creative worlds, made with AI.</p>
+          <p className={styles.openingBody}>I share photography, AI films and the creative tech behind them on Instagram as @ming.creatives.</p>
           <div className={styles.actions}>
-            <AnchorLink href="/ai-projects" className={styles.primary}>Explore AI Projects <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
-            <AnchorLink href="#showcase" className={styles.secondary}>Enter the studio</AnchorLink>
+            <AnchorLink href="#showcase" className={styles.primary}>See the creative work <ArrowRight aria-hidden="true" size={17} /></AnchorLink>
+            <AnchorLink href="/ai-projects" className={styles.secondary}>Explore AI Projects</AnchorLink>
           </div>
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>
         </div>
@@ -277,7 +277,7 @@ export function Hero() {
                   ))}
                 </nav>
                 <a className={styles.contact} href={SITE.whatsapp} target="_blank" rel="noopener noreferrer">
-                  Have something in mind? <span>Studio inquiry <ArrowUpRight aria-hidden="true" size={16} /></span>
+                  Have something in mind? <span>Collaboration inquiry <ArrowUpRight aria-hidden="true" size={16} /></span>
                 </a>
               </>
             ) : <AnchorLink href={chapter.href} className={styles.chapterAction}>{chapter.action}<ArrowUpRight aria-hidden="true" size={18} /></AnchorLink>}

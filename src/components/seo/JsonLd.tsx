@@ -3,22 +3,18 @@ import { SITE, absoluteUrl, sameAs } from "@/lib/seo";
 
 export function JsonLd() {
   const personId = `${SITE.url}/#person`;
-  const studioId = `${SITE.url}/#ming-creatives`;
   const websiteId = `${SITE.url}/#website`;
 
+  // Repositories are private, so projects are described, never linked to code.
   const projectNodes = ENGINEERING_PROJECTS.map((project) => {
     const isContribution = project.slug === "career-ops";
-    const repository = project.proofLinks.find((link) =>
-      link.label.includes("repository"),
-    );
 
     return {
-      "@type": repository ? "SoftwareSourceCode" : "CreativeWork",
+      "@type": "CreativeWork",
       "@id": `${absoluteUrl(`/work/${project.slug}`)}#project`,
       name: project.title,
       description: project.summary,
       url: absoluteUrl(`/work/${project.slug}`),
-      ...(repository ? { codeRepository: repository.href } : {}),
       ...(isContribution
         ? { contributor: { "@id": personId } }
         : { creator: { "@id": personId } }),
@@ -42,20 +38,9 @@ export function JsonLd() {
         "@type": "CollegeOrUniversity",
         name: "Universiti Sains Malaysia",
       },
-      affiliation: { "@id": studioId },
+      image: absoluteUrl("/icon.png"),
       sameAs: sameAs(),
-    },
-    {
-      "@type": "Organization",
-      "@id": studioId,
-      name: SITE.studioName,
-      url: SITE.url,
-      description: SITE.studioDescription,
-      sameAs: [SITE.instagram],
-      logo: {
-        "@type": "ImageObject",
-        url: absoluteUrl("/icon.png"),
-      },
+      // A content creator who also takes on collaborations (not a studio).
       makesOffer: SITE.services.map((service) => ({
         "@type": "Offer",
         itemOffered: {
@@ -69,7 +54,7 @@ export function JsonLd() {
       "@type": "WebSite",
       "@id": websiteId,
       url: SITE.url,
-      name: `${SITE.name} · ${SITE.studioName}`,
+      name: SITE.name,
       description: SITE.description,
       inLanguage: "en",
       about: { "@id": personId },

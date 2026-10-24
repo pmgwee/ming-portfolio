@@ -23,8 +23,8 @@ const CARDS = [
   {
     href: "/experiences",
     eyebrow: `${count(EXPERIENCE.length)} roles`,
-    title: "From fintech engineering to independent AI consulting.",
-    body: "The background behind the work: Computer Science, a fintech engineering internship, and the studio.",
+    title: "From fintech engineering to creative technology.",
+    body: "The background behind the work: Computer Science, a fintech engineering internship, and creative production.",
     chips: EXPERIENCE.map((entry) => entry.organization),
     cta: "View Experiences",
     glow: "radial-gradient(closest-side, rgba(255,212,0,0.7), transparent)",
@@ -63,7 +63,7 @@ export function CareerSection() {
           id="career-heading"
           className="mt-4 max-w-[22ch] text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[1.04] tracking-[-0.03em] text-zinc-100"
         >
-          The engineering work that powers the studio.
+          The engineering behind the creative work.
         </h2>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-3">

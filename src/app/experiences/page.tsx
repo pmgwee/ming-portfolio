@@ -4,7 +4,7 @@ import { SubpageShell } from "@/components/sections/SubpageShell";
 import { SITE } from "@/lib/seo";
 
 const DESCRIPTION =
-  "Experience and education of Ming, a Malaysian Data & AI Consultant with a Computer Science background and fintech engineering internship experience.";
+  "The experience and education behind Ming Creatives: a Computer Science background, fintech engineering internship experience, and creative production.";
 
 export const metadata: Metadata = {
   title: "Experiences",

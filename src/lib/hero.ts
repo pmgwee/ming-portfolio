@@ -52,7 +52,7 @@ export const ANNOTATIONS: Annotation[] = [
     hide: 0.86,
     eyebrow: "03 — Explore",
     title: "One person. Two paths.",
-    body: "Explore my AI systems and experience, or discover Ming Creatives' studio work.",
+    body: "Explore my AI systems and experience, or discover the creative work of Ming Creatives.",
     position: "center",
   },
 ];
