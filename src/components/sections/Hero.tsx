@@ -48,6 +48,9 @@ export function Hero() {
   const [mounted, setMounted] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [autoplaying, setAutoplaying] = useState(false);
+  // Phones skip the interactive curtain: its strand redraws made the title
+  // reveal stutter there. The introduction shows at once over the film.
+  const [curtained, setCurtained] = useState(true);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -60,6 +63,7 @@ export function Hero() {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReduced(preference.matches);
     update();
+    setCurtained(!window.matchMedia("(max-width: 768px), (pointer: coarse)").matches);
     setMounted(true);
     preference.addEventListener("change", update);
     return () => preference.removeEventListener("change", update);
@@ -101,6 +105,12 @@ export function Hero() {
     curtainRevealRef.current = 0;
     paintOpening();
   }, [staticMode, paintOpening]);
+
+  useEffect(() => {
+    if (staticMode || curtained) return;
+    curtainRevealRef.current = 1;
+    paintOpening();
+  }, [curtained, staticMode, paintOpening]);
 
   // Streaming-style scrub tip: chapter + time at a film position, placed along the rail.
   const placeTip = useCallback((time: number) => {
@@ -248,7 +258,7 @@ export function Hero() {
           <p className={styles.scrollPrompt}><span className="hero-scroll-dot"><ArrowDown aria-hidden="true" size={17} /></span>Scroll to step inside</p>
         </div>
 
-        {mounted && !staticMode ? <CurtainLayer stageRef={stageRef} controllerRef={curtainRef} onReveal={revealIntroduction} /> : null}
+        {mounted && !staticMode && curtained ? <CurtainLayer stageRef={stageRef} controllerRef={curtainRef} onReveal={revealIntroduction} /> : null}
 
         {HERO_CHAPTERS.map((chapter, index) => (
           <div key={chapter.id} ref={(node) => { chapterRefs.current[index] = node; }}

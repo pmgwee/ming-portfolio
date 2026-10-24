@@ -166,6 +166,8 @@ export function ImageField({
     let last = performance.now();
     let advance = 0;
     let running = true;
+    // Each time the field comes into view it starts with a burst (see ENTRY_BOOST).
+    let enteredAt = performance.now();
 
     // Scroll-velocity coupling: the field drifts at FLOW_SPEED when idle and
     // SPEEDS UP with scroll speed (either direction → magnitude). `scrollVel`
@@ -323,7 +325,8 @@ export function ImageField({
         FIELD.SCROLL_BOOST_MAX,
         FIELD.SCROLL_VEL_GAIN * Math.abs(scrollVel),
       );
-      advance += (FIELD.FLOW_SPEED + boost) * flowMult * dt;
+      const entry = FIELD.ENTRY_BOOST * Math.exp(-(now - enteredAt) / 1000 / FIELD.ENTRY_BOOST_S);
+      advance += (FIELD.FLOW_SPEED + boost + entry) * flowMult * dt;
 
       const fadeIn = (phase: number) => clamp01(phase / FIELD.FADE_IN_PHASE);
 
@@ -477,6 +480,7 @@ export function ImageField({
       ([entry]) => {
         if (entry.isIntersecting && !running) {
           running = true;
+          enteredAt = performance.now();
           last = performance.now(); // avoid a huge dt jump on resume
           lastScrollY = window.scrollY; // avoid a velocity spike on resume
           scrollVel = 0;

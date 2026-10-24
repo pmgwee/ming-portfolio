@@ -108,7 +108,7 @@ export const FIELD = {
   /** Card-pool size — desktop / tablet / phone (≤768px). */
   N_DESKTOP: 24,
   N_MOBILE: 16,
-  N_PHONE: 11,
+  N_PHONE: 14,
   /**
    * Phones cap how far a card grows on its way out (in place of the
    * BURST/BASE_SCALE_END_MULT below): a portrait screen is narrow enough that
@@ -136,6 +136,13 @@ export const FIELD = {
    * 1000 px/s scroll roughly quadruples the pace.
    */
   SCROLL_VEL_GAIN: 0.0002,
+  /**
+   * Entry burst: extra advance rate the moment the field comes into view,
+   * decaying with this time constant (s). At the idle pace the first cards
+   * crept out of an empty black centre; this throws a wave out first.
+   */
+  ENTRY_BOOST: 0.9,
+  ENTRY_BOOST_S: 1.4,
   /** Cap on the scroll boost (added advance-rate) so frantic scrolling can't overclock the field. */
   SCROLL_BOOST_MAX: 0.5,
   /**

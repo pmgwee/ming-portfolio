@@ -120,7 +120,8 @@
   .openingBody { font-size: 14px; max-width: 38ch; margin-top: 12px; }
   .actions { gap: 10px; margin-top: 24px; }
   .primary, .secondary { padding: 11px 18px; font-size: 12px; }
-  .scrollPrompt { margin-top: 24px; font-size: 11px; }
+  /* Phones get the start hint pill instead. */
+  .scrollPrompt { display: none; }
   .chapter { left: 24px; right: 24px; bottom: 150px; width: auto; padding: 16px 0; }
   .chapter::before { inset: -40px -45px; background: linear-gradient(transparent, rgb(5 7 14 / 88%) 22%, rgb(5 7 14 / 92%)); }
   .chapterLabel { font-size: 12px; gap: 12px; }
