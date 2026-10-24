@@ -94,11 +94,16 @@ export function ImageField({
   const [N, setN] = useState<number>(FIELD.N_DESKTOP);
   useEffect(() => {
     const viewport = window.matchMedia("(max-width: 1024px)");
+    const phone = window.matchMedia("(max-width: 768px)");
     const updatePoolSize = () =>
-      setN(viewport.matches ? FIELD.N_MOBILE : FIELD.N_DESKTOP);
+      setN(phone.matches ? FIELD.N_PHONE : viewport.matches ? FIELD.N_MOBILE : FIELD.N_DESKTOP);
     updatePoolSize();
     viewport.addEventListener("change", updatePoolSize);
-    return () => viewport.removeEventListener("change", updatePoolSize);
+    phone.addEventListener("change", updatePoolSize);
+    return () => {
+      viewport.removeEventListener("change", updatePoolSize);
+      phone.removeEventListener("change", updatePoolSize);
+    };
   }, []);
 
   // Deterministic shuffle of the FULL (S3-listed) tile pool. Used for the
@@ -198,11 +203,16 @@ export function ImageField({
     // Cache geometry outside the animation loop (no per-frame layout reads).
     let travelX = 0;
     let travelY = 0;
+    let burstEndMult: number = FIELD.BURST_SCALE_END_MULT;
+    let baseEndMult: number = FIELD.BASE_SCALE_END_MULT;
     const updateGeometry = () => {
       const root = rootRef.current;
       const width = root?.clientWidth ?? window.innerWidth;
       const height = root?.clientHeight ?? window.innerHeight;
       const vmaxPx = Math.max(window.innerWidth, window.innerHeight) / 100;
+      const phone = window.matchMedia("(max-width: 768px)").matches;
+      burstEndMult = phone ? FIELD.PHONE_SCALE_END_MULT : FIELD.BURST_SCALE_END_MULT;
+      baseEndMult = phone ? FIELD.PHONE_SCALE_END_MULT : FIELD.BASE_SCALE_END_MULT;
       if (window.matchMedia("(max-width: 1024px)").matches) {
         const cardWidth = cardRefs.current[0]?.offsetWidth ?? 0;
         // Include the largest card's half-size and diagonal exit clearance.
@@ -395,7 +405,7 @@ export function ImageField({
           // card exits scaled up relative to its OWN initial size (variety
           // preserved, not a uniform growth curve).
           const bump = smoothstep(FIELD.BURST_BUMP_START, 1, phase);
-          scale = size0 * lerp(1, FIELD.BURST_SCALE_END_MULT, bump);
+          scale = size0 * lerp(1, burstEndMult, bump);
           x = cos * radius * travelX;
           y = sin * radius * travelY;
           // Duty gate: only emit on a per-cycle subset of cycles so the burst
@@ -422,7 +432,7 @@ export function ImageField({
             hashCycle(i, cycle, 3),
           );
           const bump = smoothstep(FIELD.BASE_BUMP_START, 1, phase);
-          scale = cardScale * lerp(1, FIELD.BASE_SCALE_END_MULT, bump);
+          scale = cardScale * lerp(1, baseEndMult, bump);
           x = cos * radius * travelX;
           y = sin * radius * travelY;
           // Fade out as the card travels outward: a slow quadratic ease-in

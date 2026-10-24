@@ -197,7 +197,7 @@ export function PrismHero({ dark, reduced }: { dark: boolean; reduced: boolean }
           </div>
         </motion.div>
 
-        <div ref={crystalRef} className="relative order-1 ml-auto mr-2 grid size-[150px] place-items-center [perspective:900px] sm:size-[180px] lg:order-2 lg:mx-auto lg:size-[320px]">
+        <div ref={crystalRef} className="relative order-1 mx-auto grid size-[168px] place-items-center [perspective:900px] sm:size-[180px] lg:order-2 lg:mx-auto lg:size-[320px]">
           <span aria-hidden="true" className={styles.bloom} />
           <div ref={tiltRef} className={styles.crystal}>
             <Image src={SITE.logo} alt="" width={260} height={260} className="size-full scale-[1.12] object-cover" />

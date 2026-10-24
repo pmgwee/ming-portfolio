@@ -79,14 +79,16 @@ body {
   overflow-x: hidden;
 }
 
-/* Original production scrub distances: shortening these speeds up the hero. */
+/* Original production scrub distances: shortening these speeds up the hero.
+   Tall scroll ranges use --lock-vh (src/lib/viewport-lock.ts), not vh/svh:
+   in-app browsers resize mid-scroll and would re-size every screen above. */
 .scroll-animation {
-  height: 560vh;
+  height: calc(var(--lock-vh, 1vh) * 560);
 }
 
 @media (max-width: 1024px) {
   .scroll-animation {
-    height: 490vh;
+    height: calc(var(--lock-vh, 1vh) * 490);
   }
 }
 
@@ -98,7 +100,7 @@ body {
 
 @media (max-width: 768px) {
   .scroll-animation {
-    height: 420vh;
+    height: calc(var(--lock-vh, 1vh) * 420);
   }
 
   .hero-sticky {
@@ -125,8 +127,8 @@ body {
 }
 
 .showcase-stage {
-  --showcase-reveal-height: 230vh;
-  --showcase-video-hold: 100vh; /* one screen of full-view video before Services */
+  --showcase-reveal-height: calc(var(--lock-vh, 1vh) * 230);
+  --showcase-video-hold: calc(var(--lock-vh, 1vh) * 100); /* one screen of full-view video before Services */
   height: calc(var(--showcase-reveal-height) + var(--showcase-video-hold));
 }
 
@@ -145,11 +147,10 @@ body {
 }
 
 @media (max-width: 1024px) {
-  /* Keep a real fly-through on touch screens, not a one-swipe video reveal.
-     Stable viewport units prevent browser chrome from retiming the sequence. */
+  /* Keep a real fly-through on touch screens, not a one-swipe video reveal. */
   .showcase-stage {
-    --showcase-reveal-height: 300vh;
-    --showcase-video-hold: 240vh;
+    --showcase-reveal-height: calc(var(--lock-vh, 1vh) * 300);
+    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 160);
   }
 
   .showcase-viewport {
@@ -158,34 +159,20 @@ body {
   }
 
   .showcase-tile {
-    width: clamp(156px, 30vw, 240px);
+    width: clamp(132px, 24vw, 200px);
   }
 }
 
 @media (max-width: 768px) {
+  /* The card fly-through keeps its length; the full-view video holds for
+     about a swipe and a half (it was three screens), then Services. */
   .showcase-stage {
-    --showcase-reveal-height: 360vh;
-    --showcase-video-hold: 280vh;
+    --showcase-reveal-height: calc(var(--lock-vh, 1vh) * 340);
+    --showcase-video-hold: calc(var(--lock-vh, 1vh) * 140);
   }
 
   .showcase-tile {
-    width: clamp(148px, 42vw, 210px);
-  }
-}
-
-@supports (height: 1svh) {
-  @media (max-width: 1024px) {
-    .showcase-stage {
-      --showcase-reveal-height: 300svh;
-      --showcase-video-hold: 240svh;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .showcase-stage {
-      --showcase-reveal-height: 360svh;
-      --showcase-video-hold: 280svh;
-    }
+    width: clamp(104px, 29vw, 140px);
   }
 }
 

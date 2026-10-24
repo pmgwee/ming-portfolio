@@ -169,7 +169,7 @@ export function StudioChat({ reduced }: { reduced: boolean }) {
               <div aria-hidden="true" className="relative flex h-[52px] items-center justify-between pl-9 pr-7 pt-1.5">
                 <span className="text-[16px] font-semibold tracking-[-0.01em]">9:41</span>
                 {/* Dynamic Island with a live activity: artwork left, sound wave right. */}
-                <span className="absolute left-1/2 top-[10px] flex h-[33px] w-[128px] -translate-x-1/2 items-center justify-between rounded-full bg-black pl-[6px] pr-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
+                <span className="absolute left-1/2 top-[10px] flex h-[33px] w-[108px] -translate-x-1/2 min-[428px]:w-[128px] items-center justify-between rounded-full bg-black pl-[6px] pr-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
                   <Image src={SITE.logo} alt="" width={22} height={22} className="size-[22px] rounded-[6px] object-cover" />
                   <span className="flex h-3.5 items-center gap-[2.5px]">
                     {[0.45, 0.8, 1, 0.65, 0.9, 0.5].map((h, i) => (

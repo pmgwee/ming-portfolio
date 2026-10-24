@@ -105,9 +105,16 @@ export const CAROUSEL = {
 /*   • burst — emerges from center at a VARIED size, drifts outward, and  */
 /*             gently scales up ~1.2× in the second half of its travel.   */
 export const FIELD = {
-  /** Card-pool size — desktop / mobile. */
+  /** Card-pool size — desktop / tablet / phone (≤768px). */
   N_DESKTOP: 24,
   N_MOBILE: 16,
+  N_PHONE: 11,
+  /**
+   * Phones cap how far a card grows on its way out (in place of the
+   * BURST/BASE_SCALE_END_MULT below): a portrait screen is narrow enough that
+   * the full growth filled it with one or two cards.
+   */
+  PHONE_SCALE_END_MULT: 1.6,
   /**
    * IDLE advance rate per second — the field's drift pace when the user is
    * NOT scrolling. Scrolling boosts this via SCROLL_VEL_GAIN (below). At idle

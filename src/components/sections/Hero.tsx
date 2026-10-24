@@ -1,24 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FilmStrip } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FilmStrip, HandPointing, MouseScroll, Pause, Play } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { useScrollFilm } from "@/hooks/useScrollFilm";
 import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, progressAt } from "@/lib/hero-story";
 import { SITE } from "@/lib/seo";
-import { lockPageScroll, scrollToPosition } from "@/lib/smooth-scroll";
+import { followScrollPosition, lockPageScroll, scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
 import { CurtainLayer, type CurtainController } from "./CurtainLayer";
 
 /**
  * Experience: the supplied curtain/TV/ship film leads; HTML restores its four
- * chapters. The film-only section height (1320/1140/950vh) and the HERO_PACING
+ * chapters. The film-only section height (1320/1140/950 × --lock-vh) and the HERO_PACING
  * curve (short opening, long glass-lettering reveal) are user-requested; Lenis
  * settings are unchanged.
  * Signature: decoded video frames, rather than timers, drive the chapter copy.
  * First viewport: artwork first; the introduction sits behind an interactive
  * curtain layer, with a bottom timeline rail framing the film.
  */
+/** How long "Play film" rests on each chapter so its copy can be read. */
+const CHAPTER_HOLD_MS = 2600;
+
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,11 +39,15 @@ export function Hero() {
   const previewingRef = useRef(false);
   const readButtonRef = useRef<HTMLButtonElement>(null);
   const wasReadingRef = useRef(false);
+  const chapterOpacityRef = useRef<number[]>([]);
+  const filmFocusRef = useRef("");
+  const autoplayHoldRef = useRef(false);
+  const stopAutoplayRef = useRef<(() => void) | null>(null);
   const [reduced, setReduced] = useState(false);
   const [reading, setReading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [skipped, setSkipped] = useState(false);
-  const [announceReady, setAnnounceReady] = useState(false);
+  const [autoplaying, setAutoplaying] = useState(false);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -59,17 +66,27 @@ export function Hero() {
   }, []);
 
   const paintOpening = useCallback(() => {
+    // Runs every scrubbed frame: write only what changed.
     const openingOpacity = Math.min(1, Math.max(0, (2.45 - filmTimeRef.current) / 0.3)) * curtainRevealRef.current;
-    if (openingRef.current) {
-      openingRef.current.style.opacity = String(openingOpacity);
-      openingRef.current.inert = openingOpacity < 0.1;
-      openingRef.current.setAttribute("aria-hidden", String(openingOpacity < 0.1));
+    const opening = openingRef.current;
+    if (opening) {
+      opening.style.opacity = String(openingOpacity);
+      const hidden = openingOpacity < 0.1;
+      if (opening.inert !== hidden) {
+        opening.inert = hidden;
+        opening.setAttribute("aria-hidden", String(hidden));
+      }
     }
     // The timeline rail and "Read without motion" only show while the curtain
     // is open and the film is still on its opening (0:00–0:02). Hidden on the
     // closed curtain and once the film moves on. Kept focusable for keyboards.
-    const showToolbar = curtainRevealRef.current > 0.35 && filmTimeRef.current <= 2;
-    if (sectionRef.current) sectionRef.current.dataset.toolbar = showToolbar ? "shown" : "hidden";
+    const section = sectionRef.current;
+    if (!section) return;
+    const toolbar = curtainRevealRef.current > 0.35 && filmTimeRef.current <= 2 ? "shown" : "hidden";
+    if (section.dataset.toolbar !== toolbar) section.dataset.toolbar = toolbar;
+    // The start hint stays until the film first moves.
+    const atStart = String(filmTimeRef.current < 0.15);
+    if (section.dataset.atStart !== atStart) section.dataset.atStart = atStart;
   }, []);
 
   const revealIntroduction = useCallback((amount: number) => {
@@ -101,12 +118,13 @@ export function Hero() {
     HERO_CHAPTERS.forEach((chapter, index) => {
       const node = chapterRefs.current[index];
       const opacity = chapterOpacity(time, chapter.start, chapter.end);
-      if (!node) return;
+      if (time >= chapter.start) next = chapter.id;
+      if (!node || chapterOpacityRef.current[index] === opacity) return;
+      chapterOpacityRef.current[index] = opacity;
       node.style.opacity = String(opacity);
       node.style.transform = `translateY(${(1 - opacity) * 10}px)`;
       node.inert = opacity < 0.1;
       node.setAttribute("aria-hidden", String(opacity < 0.1));
-      if (time >= chapter.start) next = chapter.id;
     });
     if (progressRef.current) {
       progressRef.current.value = String(time);
@@ -114,9 +132,14 @@ export function Hero() {
       progressRef.current.setAttribute("aria-valuetext", `${time.toFixed(1)} of 15 seconds, ${chapterLabelAt(time)}`);
     }
     if (!previewingRef.current) placeTip(time);
-    if (sectionRef.current) {
-      sectionRef.current.dataset.chapter = next;
-      sectionRef.current.style.setProperty("--film-focus", time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%");
+    const section = sectionRef.current;
+    if (section) {
+      if (section.dataset.chapter !== next) section.dataset.chapter = next;
+      const focus = time < 5.1 ? "45%" : time < 6.7 ? "36%" : "50%";
+      if (filmFocusRef.current !== focus) {
+        filmFocusRef.current = focus;
+        section.style.setProperty("--film-focus", focus);
+      }
     }
   }, [paintOpening, placeTip]);
 
@@ -131,7 +154,7 @@ export function Hero() {
     placeTip(Number(progressRef.current?.value ?? 0));
   };
 
-  const { ready, failed, progress, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint });
+  const { ready, failed, progress, retry } = useScrollFilm({ sectionRef, videoRef, enabled: mounted && !staticMode, onFrame: paint, holdRef: autoplayHoldRef });
   const preloading = mounted && !staticMode && !ready && !failed;
 
   // Hold the page on the curtain until the whole film is in memory, so the
@@ -143,20 +166,51 @@ export function Hero() {
     return lockPageScroll();
   }, [preloading, skipped]);
 
-  // Briefly confirm the film is ready, then get out of the way.
-  useEffect(() => {
-    if (!ready || staticMode) return;
-    setAnnounceReady(true);
-    const timer = window.setTimeout(() => setAnnounceReady(false), 2600);
-    const dismiss = () => setAnnounceReady(false);
-    window.addEventListener("wheel", dismiss, { once: true, passive: true });
-    window.addEventListener("touchmove", dismiss, { once: true, passive: true });
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("wheel", dismiss);
-      window.removeEventListener("touchmove", dismiss);
+  // "Play film": the film plays for real (no seeking, so no dropped frames)
+  // and the page follows it, resting on each chapter long enough to read.
+  // Any touch, wheel or key hands control straight back to the visitor.
+  const stopAutoplay = useCallback(() => stopAutoplayRef.current?.(), []);
+  const playFilm = () => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video || stopAutoplayRef.current) return;
+    const top = window.scrollY + section.getBoundingClientRect().top;
+    const travel = Math.max(0, section.offsetHeight - window.innerHeight);
+    const end = Math.min(HERO_FILM.duration, Number.isFinite(video.duration) ? video.duration : HERO_FILM.duration) - 1 / 30;
+    const stops: number[] = HERO_CHAPTERS.map((chapter) => chapter.jump).filter((at) => at > video.currentTime + 0.1 && at < end - 1);
+    const events = ["touchstart", "wheel", "keydown"] as const;
+    let frame = 0;
+    let rest = 0;
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(rest);
+      events.forEach((type) => window.removeEventListener(type, stop));
+      video.pause();
+      autoplayHoldRef.current = false;
+      stopAutoplayRef.current = null;
+      setAutoplaying(false);
     };
-  }, [ready, staticMode]);
+    const follow = () => {
+      const time = video.currentTime;
+      paint(time);
+      followScrollPosition(top + travel * progressAt(time));
+      if (time >= end) return stop();
+      if (stops.length && time >= stops[0]) {
+        stops.shift();
+        video.pause();
+        rest = window.setTimeout(() => void video.play().catch(stop), CHAPTER_HOLD_MS);
+      }
+      frame = requestAnimationFrame(follow);
+    };
+    stopAutoplayRef.current = stop;
+    autoplayHoldRef.current = true;
+    setAutoplaying(true);
+    // Listen once this tap has finished, so it doesn't count as taking over.
+    window.setTimeout(() => events.forEach((type) => window.addEventListener(type, stop, { passive: true })), 0);
+    video.play().then(() => { frame = requestAnimationFrame(follow); }, stop);
+  };
+  useEffect(() => stopAutoplay, [stopAutoplay]);
+  useEffect(() => { if (staticMode) stopAutoplay(); }, [staticMode, stopAutoplay]);
 
   const jump = (time: number) => {
     const section = sectionRef.current;
@@ -174,7 +228,7 @@ export function Hero() {
   };
 
   return (
-    <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading}
+    <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-at-start="true" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading} data-autoplaying={autoplaying}
       className={`scroll-animation ${styles.hero}`} aria-label="Ming and Ming Creatives: an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -229,19 +283,33 @@ export function Hero() {
           </div>
           <button ref={readButtonRef} type="button" className={styles.readButton} onClick={toggleReading}><BookOpen aria-hidden="true" size={17} /><span>Read without motion</span></button>
         </div>
-        {preloading || announceReady ? (
-          <div className={styles.preloader} data-ready={!preloading} role="status" aria-live="polite">
-            {preloading ? (
-              <>
-                <span>Loading the film</span>
-                <span className={styles.preloaderTrack} aria-hidden="true"><i style={{ transform: `scaleX(${progress})` }} /></span>
-                <span className={styles.preloaderPct}>{Math.round(progress * 100)}%</span>
-                {!skipped ? <button type="button" className={styles.preloaderSkip} onClick={() => setSkipped(true)}>Skip</button> : null}
-              </>
-            ) : (
-              <span className={styles.preloaderReady}>Ready. Scroll to begin <ArrowDown aria-hidden="true" size={15} /></span>
-            )}
+        {preloading ? (
+          <div className={styles.preloader} role="status" aria-live="polite">
+            <span>Loading the film</span>
+            <span className={styles.preloaderTrack} aria-hidden="true"><i style={{ transform: `scaleX(${progress})` }} /></span>
+            <span className={styles.preloaderPct}>{Math.round(progress * 100)}%</span>
+            {!skipped ? <button type="button" className={styles.preloaderSkip} onClick={() => setSkipped(true)}>Skip</button> : null}
           </div>
+        ) : null}
+        {/* What to do on arrival: swipe or scroll through the film, or let it play. */}
+        {ready && !failed && !staticMode ? (
+          autoplaying ? (
+            <button type="button" className={`${styles.startHint} ${styles.playing}`} onClick={stopAutoplay}>
+              <Pause aria-hidden="true" size={15} weight="fill" />Pause
+            </button>
+          ) : (
+            <div className={styles.startHint}>
+              <span className={styles.gesture}>
+                <HandPointing aria-hidden="true" size={19} className={`${styles.touchOnly} ${styles.swipe}`} />
+                <MouseScroll aria-hidden="true" size={19} className={`${styles.pointerOnly} ${styles.wheel}`} />
+                <span className={styles.touchOnly}>Swipe up to explore</span>
+                <span className={styles.pointerOnly}>Scroll to explore</span>
+              </span>
+              <button type="button" className={styles.playButton} onClick={playFilm}>
+                <Play aria-hidden="true" size={13} weight="fill" />Play film
+              </button>
+            </div>
+          )
         ) : null}
         {failed ? <div className={styles.error} role="status"><span>The film couldn&apos;t load.</span><button type="button" onClick={retry}>Try again</button><button type="button" onClick={toggleReading}>Read the introduction</button></div> : null}
       </div>

@@ -56,13 +56,16 @@ export function CurtainLayer({ stageRef, controllerRef, onReveal }: {
       backContext.fillStyle = "#07080c";
       backContext.fillRect(0, 0, width, height);
       // Closed, plate + strands recompose the film frame exactly; a slight blur
-      // only grows as strands part, softening the reconstructed gaps.
-      const blur = Math.min(1, open) * 3;
+      // only grows as strands part, softening the reconstructed gaps. Touch
+      // screens skip it: a full-screen canvas filter every frame of the
+      // opening swipe cost more than the softening is worth there.
+      const blur = coarse ? 0 : Math.min(1, open) * 3;
       backContext.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
       backContext.drawImage(cleanPlate, ox, oy, sceneWidth, sceneHeight);
       backContext.filter = "none";
-      const strip = width <= 768 ? 16 : 10;
-      const row = texture.height / 20;
+      // Touch: wider strands and fewer rows (~750 draws a frame, not 1,600).
+      const strip = width <= 768 ? (coarse ? 24 : 16) : 10;
+      const row = texture.height / (coarse ? 14 : 20);
       context.globalAlpha = Math.max(0, Math.min(1, (2.5 - time) / 0.5));
       for (let x = 0; x < texture.width; x += strip) {
         const home = ox + x * scale;

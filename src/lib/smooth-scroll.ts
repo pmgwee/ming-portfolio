@@ -78,6 +78,13 @@ export function scrollToPosition(top: number) {
   }
 }
 
+/** Per-frame scroll writes (the page following the playing hero film): no re-measure. */
+export function followScrollPosition(top: number) {
+  if (typeof window === "undefined") return;
+  if (lenisInstance) lenisInstance.scrollTo(top, { immediate: true });
+  else window.scrollTo({ top, behavior: "instant" });
+}
+
 /**
  * Smooth-scroll to an in-page hash target (`"#services"`, or `"#"` / `"#top"`
  * for the top of the page). Falls back to native scrolling when Lenis isn't

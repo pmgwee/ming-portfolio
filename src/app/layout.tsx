@@ -5,6 +5,7 @@ import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { PageTransition } from "@/components/providers/PageTransition";
 import { TRANSITION_BOOT_SCRIPT } from "@/lib/page-transition";
+import { VIEWPORT_LOCK_SCRIPT } from "@/lib/viewport-lock";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
@@ -66,6 +67,8 @@ export default function RootLayout({
       <body id="top">
         {/* Pre-paint: keep the screen covered when arriving via a page transition. */}
         <script dangerouslySetInnerHTML={{ __html: TRANSITION_BOOT_SCRIPT }} />
+        {/* Pre-paint: fix the unit tall scroll sections are measured in. */}
+        <script dangerouslySetInnerHTML={{ __html: VIEWPORT_LOCK_SCRIPT }} />
         {/* Warm up the CloudFront connection (DNS + TLS) before the media
             requests fire. No crossOrigin — media is fetched non-CORS (see
             DEPLOYMENT.md). React hoists this <link> into <head>. */}

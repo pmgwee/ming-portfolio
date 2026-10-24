@@ -54,6 +54,12 @@
   .draw { transition: none; }
 }
 
+/* Phones: hold the light still. Three section-tall layers blurred by 90px are
+   expensive to re-composite every frame while a phone is scrolling. */
+@media (max-width: 768px) {
+  .pool, .sheen { animation: none; will-change: auto; }
+}
+
 /* Film portal: a spectral rim (the prism's light) turning slowly round the screen. */
 .portalRim {
   position: relative; isolation: isolate; overflow: hidden; padding: 1.5px; border-radius: 32px;

@@ -1,4 +1,4 @@
-.hero { --film-focus: 50%; height: 1320vh; color: #fff; background: #07080c; }
+.hero { --film-focus: 50%; height: calc(var(--lock-vh, 1vh) * 1320); color: #fff; background: #07080c; }
 .stage { isolation: isolate; overflow: hidden; }
 .film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--film-focus) center; }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(5 7 14 / 45%), transparent 24%, transparent 45%, rgb(5 7 14 / 65%) 82%, rgb(5 7 14 / 94%)); }
@@ -62,13 +62,31 @@
 .readButton:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
 .loading { position: absolute; right: 32px; top: 116px; font-size: 12px; color: #fff; }
 .preloader { position: absolute; left: 50%; bottom: 104px; z-index: 5; display: flex; align-items: center; gap: 14px; min-width: 320px; padding: 8px 10px 8px 18px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 999px; background: rgb(10 11 16 / 72%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #f4f4f5; font-size: 13px; transform: translateX(-50%); animation: preloaderIn .5s ease both; }
-.preloader[data-ready="true"] { min-width: 0; padding: 10px 18px; }
 .preloaderTrack { flex: 1; min-width: 110px; height: 3px; overflow: hidden; border-radius: 3px; background: rgb(255 255 255 / 16%); }
 .preloaderTrack i { display: block; height: 100%; background: #fff; transform-origin: left; transition: transform .25s linear; }
 .preloaderPct { width: 4ch; text-align: right; font-family: var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; color: #d4d4d8; }
 .preloaderSkip { min-height: 32px; padding: 0 8px; color: #a1a1aa; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .preloaderSkip:hover { color: #fff; }
-.preloaderReady { display: inline-flex; align-items: center; gap: 8px; }
+/* Start hint: how to move through the film, or let it play. Shown until the
+   film first moves (data-at-start), then out of the way. */
+.startHint { position: absolute; left: 50%; bottom: 104px; z-index: 5; display: flex; align-items: center; gap: 6px; padding: 5px 5px 5px 16px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; background: rgb(10 11 16 / 72%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #f4f4f5; font-size: 13px; white-space: nowrap; transform: translateX(-50%); opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s; }
+.hero[data-at-start="true"] .startHint, .startHint.playing { opacity: 1; visibility: visible; animation: preloaderIn .5s ease both; }
+/* While the film plays itself, the pill sits at the very bottom (clear of the
+   chapter copy) and stands in for the manual timeline rail. */
+.startHint.playing { bottom: max(24px, env(safe-area-inset-bottom)); gap: 8px; min-height: 44px; padding: 0 18px; font-weight: 600; cursor: pointer; }
+.hero[data-autoplaying="true"] .toolbar { opacity: 0; visibility: hidden; }
+.gesture { display: inline-flex; align-items: center; gap: 8px; padding-right: 6px; }
+.playButton { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 15px; border-radius: 999px; background: #fff; color: #101219; font-weight: 600; cursor: pointer; transition: background 180ms ease; }
+.playButton:hover { background: #e4e4e7; }
+.swipe { animation: hintSwipe 1.8s ease-in-out infinite; }
+.wheel { animation: hintWheel 1.8s ease-in-out infinite; }
+@keyframes hintSwipe { 0%, 100% { transform: translateY(3px); opacity: .55; } 50% { transform: translateY(-4px); opacity: 1; } }
+@keyframes hintWheel { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(2px); } }
+.touchOnly { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .touchOnly { display: inline; }
+  .pointerOnly { display: none; }
+}
 .hero[data-film-ready="false"] .scrollPrompt { visibility: hidden; }
 @keyframes preloaderIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .error { position: absolute; top: 160px; right: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: calc(100% - 48px); padding: 12px 18px; border-radius: 6px; background: #101219; font-size: 13px; z-index: 4; }
@@ -86,14 +104,15 @@
 @media (max-width: 1100px) {
   .readButton { width: auto; }
 }
-@media (max-width: 1024px) { .hero { height: 1140vh; } }
+@media (max-width: 1024px) { .hero { height: calc(var(--lock-vh, 1vh) * 1140); } }
 @media (max-width: 768px) {
-  .hero { height: 950vh; }
+  .hero { height: calc(var(--lock-vh, 1vh) * 950); }
   /* Preserve every part of the landscape film rather than crop away the TV,
      passenger or glass lettering. The reading area occupies the lower half. */
   .film { object-fit: contain; object-position: center 20%; }
   .loading { top: 110px; right: 24px; font-size: 10px; }
   .preloader { bottom: 128px; min-width: 0; width: calc(100% - 48px); font-size: 12px; }
+  .startHint { bottom: 128px; }
   .opening { padding: 150px 24px 145px; }
   .role { max-width: 30ch; font-size: 12px; }
   .opening h1 { font-size: clamp(2.8rem, 12vw, 4.5rem); }
@@ -146,6 +165,7 @@
   .actions { margin-top: 14px; }
   .primary, .secondary { min-height: 44px; padding: 9px 18px; font-size: 12px; }
   .scrollPrompt { display: none; }
+  .startHint { bottom: 24px; }
   .toolbar { bottom: 10px; }
   .chapter { bottom: 92px; padding: 0; }
   .chapterLabel { font-size: 12px; }
@@ -160,6 +180,7 @@
   .contact { margin-top: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .swipe, .wheel { animation: none; }
   .hero { height: auto; }
   .stage { display: none; }
   .reader { display: block; }

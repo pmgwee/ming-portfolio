@@ -33,12 +33,24 @@ async function loadFilm(url: string, signal: AbortSignal, onProgress: (fraction:
   return URL.createObjectURL(new Blob(chunks as BlobPart[], { type: response.headers.get("content-type") ?? "video/mp4" }));
 }
 
+/**
+ * Most film a single seek moves towards the scroll position. A fast flick asks
+ * for seconds of film at once; stepping a few frames per seek plays through
+ * them instead of skipping straight to the end (the opening's 2.5s pass under
+ * one thumb swipe on a phone). Jumps past `SEEK_JUMP` (chapter links) go
+ * straight there.
+ */
+const SEEK_STEP = 0.2;
+const SEEK_JUMP = 2;
+
 /** One seek in flight; captions advance only when its frame is decoded. */
-export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
+export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame, holdRef }: {
   sectionRef: RefObject<HTMLElement | null>;
   videoRef: RefObject<HTMLVideoElement | null>;
   enabled: boolean;
   onFrame: (time: number) => void;
+  /** While true the film is playing on its own and scrolling doesn't seek. */
+  holdRef?: RefObject<boolean>;
 }) {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -67,12 +79,14 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
       onFrame(lastPresented);
     };
     const seek = () => {
-      if (disposed || video.readyState < 2 || video.seeking) return;
-      if (Math.abs(video.currentTime - desired) <= 1 / 30) {
+      if (disposed || holdRef?.current || video.readyState < 2 || video.seeking) return;
+      const gap = desired - video.currentTime;
+      if (Math.abs(gap) <= 1 / 30) {
         if (lastPresented < 0) present();
         return;
       }
-      try { video.currentTime = desired; } catch {
+      const next = Math.abs(gap) > SEEK_JUMP ? desired : video.currentTime + Math.sign(gap) * Math.min(Math.abs(gap), SEEK_STEP);
+      try { video.currentTime = next; } catch {
         // Some browsers need another data event before seeking is available.
       }
     };
@@ -151,6 +165,6 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame }: {
       video.load();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [attempt, enabled, onFrame, sectionRef, videoRef]);
+  }, [attempt, enabled, holdRef, onFrame, sectionRef, videoRef]);
   return { ready, failed, progress, retry: () => setAttempt((value) => value + 1) };
 }
