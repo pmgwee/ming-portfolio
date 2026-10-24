@@ -25,7 +25,7 @@ const CARDS = [
     eyebrow: `${count(EXPERIENCE.length)} roles`,
     title: "From fintech engineering to creative technology.",
     body: "The background behind the work: Computer Science, a fintech engineering internship, and creative production.",
-    chips: EXPERIENCE.map((entry) => entry.organization),
+    chips: EXPERIENCE.map((entry) => entry.field),
     cta: "View Experiences",
     glow: "radial-gradient(closest-side, rgba(255,212,0,0.7), transparent)",
   },

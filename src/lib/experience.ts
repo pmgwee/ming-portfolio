@@ -1,6 +1,8 @@
 export interface ExperienceEntry {
   role: string;
   organization: string;
+  /** Short field label for the Engineering section's chips. */
+  field: string;
   dates: string;
   location?: string;
   bullets: string[];
@@ -13,6 +15,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
   {
     role: "Automation Engineer Intern",
     organization: "Fintech investment platform",
+    field: "Fintech industry",
     dates: "2024 · 6 months",
     location: "Malaysia",
     bullets: [
@@ -24,6 +27,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
   {
     role: "Ski & Snowboard Technician",
     organization: "Ski resort · work and travel programme",
+    field: "Customer service",
     dates: "Winter 2025–26",
     location: "United States",
     bullets: [
@@ -34,6 +38,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
   {
     role: "Founder",
     organization: "Independent creative production studio",
+    field: "Filmmaking production",
     dates: "2024 – 2025",
     location: "Malaysia",
     bullets: [
