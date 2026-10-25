@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import { HERO_FILM, endRest, filmTimeAt } from "@/lib/hero-story";
+import { HERO_FILM, PHONE_FILM_QUERY, endRest, filmTimeAt } from "@/lib/hero-story";
 
 /**
  * Download the whole film before it can be scrubbed. Scroll-scrubbing seeks
@@ -122,7 +122,7 @@ export function useScrollFilm({ sectionRef, videoRef, enabled, onFrame, holdRef 
     window.addEventListener("resize", onScroll);
     video.muted = true;
     // Choose once, avoiding a second download on orientation changes.
-    const source = window.matchMedia("(max-width: 768px)").matches ? HERO_FILM.mobile : HERO_FILM.desktop;
+    const source = window.matchMedia(PHONE_FILM_QUERY).matches ? HERO_FILM.mobile : HERO_FILM.desktop;
     let lastReported = 0;
     loadFilm(source, abort.signal, (fraction) => {
       // Re-render at most every 1% to keep the download loop cheap.

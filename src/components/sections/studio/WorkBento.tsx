@@ -121,7 +121,7 @@ export function WorkBento({ reduced }: { reduced: boolean }) {
                   <video
                     ref={filmRef}
                     className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none"
-                    src={HERO_FILM.mobile}
+                    src={HERO_FILM.compact}
                     poster={HERO_FILM.ending}
                     muted
                     loop

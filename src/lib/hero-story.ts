@@ -3,11 +3,18 @@ import { SITE } from "./seo";
 /** Versioned review assets, independent of the old S3 frame sequence. */
 export const HERO_FILM = {
   desktop: "/hero/studio-journey-v2/film-1080.mp4",
-  mobile: "/hero/studio-journey-v2/film-720.mp4",
   poster: "/hero/studio-journey-v2/opening.webp",
   ending: "/hero/studio-journey-v2/ending.webp",
+  /** The landscape film at 720p, looped as a background in the Services bento. */
+  compact: "/hero/studio-journey-v2/film-720.mp4",
+  /** Phones: a 9:16 remake retimed to the same chapter beats (see its README). */
+  mobile: "/hero/phone-portrait-v1/film-720x1280.mp4",
+  mobilePoster: "/hero/phone-portrait-v1/opening.webp",
   duration: 15,
 } as const;
+
+/** Viewports that get the portrait film; Hero.module.css frames it under the same query. */
+export const PHONE_FILM_QUERY = "(max-width: 768px)";
 
 export const HERO_CHAPTERS = [
   {

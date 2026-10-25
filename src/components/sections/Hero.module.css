@@ -110,9 +110,12 @@
      learns to fling), then one screen of rest on the final chapter
      (PHONE_END_REST_SCREENS) before the creative work: 650 + 100. */
   .hero { height: calc(var(--lock-vh, 1vh) * 750); }
-  /* Preserve every part of the landscape film rather than crop away the TV,
-     passenger or glass lettering. The reading area occupies the lower half. */
-  .film { object-fit: contain; object-position: center 20%; }
+  /* The portrait film (PHONE_FILM_QUERY) spans the full width, so nothing at
+     the sides is cropped, not even the glass lettering, which runs edge to
+     edge. On screens taller than 9:16 it stops short of the bottom, and the
+     shade fades it into the page colour there, behind the chapter copy. */
+  .film { bottom: auto; height: min(100%, calc(100vw * 16 / 9)); object-position: center top; }
+  .shade { background: linear-gradient(180deg, rgb(5 7 14 / 45%), transparent 22%, transparent 45%, rgb(7 8 12 / 72%) calc(min(100%, 177.78vw) - 24vw), #07080c min(100%, 177.78vw)); }
   .loading { top: 110px; right: 24px; font-size: 10px; }
   .preloader { bottom: 128px; min-width: 0; width: calc(100% - 48px); font-size: 12px; }
   .startHint { bottom: 128px; }

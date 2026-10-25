@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPoi
 import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, FilmStrip, HandPointing, MouseScroll, Pause, Play } from "@phosphor-icons/react";
 import { AnchorLink } from "@/components/ui/AnchorLink";
 import { useScrollFilm } from "@/hooks/useScrollFilm";
-import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, chapterLabelAt, chapterOpacity, endRest, progressAt } from "@/lib/hero-story";
+import { HERO_CHAPTERS, HERO_DESTINATIONS, HERO_FILM, PHONE_FILM_QUERY, chapterLabelAt, chapterOpacity, endRest, progressAt } from "@/lib/hero-story";
 import { SITE } from "@/lib/seo";
 import { followScrollPosition, lockPageScroll, scrollToPosition } from "@/lib/smooth-scroll";
 import styles from "./Hero.module.css";
@@ -60,6 +60,8 @@ export function Hero() {
   // Phones skip the interactive curtain: its strand redraws made the title
   // reveal stutter there. The introduction shows at once over the film.
   const [curtained, setCurtained] = useState(true);
+  // Phones load the portrait film (useScrollFilm picks it once, the same way).
+  const [phone, setPhone] = useState(false);
   const staticMode = reading || reduced;
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export function Hero() {
     const update = () => setReduced(preference.matches);
     update();
     setCurtained(!window.matchMedia("(max-width: 768px), (pointer: coarse)").matches);
+    setPhone(window.matchMedia(PHONE_FILM_QUERY).matches);
     setMounted(true);
     preference.addEventListener("change", update);
     return () => preference.removeEventListener("change", update);
@@ -251,10 +254,13 @@ export function Hero() {
     <section ref={sectionRef} data-cinematic-hero data-toolbar="hidden" data-at-start="true" data-chapter="intro" data-film-time="0" data-static={staticMode} data-film-ready={!preloading} data-autoplaying={autoplaying}
       className={`scroll-animation ${styles.hero}`} aria-label="Ming Creatives: an introduction in four chapters">
       <div ref={stageRef} className={`hero-sticky ${styles.stage}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={HERO_FILM.poster} alt="" fetchPriority="high" loading="eager" className={styles.film} />
+        <picture>
+          <source media={PHONE_FILM_QUERY} srcSet={HERO_FILM.mobilePoster} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={HERO_FILM.poster} alt="" fetchPriority="high" loading="eager" className={styles.film} />
+        </picture>
         <video ref={videoRef} className={styles.film} style={{ opacity: ready && !failed ? 1 : 0 }} muted playsInline
-          preload="none" poster={HERO_FILM.poster} disablePictureInPicture aria-hidden="true" />
+          preload="none" poster={phone ? HERO_FILM.mobilePoster : HERO_FILM.poster} disablePictureInPicture aria-hidden="true" />
         <div className={styles.shade} aria-hidden="true" />
         <div ref={openingRef} id="hero-introduction" className={styles.opening} aria-hidden="true" inert>
           <p className={styles.role}>{SITE.headline}</p>
